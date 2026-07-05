@@ -43,9 +43,10 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "ServerAliveInterval 30" >> ~/.ssh/config
 
-      - name: Upload app files via tar+SSH
+      - name: Package app files
         run: |
           tar --exclude='.git' \
               --exclude='node_modules' \
@@ -53,9 +54,14 @@ jobs:
               --exclude='.github' \
               --exclude='vendor' \
               -czf /tmp/deploy.tar.gz .
+
+      - name: Upload app files via tar+SSH
+        run: |
           ssh -i ~/.ssh/deploy_key \
               -p ${{ secrets.SSH_PORT }} \
               -o StrictHostKeyChecking=no \
+              -o ServerAliveInterval=30 \
+              -o ConnectTimeout=60 \
               ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
               "mkdir -p ~/pusatvillabali && cd ~/pusatvillabali && tar -xzf -" < /tmp/deploy.tar.gz
 

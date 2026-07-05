@@ -164,78 +164,82 @@ export default function HomePage({ villas, destinations, settings }: Props) {
 
                             {/* Search card */}
                             <form onSubmit={handleSearch} className="bg-white rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.18)] border border-white/20 overflow-visible">
-                                <div className="flex flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x divide-zinc-200/60">
-                                    <div ref={searchRef} className="flex-1 relative">
-                                        <div className="flex items-center gap-3 px-4 py-3.5">
-                                            <MapPin className="w-4 h-4 text-blue-600 shrink-0" />
-                                            <input
-                                                type="text"
-                                                value={location}
-                                                onChange={e => { setLocation(e.target.value); setShowSuggestions(true); }}
-                                                onFocus={() => setShowSuggestions(true)}
-                                                placeholder="Cari lokasi atau nama villa..."
-                                                className="w-full text-sm text-zinc-800 outline-none bg-transparent placeholder:text-zinc-400 font-medium"
-                                                autoComplete="off"
-                                            />
-                                            {location && (
-                                                <button type="button" onClick={() => { setLocation(''); setShowSuggestions(false); }} className="text-zinc-300 hover:text-zinc-500 transition-colors cursor-pointer">
-                                                    <Search className="w-3.5 h-3.5" />
-                                                </button>
-                                            )}
-                                        </div>
-                                        {/* Autocomplete dropdown */}
-                                        {showSuggestions && suggestions.length > 0 && (
-                                            <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] border border-slate-100 overflow-hidden z-50">
-                                                {location.trim() === '' && (
-                                                    <div className="px-4 pt-3 pb-1">
-                                                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Destinasi Populer</p>
-                                                    </div>
-                                                )}
-                                                {suggestions.map((s, i) => (
-                                                    <button
-                                                        key={i}
-                                                        type="button"
-                                                        onMouseDown={() => {
-                                                            setLocation(s.label);
-                                                            setShowSuggestions(false);
-                                                        }}
-                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors cursor-pointer text-left group"
-                                                    >
-                                                        <span className="w-7 h-7 rounded-lg bg-blue-50 group-hover:bg-blue-100 flex items-center justify-center shrink-0 transition-colors">
-                                                            <MapPin className="w-3.5 h-3.5 text-blue-600" />
-                                                        </span>
-                                                        <div className="min-w-0">
-                                                            <p className="text-sm font-semibold text-slate-800 leading-tight truncate">{s.label}</p>
-                                                            {s.sub && <p className="text-xs text-slate-400 leading-tight truncate">{s.sub}</p>}
-                                                        </div>
-                                                    </button>
-                                                ))}
-                                            </div>
+                                {/* Location input — always visible */}
+                                <div ref={searchRef} className="relative border-b border-zinc-200/60">
+                                    <div className="flex items-center gap-3 px-4 py-3.5">
+                                        <MapPin className="w-4 h-4 text-blue-600 shrink-0" />
+                                        <input
+                                            type="text"
+                                            value={location}
+                                            onChange={e => { setLocation(e.target.value); setShowSuggestions(true); }}
+                                            onFocus={() => setShowSuggestions(true)}
+                                            placeholder="Cari lokasi atau nama villa..."
+                                            className="w-full text-sm text-zinc-800 outline-none bg-transparent placeholder:text-zinc-400 font-medium"
+                                            autoComplete="off"
+                                        />
+                                        {location && (
+                                            <button type="button" onClick={() => { setLocation(''); setShowSuggestions(false); }} className="text-zinc-300 hover:text-zinc-500 transition-colors cursor-pointer">
+                                                <Search className="w-3.5 h-3.5" />
+                                            </button>
                                         )}
                                     </div>
-                                    <div className="flex items-center gap-2 px-4 py-3.5 sm:w-36">
+                                    {/* Autocomplete dropdown */}
+                                    {showSuggestions && suggestions.length > 0 && (
+                                        <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] border border-slate-100 overflow-hidden z-50">
+                                            {location.trim() === '' && (
+                                                <div className="px-4 pt-3 pb-1">
+                                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Destinasi Populer</p>
+                                                </div>
+                                            )}
+                                            {suggestions.map((s, i) => (
+                                                <button
+                                                    key={i}
+                                                    type="button"
+                                                    onMouseDown={() => {
+                                                        setLocation(s.label);
+                                                        setShowSuggestions(false);
+                                                    }}
+                                                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors cursor-pointer text-left group"
+                                                >
+                                                    <span className="w-7 h-7 rounded-lg bg-blue-50 group-hover:bg-blue-100 flex items-center justify-center shrink-0 transition-colors">
+                                                        <MapPin className="w-3.5 h-3.5 text-blue-600" />
+                                                    </span>
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-semibold text-slate-800 leading-tight truncate">{s.label}</p>
+                                                        {s.sub && <p className="text-xs text-slate-400 leading-tight truncate">{s.sub}</p>}
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Dates + button row */}
+                                <div className="flex items-stretch divide-x divide-zinc-200/60">
+                                    <div className="flex-1 flex flex-col px-3 py-2.5">
+                                        <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide mb-0.5">Check-in</span>
                                         <input
                                             type="date"
                                             value={checkIn}
                                             onChange={e => setCheckIn(e.target.value)}
-                                            className="text-sm text-zinc-800 outline-none bg-transparent w-full"
+                                            className="text-xs sm:text-sm text-zinc-800 outline-none bg-transparent w-full"
                                         />
                                     </div>
-                                    <div className="flex items-center gap-2 px-4 py-3.5 sm:w-36">
+                                    <div className="flex-1 flex flex-col px-3 py-2.5">
+                                        <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide mb-0.5">Check-out</span>
                                         <input
                                             type="date"
                                             value={checkOut}
                                             onChange={e => setCheckOut(e.target.value)}
-                                            className="text-sm text-zinc-800 outline-none bg-transparent w-full"
+                                            className="text-xs sm:text-sm text-zinc-800 outline-none bg-transparent w-full"
                                         />
                                     </div>
-                                    <div className="flex items-center px-3 py-3 sm:py-0">
+                                    <div className="flex items-center px-3">
                                         <button
                                             type="submit"
-                                            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold rounded-xl px-6 py-3 flex items-center justify-center gap-2 transition-all duration-200 text-sm cursor-pointer shadow-lg shadow-blue-600/20"
+                                            className="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold rounded-xl px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-center gap-2 transition-all duration-200 text-sm cursor-pointer shadow-lg shadow-blue-600/20"
                                         >
                                             <Search className="w-4 h-4" strokeWidth={2.5} />
-                                            <span className="sm:hidden">Cari Villa</span>
+                                            <span className="hidden sm:inline">Cari</span>
                                         </button>
                                     </div>
                                 </div>

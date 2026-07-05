@@ -1,0 +1,151 @@
+import React, { useState } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
+import type { Booking, PaginatedData, Villa } from '@/types';
+import { formatPrice } from '@/lib/format';
+import { format, parseISO } from 'date-fns';
+import { id as localeID } from 'date-fns/locale';
+import { Search, ExternalLink, Eye } from 'lucide-react';
+
+interface Props {
+    bookings: PaginatedData<Booking>;
+    villas: { id: number; name: string }[];
+}
+
+const statusColors: Record<string, string> = {
+    pending: 'bg-yellow-100 text-yellow-700',
+    confirmed: 'bg-green-100 text-green-700',
+    cancelled: 'bg-red-100 text-red-700',
+    completed: 'bg-blue-100 text-blue-700',
+};
+
+const paymentColors: Record<string, string> = {
+    unpaid: 'bg-red-100 text-red-700',
+    pending: 'bg-yellow-100 text-yellow-700',
+    paid: 'bg-green-100 text-green-700',
+    refunded: 'bg-blue-100 text-blue-700',
+    expired: 'bg-slate-100 text-slate-600',
+};
+
+export default function AdminBookingsPage({ bookings, villas }: Props) {
+    const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+
+    const handleFilter = () => {
+        const params: Record<string, string> = {};
+        if (search) params.search = search;
+        if (statusFilter) params.status = statusFilter;
+        router.get('/admin/bookings', params, { preserveScroll: true });
+    };
+
+    return (
+        <>
+            <Head title="Kelola Pemesanan" />
+
+            <div className="space-y-5">
+                <div>
+                    <h1 className="text-2xl font-black text-slate-800">Pemesanan</h1>
+                    <p className="text-sm text-slate-500">{bookings.total} total pemesanan</p>
+                </div>
+
+                {/* Filters */}
+                <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2">
+                        <Search className="w-4 h-4 text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Cari nama, kode, email..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleFilter()}
+                            className="text-sm outline-none text-slate-700 w-52 placeholder:text-slate-400"
+                        />
+                    </div>
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => { setStatusFilter(e.target.value); }}
+                        className="text-sm border border-slate-200 bg-white rounded-lg px-3 py-2 outline-none text-slate-700"
+                    >
+                        <option value="">Semua Status</option>
+                        <option value="pending">Menunggu</option>
+                        <option value="confirmed">Dikonfirmasi</option>
+                        <option value="completed">Selesai</option>
+                        <option value="cancelled">Dibatalkan</option>
+                    </select>
+                    <button onClick={handleFilter} className="text-sm bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-900">
+                        Filter
+                    </button>
+                </div>
+
+                {/* Table */}
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="bg-slate-50 border-b border-slate-200">
+                                    <th className="text-left px-5 py-3 font-semibold text-slate-600">Pemesan</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-slate-600">Villa</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-slate-600">Tanggal</th>
+                                    <th className="text-right px-4 py-3 font-semibold text-slate-600">Total</th>
+                                    <th className="text-center px-4 py-3 font-semibold text-slate-600">Status</th>
+                                    <th className="text-center px-4 py-3 font-semibold text-slate-600">Pembayaran</th>
+                                    <th className="text-center px-4 py-3 font-semibold text-slate-600">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {bookings.data.map((b) => (
+                                    <tr key={b.id} className="hover:bg-slate-50">
+                                        <td className="px-5 py-3">
+                                            <p className="font-semibold text-slate-800">{b.guest_name}</p>
+                                            <p className="text-xs text-slate-400 font-mono">#{b.booking_code}</p>
+                                        </td>
+                                        <td className="px-4 py-3 text-slate-600 max-w-[140px] truncate">{b.villa?.name ?? '-'}</td>
+                                        <td className="px-4 py-3 text-slate-600 text-xs">
+                                            <p>{format(parseISO(b.check_in), 'dd MMM yy', { locale: localeID })}</p>
+                                            <p className="text-slate-400">– {format(parseISO(b.check_out), 'dd MMM yy', { locale: localeID })}</p>
+                                        </td>
+                                        <td className="px-4 py-3 text-right font-bold text-slate-800">{formatPrice(b.total_amount)}</td>
+                                        <td className="px-4 py-3 text-center">
+                                            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${statusColors[b.status] ?? 'bg-slate-100 text-slate-600'}`}>
+                                                {b.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-center">
+                                            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${paymentColors[b.payment_status] ?? 'bg-slate-100 text-slate-600'}`}>
+                                                {b.payment_status}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-center">
+                                            <div className="flex items-center justify-center gap-1">
+                                                <Link
+                                                    href={`/admin/bookings/${b.id}`}
+                                                    className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-flex"
+                                                    title="Lihat Detail Pemesanan"
+                                                >
+                                                    <Eye className="w-4.5 h-4.5" />
+                                                </Link>
+                                                <a
+                                                    href={`/booking/status?code=${b.booking_code}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-flex"
+                                                    title="Lihat Halaman Publik"
+                                                >
+                                                    <ExternalLink className="w-4.5 h-4.5" />
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {bookings.data.length === 0 && (
+                                    <tr>
+                                        <td colSpan={7} className="px-5 py-12 text-center text-slate-400">Belum ada pemesanan</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}

@@ -1,0 +1,88 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: '22'
+
+      - name: Install PHP dependencies
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Deploy to production via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd ~/pusatvillabali
+
+            echo "==> Pulling latest code..."
+            git pull origin main
+
+            echo "==> Installing PHP dependencies..."
+            composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+
+            echo "==> Clearing caches..."
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+
+            echo "==> Running migrations..."
+            php artisan migrate --force
+
+            echo "==> Caching for production..."
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            echo "==> Storage link..."
+            php artisan storage:link || true
+
+            echo "==> Setting permissions..."
+            chmod -R 775 storage bootstrap/cache
+
+            echo "==> Deploy complete."
+
+      - name: Upload built assets to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "public/build"
+          target: "~/pusatvillabali/public/"
+          strip_components: 1

@@ -42,10 +42,10 @@ export default function VillaCard({
             : ''
     }`;
 
-    const ratingVal = villa.reviews_avg_rating
+    const ratingVal = villa.reviews_avg_rating && villa.reviews_count && villa.reviews_count > 0
         ? parseFloat(villa.reviews_avg_rating.toString())
-        : 4.5 + (villa.id % 5) * 0.1;
-    const ratingText = ratingVal.toFixed(1).replace('.', ',');
+        : null;
+    const ratingText = ratingVal !== null ? ratingVal.toFixed(1).replace('.', ',') : null;
     const reviewCount = villa.reviews_count ?? 0;
 
     const allPhotos =
@@ -68,15 +68,14 @@ export default function VillaCard({
         setCurrentPhotoIndex((prev) => (prev < photos.length - 1 ? prev + 1 : 0));
     };
 
-    const hasWeekendPrice = villa.weekend_price && villa.weekend_price !== villa.price_per_night;
     const priceText = formatPrice(villa.price_per_night);
-    const priceLabel = hasWeekendPrice ? `– ${formatPrice(villa.weekend_price!)}` : '/ malam';
+    const priceLabel = '/ malam';
 
     return (
         <Link
             href={detailUrl}
             className={`group cursor-pointer flex flex-col w-full bg-transparent hover:no-underline ${
-                isSelected ? 'ring-2 ring-blue-500 rounded-xl' : ''
+                isSelected ? 'ring-2 ring-[#00A86B] rounded-xl' : ''
             }`}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
@@ -109,75 +108,93 @@ export default function VillaCard({
                     />
                 )}
 
+                {/* Heart — top right */}
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleWishlist?.(villa.id, e);
+                    }}
+                    className="absolute top-2.5 right-2.5 p-0 bg-transparent border-0 cursor-pointer"
+                    aria-label={isWished ? 'Hapus dari wishlist' : 'Tambah ke wishlist'}
+                >
+                    <Heart
+                        className={`w-5 h-5 drop-shadow-md transition-colors ${
+                            isWished
+                                ? 'fill-rose-500 stroke-rose-500'
+                                : 'fill-black/20 stroke-white'
+                        }`}
+                        strokeWidth={2}
+                    />
+                </button>
+
                 {/* Nav arrows */}
                 {photos.length > 1 && (
                     <>
                         <button
                             onClick={handlePrev}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-white/80 hover:bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-white/80 hover:bg-white rounded-full shadow opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                         >
-                            <ChevronLeft className="w-4 h-4 text-slate-700" />
+                            <ChevronLeft className="w-3.5 h-3.5 text-slate-700" />
                         </button>
                         <button
                             onClick={handleNext}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-white/80 hover:bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-white/80 hover:bg-white rounded-full shadow opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                         >
-                            <ChevronRight className="w-4 h-4 text-slate-700" />
+                            <ChevronRight className="w-3.5 h-3.5 text-slate-700" />
                         </button>
-                        {/* Dots */}
-                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                            {photos.map((_, i) => (
-                                <div
-                                    key={i}
-                                    className={`w-1.5 h-1.5 rounded-full transition-all ${
-                                        i === currentPhotoIndex ? 'bg-white w-3' : 'bg-white/60'
-                                    }`}
-                                />
-                            ))}
-                        </div>
                     </>
                 )}
 
-                {/* Wishlist */}
-                {toggleWishlist && (
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleWishlist(villa.id, e);
-                        }}
-                        className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 hover:bg-white transition-colors shadow"
-                    >
-                        <Heart
-                            className={`w-4 h-4 transition-colors ${
-                                isWished ? 'fill-rose-500 text-rose-500' : 'text-slate-600'
-                            }`}
-                        />
-                    </button>
+                {/* Dot indicators */}
+                {photos.length > 1 && (
+                    <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex gap-1">
+                        {photos.map((_, i) => (
+                            <span
+                                key={i}
+                                className={`block rounded-full transition-all ${
+                                    i === currentPhotoIndex
+                                        ? 'w-2 h-2 bg-white'
+                                        : 'w-1.5 h-1.5 bg-white/50'
+                                }`}
+                            />
+                        ))}
+                    </div>
                 )}
-
-                {/* Rating */}
-                <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/90 rounded-full px-2 py-0.5 shadow">
-                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                    <span className="text-xs font-semibold text-slate-700">{ratingText}</span>
-                    {reviewCount > 0 && (
-                        <span className="text-xs text-slate-500">({reviewCount})</span>
-                    )}
-                </div>
             </div>
 
             {/* Info */}
             <div className="pt-3 flex flex-col space-y-0.5">
-                <h3 className="text-[14px] sm:text-[15px] font-semibold text-slate-700 leading-tight tracking-tight line-clamp-1 group-hover:text-blue-600 transition-colors">
-                    {villa.name}
-                </h3>
-                <p className="text-xs text-slate-500 truncate">{villa.location}</p>
-                <div className="text-[13px] sm:text-[14px] text-slate-700 font-normal pt-0.5">
+                {/* Name + rating inline */}
+                <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-[14px] sm:text-[15px] font-semibold text-slate-800 leading-tight tracking-tight line-clamp-1 flex-1">
+                        {villa.name}
+                    </h3>
+                    <div className="flex items-center gap-0.5 shrink-0">
+                        {ratingText !== null ? (
+                            <>
+                                <Star className="w-3.5 h-3.5 fill-slate-800 stroke-slate-800" />
+                                <span className="text-[13px] font-semibold text-slate-800">{ratingText}</span>
+                            </>
+                        ) : (
+                            <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-full">Baru</span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Location */}
+                <p className="text-sm text-slate-500 truncate">{villa.location}</p>
+
+                {/* Review count */}
+                {reviewCount > 0 && (
+                    <p className="text-xs text-slate-400">{reviewCount} ulasan</p>
+                )}
+
+                {/* Price */}
+                <div className="text-[13px] sm:text-[14px] text-slate-800 font-normal pt-1">
                     <span className="font-semibold">{priceText}</span>
-                    <span className="text-slate-500">
-                        {' '}
-                        {hasWeekendPrice ? priceLabel : '/ malam'}
-                    </span>
+                    <span className="text-slate-500"> {priceLabel}</span>
                 </div>
             </div>
         </Link>

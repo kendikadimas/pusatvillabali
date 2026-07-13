@@ -26,6 +26,20 @@ const paymentColors: Record<string, string> = {
     expired: 'bg-slate-100 text-slate-600',
 };
 
+const statusLabels: Record<string, string> = {
+    pending: 'Menunggu',
+    confirmed: 'Dikonfirmasi',
+    cancelled: 'Dibatalkan',
+    completed: 'Selesai',
+};
+const paymentLabels: Record<string, string> = {
+    unpaid: 'Belum Dibayar',
+    pending: 'Menunggu Verifikasi',
+    paid: 'Lunas',
+    refunded: 'Dikembalikan',
+    expired: 'Kadaluarsa',
+};
+
 export default function AdminBookingsPage({ bookings, villas }: Props) {
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
@@ -78,7 +92,37 @@ export default function AdminBookingsPage({ bookings, villas }: Props) {
 
                 {/* Table */}
                 <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-                    <div className="overflow-x-auto">
+                    {/* Mobile card view */}
+                    <div className="md:hidden divide-y divide-slate-100">
+                        {bookings.data.map((b) => (
+                            <div key={b.id} className="p-4">
+                                <div className="flex items-start justify-between gap-2 mb-2">
+                                    <div>
+                                        <p className="font-semibold text-slate-800 text-sm">{b.guest_name}</p>
+                                        <p className="text-xs text-slate-400 font-mono">#{b.booking_code}</p>
+                                        <p className="text-xs text-slate-500 mt-0.5">{b.villa?.name ?? '-'}</p>
+                                    </div>
+                                    <Link href={`/admin/bookings/${b.id}`} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg shrink-0">
+                                        <Eye className="w-4 h-4" />
+                                    </Link>
+                                </div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${statusColors[b.status] ?? 'bg-slate-100 text-slate-600'}`}>
+                                        {statusLabels[b.status] ?? b.status}
+                                    </span>
+                                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${paymentColors[b.payment_status] ?? 'bg-slate-100 text-slate-600'}`}>
+                                        {paymentLabels[b.payment_status] ?? b.payment_status}
+                                    </span>
+                                    <span className="text-xs font-bold text-slate-700 ml-auto">{formatPrice(b.total_amount)}</span>
+                                </div>
+                            </div>
+                        ))}
+                        {bookings.data.length === 0 && (
+                            <div className="p-8 text-center text-slate-400 text-sm">Belum ada pemesanan</div>
+                        )}
+                    </div>
+
+                    <div className="hidden md:block overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="bg-slate-50 border-b border-slate-200">
@@ -106,12 +150,12 @@ export default function AdminBookingsPage({ bookings, villas }: Props) {
                                         <td className="px-4 py-3 text-right font-bold text-slate-800">{formatPrice(b.total_amount)}</td>
                                         <td className="px-4 py-3 text-center">
                                             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${statusColors[b.status] ?? 'bg-slate-100 text-slate-600'}`}>
-                                                {b.status}
+                                                 {statusLabels[b.status] ?? b.status}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-center">
                                             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${paymentColors[b.payment_status] ?? 'bg-slate-100 text-slate-600'}`}>
-                                                {b.payment_status}
+                                                 {paymentLabels[b.payment_status] ?? b.payment_status}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-center">
@@ -144,6 +188,33 @@ export default function AdminBookingsPage({ bookings, villas }: Props) {
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Pagination */}
+                    {bookings.last_page > 1 && (
+                        <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 bg-slate-50">
+                            <span className="text-xs text-slate-500">
+                                {bookings.from}–{bookings.to} dari {bookings.total}
+                            </span>
+                            <div className="flex gap-1">
+                                {Array.from({ length: bookings.last_page }, (_, i) => i + 1).map((page) => (
+                                    <button
+                                        key={page}
+                                        onClick={() => {
+                                            const params: Record<string, string> = { page: String(page) };
+                                            if (search) params.search = search;
+                                            if (statusFilter) params.status = statusFilter;
+                                            router.get('/admin/bookings', params, { preserveScroll: true });
+                                        }}
+                                        className={`w-7 h-7 rounded text-xs font-medium ${
+                                            page === bookings.current_page ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        {page}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </>

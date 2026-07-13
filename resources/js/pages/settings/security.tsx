@@ -32,7 +32,7 @@ export default function Security(props: Props) {
                 />
 
                 <Form
-                    {...SecurityController.update.form()}
+                    {...SecurityController.update['/settings/password'].form()}
                     options={{
                         preserveScroll: true,
                     }}

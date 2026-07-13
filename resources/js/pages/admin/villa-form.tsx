@@ -722,7 +722,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                         type="button"
                         onClick={() => setActiveTab('info')}
                         className={`pb-3 border-b-2 cursor-pointer transition-colors ${
-                            activeTab === 'info' ? 'border-blue-605 text-blue-605 font-bold border-blue-605' : 'border-transparent text-slate-400 hover:text-slate-700'
+                            activeTab === 'info' ? 'border-blue-600 text-blue-600 font-bold border-blue-600' : 'border-transparent text-slate-400 hover:text-slate-700'
                         }`}
                     >
                         1. Info Detail
@@ -740,7 +740,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                             !isEdit 
                                 ? 'text-slate-300 cursor-not-allowed border-transparent' 
                                 : activeTab === 'photos' 
-                                    ? 'border-blue-605 text-blue-605 font-bold cursor-pointer border-blue-605' 
+                                    ? 'border-blue-600 text-blue-600 font-bold cursor-pointer border-blue-600' 
                                     : 'border-transparent text-slate-400 hover:text-slate-700 cursor-pointer'
                         }`}
                     >
@@ -761,7 +761,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                             !isEdit 
                                 ? 'text-slate-300 cursor-not-allowed border-transparent' 
                                 : activeTab === 'blocked_dates' 
-                                    ? 'border-blue-605 text-blue-605 font-bold cursor-pointer border-blue-605' 
+                                    ? 'border-blue-600 text-blue-600 font-bold cursor-pointer border-blue-600' 
                                     : 'border-transparent text-slate-400 hover:text-slate-700 cursor-pointer'
                         }`}
                     >
@@ -791,9 +791,9 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 placeholder="Contoh: Villa Kencana Cilember"
                                                 value={name}
                                                 onChange={(e) => setName(e.target.value)}
-                                                className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
                                                     formErrors.name ? 'border-red-500' : 'border-slate-200 hover:border-slate-300'
-                                                }`}
+                                                 }`}
                                             />
                                             {formErrors.name && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.name}</p>}
                                         </div>
@@ -806,9 +806,9 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 value={shortDesc}
                                                 onChange={(e) => setShortDesc(e.target.value)}
                                                 maxLength={150}
-                                                className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
                                                     formErrors.short_desc ? 'border-red-500' : 'border-slate-200 hover:border-slate-300'
-                                                }`}
+                                                 }`}
                                             />
                                             <div className="flex justify-between items-center text-[9px] text-slate-400 mt-1 font-semibold">
                                                 <span>Tampil di halaman katalog.</span>
@@ -824,9 +824,9 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 placeholder="Contoh: Cilember, Cisarua, Bogor"
                                                 value={location}
                                                 onChange={(e) => setLocation(e.target.value)}
-                                                className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
                                                     formErrors.location ? 'border-red-500' : 'border-slate-200 hover:border-slate-300'
-                                                }`}
+                                                 }`}
                                             />
                                             {formErrors.location && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.location}</p>}
                                         </div>
@@ -840,7 +840,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                     <select 
                                                         value={destinationId}
                                                         onChange={(e) => setDestinationId(e.target.value)}
-                                                        className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 cursor-pointer ${
+                                                        className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 cursor-pointer ${
                                                             formErrors.destination_id ? 'border-red-500' : 'border-slate-200 hover:border-slate-300'
                                                         }`}
                                                     >
@@ -875,14 +875,14 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                         placeholder="Nama destinasi (misal: Cisarua, Bogor) *"
                                                         value={newDestName}
                                                         onChange={(e) => setNewDestName(e.target.value)}
-                                                        className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Kota/kabupaten *"
-                                                        value={newDestCity}
-                                                        onChange={(e) => setNewDestCity(e.target.value)}
-                                                        className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                                                 className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                                                     />
+                                                     <input
+                                                         type="text"
+                                                         placeholder="Kota/kabupaten *"
+                                                         value={newDestCity}
+                                                         onChange={(e) => setNewDestCity(e.target.value)}
+                                                         className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
                                                     />
                                                     <button
                                                         type="button"
@@ -920,18 +920,18 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                     setMapsUrl(val);
                                                 }}
                                                 placeholder="Tempel embed URL src dari Google Maps iframe"
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
-                                            />
-                                        </div>
-                                    </div>
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                             />
+                                         </div>
+                                     </div>
 
-                                    <div>
-                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Deskripsi Lengkap Villa *</label>
-                                        <textarea 
-                                            rows={6}
-                                            value={description}
-                                            onChange={(e) => setDescription(e.target.value)}
-                                            className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
+                                     <div>
+                                         <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Deskripsi Lengkap Villa *</label>
+                                         <textarea 
+                                             rows={6}
+                                             value={description}
+                                             onChange={(e) => setDescription(e.target.value)}
+                                             className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
                                                 formErrors.description ? 'border-red-500' : 'border-slate-200 hover:border-slate-300'
                                             }`}
                                         />
@@ -950,9 +950,9 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 type="number" 
                                                 value={pricePerNight}
                                                 onChange={(e) => setPricePerNight(e.target.value)}
-                                                className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
                                                     formErrors.price_per_night ? 'border-red-500' : 'border-slate-200'
-                                                }`}
+                                                 }`}
                                             />
                                             {formErrors.price_per_night && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.price_per_night}</p>}
                                         </div>
@@ -962,66 +962,66 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 type="number" 
                                                 value={weekendPrice}
                                                 onChange={(e) => setWeekendPrice(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Kamar Tidur</label>
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                             />
+                                         </div>
+                                         <div>
+                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Kamar Tidur</label>
                                             <input 
                                                 type="number" 
                                                 min="1"
                                                 value={bedrooms}
                                                 onChange={(e) => setBedrooms(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Kamar Mandi</label>
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                             />
+                                         </div>
+                                         <div>
+                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Kamar Mandi</label>
                                             <input 
                                                 type="number" 
                                                 min="1"
                                                 value={bathrooms}
                                                 onChange={(e) => setBathrooms(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Kapasitas Tamu</label>
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                             />
+                                         </div>
+                                         <div>
+                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Kapasitas Tamu</label>
                                             <input 
                                                 type="number" 
                                                 min="1"
                                                 value={maxGuests}
                                                 onChange={(e) => setMaxGuests(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Beds (Kasur)</label>
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                             />
+                                         </div>
+                                         <div>
+                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Beds (Kasur)</label>
                                             <input 
                                                 type="number" 
                                                 min="1"
                                                 value={beds}
                                                 onChange={(e) => setBeds(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Biaya Kebersihan</label>
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                             />
+                                         </div>
+                                         <div>
+                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Biaya Kebersihan</label>
                                             <input 
                                                 type="number" 
                                                 value={cleaningFee}
                                                 onChange={(e) => setCleaningFee(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Min Menginap (Malam)</label>
-                                            <input 
-                                                type="number" 
-                                                min="1"
-                                                value={minNights}
-                                                onChange={(e) => setMinNights(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                             />
+                                         </div>
+                                         <div>
+                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Min Menginap (Malam)</label>
+                                             <input 
+                                                 type="number" 
+                                                 min="1"
+                                                 value={minNights}
+                                                 onChange={(e) => setMinNights(e.target.value)}
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
                                             />
                                         </div>
                                     </div>
@@ -1039,9 +1039,9 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 value={checkInTime}
                                                 onChange={(e) => setCheckInTime(e.target.value)}
                                                 placeholder="Misal: 14:00"
-                                                className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
                                                     formErrors.check_in_time ? 'border-red-500' : 'border-slate-200'
-                                                }`}
+                                                 }`}
                                             />
                                         </div>
                                         <div>
@@ -1051,9 +1051,9 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 value={checkOutTime}
                                                 onChange={(e) => setCheckOutTime(e.target.value)}
                                                 placeholder="Misal: 12:00"
-                                                className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
                                                     formErrors.check_out_time ? 'border-red-500' : 'border-slate-200'
-                                                }`}
+                                                 }`}
                                             />
                                         </div>
                                         <div className="sm:col-span-2">
@@ -1062,16 +1062,16 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 rows={3}
                                                 value={rules}
                                                 onChange={(e) => setRules(e.target.value)}
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
-                                            />
-                                        </div>
-                                        <div className="sm:col-span-2 flex items-center space-x-3 pt-2">
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                             />
+                                         </div>
+                                         <div className="sm:col-span-2 flex items-center space-x-3 pt-2">
                                             <input 
                                                 type="checkbox" 
                                                 id="isActive"
                                                 checked={isActive}
                                                 onChange={(e) => setIsActive(e.target.checked)}
-                                                className="rounded border-slate-300 text-blue-605 focus:ring-blue-605 w-4 h-4 cursor-pointer"
+                                                className="rounded border-slate-300 text-blue-600 focus:ring-blue-605 w-4 h-4 cursor-pointer"
                                             />
                                             <label htmlFor="isActive" className="text-xs font-bold text-slate-700 cursor-pointer">
                                                 Aktifkan Villa (Tampilkan langsung di katalog website)
@@ -1109,7 +1109,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 placeholder="Misal: WiFi 100Mbps"
                                                 value={newAmenityName}
                                                 onChange={(e) => setNewAmenityName(e.target.value)}
-                                                className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-505 font-semibold"
+                                                 className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-505 font-semibold"
                                                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addAmenity())}
                                             />
                                         </div>
@@ -1194,41 +1194,41 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                     <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
                                         <div>
                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nama Tuan Rumah</label>
-                                            <input 
-                                                type="text" 
-                                                value={hostName} 
-                                                onChange={(e) => setHostName(e.target.value)} 
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">No. WhatsApp Host</label>
-                                            <input 
-                                                type="text" 
-                                                placeholder="081234567890" 
-                                                value={hostPhone} 
-                                                onChange={(e) => setHostPhone(e.target.value)} 
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tahun Pengalaman (Tahun)</label>
-                                            <input 
-                                                type="number" 
-                                                min="0" 
-                                                value={hostYears} 
-                                                onChange={(e) => setHostYears(Number(e.target.value))} 
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Label Bergabung</label>
-                                            <input 
-                                                type="text" 
-                                                value={hostJoinedLabel} 
-                                                placeholder="Mulai menerima tamu 2024" 
-                                                onChange={(e) => setHostJoinedLabel(e.target.value)} 
-                                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
+                                             <input 
+                                                 type="text" 
+                                                 value={hostName} 
+                                                 onChange={(e) => setHostName(e.target.value)} 
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
+                                             />
+                                         </div>
+                                         <div>
+                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">No. WhatsApp Host</label>
+                                             <input 
+                                                 type="text" 
+                                                 placeholder="081234567890" 
+                                                 value={hostPhone} 
+                                                 onChange={(e) => setHostPhone(e.target.value)} 
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
+                                             />
+                                         </div>
+                                         <div>
+                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tahun Pengalaman (Tahun)</label>
+                                             <input 
+                                                 type="number" 
+                                                 min="0" 
+                                                 value={hostYears} 
+                                                 onChange={(e) => setHostYears(Number(e.target.value))} 
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
+                                             />
+                                         </div>
+                                         <div>
+                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Label Bergabung</label>
+                                             <input 
+                                                 type="text" 
+                                                 value={hostJoinedLabel} 
+                                                 placeholder="Mulai menerima tamu 2024" 
+                                                 onChange={(e) => setHostJoinedLabel(e.target.value)} 
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
                                             />
                                         </div>
                                         <div className="flex items-center space-x-2 pt-6">
@@ -1237,7 +1237,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 id="hostIsVerified" 
                                                 checked={hostIsVerified} 
                                                 onChange={(e) => setHostIsVerified(e.target.checked)} 
-                                                className="w-4 h-4 text-blue-605 border-slate-300 rounded focus:ring-blue-605 cursor-pointer" 
+                                                className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-605 cursor-pointer" 
                                             />
                                             <label htmlFor="hostIsVerified" className="text-[10px] font-bold text-slate-600 uppercase tracking-wider cursor-pointer">Host Terverifikasi</label>
                                         </div>
@@ -1306,12 +1306,12 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 placeholder="Contoh: Senang berbagi rekomendasi lokal" 
                                                 value={hostAboutInput} 
                                                 onChange={(e) => setHostAboutInput(e.target.value)} 
-                                                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" 
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                        if (!hostAboutInput.trim()) return;
-                                                        setHostAboutList(prev => [...prev, hostAboutInput.trim()]);
+                                                 className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" 
+                                                 onKeyDown={(e) => {
+                                                     if (e.key === 'Enter') {
+                                                         e.preventDefault();
+                                                         if (!hostAboutInput.trim()) return;
+                                                         setHostAboutList(prev => [...prev, hostAboutInput.trim()]);
                                                         setHostAboutInput('');
                                                     }
                                                 }}
@@ -1354,7 +1354,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                                         <div>
                                             <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Ikon</label>
-                                            <select value={hlIcon} onChange={(e) => setHlIcon(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold cursor-pointer">
+                                             <select value={hlIcon} onChange={(e) => setHlIcon(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold cursor-pointer">
                                                 <option value="Wind">AC/Kipas</option>
                                                 <option value="Key">Check-in</option>
                                                 <option value="Car">Parkir</option>
@@ -1367,11 +1367,11 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                         </div>
                                         <div>
                                             <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Judul</label>
-                                            <input type="text" placeholder="Misal: Check-in mandiri" value={hlTitle} onChange={(e) => setHlTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Deskripsi</label>
-                                            <input type="text" placeholder="Masuk dengan smartlock." value={hlDesc} onChange={(e) => setHlDesc(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                             <input type="text" placeholder="Misal: Check-in mandiri" value={hlTitle} onChange={(e) => setHlTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                         </div>
+                                         <div>
+                                             <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Deskripsi</label>
+                                             <input type="text" placeholder="Masuk dengan smartlock." value={hlDesc} onChange={(e) => setHlDesc(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                                         </div>
                                         <div className="sm:col-span-3 flex justify-end">
                                             <button 
@@ -1465,11 +1465,11 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                         </div>
                                         <div>
                                             <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Kamar</label>
-                                            <input type="text" placeholder="Misal: Kamar utama" value={brTitle} onChange={(e) => setBrTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
-                                        </div>
-                                        <div className="sm:col-span-2">
-                                            <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Keterangan Tempat Tidur</label>
-                                            <input type="text" placeholder="Misal: 1 tempat tidur king size" value={brSubtext} onChange={(e) => setBrSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                             <input type="text" placeholder="Misal: Kamar utama" value={brTitle} onChange={(e) => setBrTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                         </div>
+                                         <div className="sm:col-span-2">
+                                             <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Keterangan Tempat Tidur</label>
+                                             <input type="text" placeholder="Misal: 1 tempat tidur king size" value={brSubtext} onChange={(e) => setBrSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
                                         </div>
                                         <div className="sm:col-span-3 flex justify-end">
                                             <button 
@@ -1514,12 +1514,12 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 placeholder="Contoh: Detektor asap terpasang" 
                                                 value={safetyInput} 
                                                 onChange={(e) => setSafetyInput(e.target.value)} 
-                                                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" 
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                        if (!safetyInput.trim()) return;
-                                                        setSafetyList(prev => [...prev, safetyInput.trim()]);
+                                                 className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" 
+                                                 onKeyDown={(e) => {
+                                                     if (e.key === 'Enter') {
+                                                         e.preventDefault();
+                                                         if (!safetyInput.trim()) return;
+                                                         setSafetyList(prev => [...prev, safetyInput.trim()]);
                                                         setSafetyInput('');
                                                     }
                                                 }}
@@ -1536,7 +1536,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                     </div>
                                     <div>
                                         <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Deskripsi Lingkungan Sekitar</label>
-                                        <textarea rows={2} placeholder="Sebutkan hal menarik di lingkungan sekitar..." value={neighborhoodDesc} onChange={(e) => setNeighborhoodDesc(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" />
+                                         <textarea rows={2} placeholder="Sebutkan hal menarik di lingkungan sekitar..." value={neighborhoodDesc} onChange={(e) => setNeighborhoodDesc(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" />
                                     </div>
                                 </div>
 
@@ -1832,7 +1832,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                     )}
                                                     {isBulkMode && !isBlocked && !isPast && (
                                                         <div className={`absolute top-1 right-1 w-3 h-3 rounded border flex items-center justify-center text-[8px] ${
-                                                            isSelected ? 'bg-white border-white text-blue-605' : 'bg-white/50 border-slate-300'
+                                                            isSelected ? 'bg-white border-white text-blue-600' : 'bg-white/50 border-slate-300'
                                                         }`}>
                                                             {isSelected && <Check className="w-2.5 h-2.5" />}
                                                         </div>

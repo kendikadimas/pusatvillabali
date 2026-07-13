@@ -11,7 +11,6 @@ interface BookingState {
     notes: string;
     totalNights: number;
     totalAmount: number;
-    isRefundable: boolean;
     priceBreakdown: {
         weekdays: { count: number; price: number; total: number };
         weekends: { count: number; price: number; total: number };
@@ -20,7 +19,6 @@ interface BookingState {
     setDates: (checkIn: string | null, checkOut: string | null) => void;
     setNumGuests: (guests: number) => void;
     setNotes: (notes: string) => void;
-    setRefundable: (isRefundable: boolean) => void;
     calculatePricing: () => void;
     resetStore: () => void;
 }
@@ -35,7 +33,6 @@ export const useBookingStore = create<BookingState>()(
             notes: '',
             totalNights: 0,
             totalAmount: 0,
-            isRefundable: false,
             priceBreakdown: {
                 weekdays: { count: 0, price: 0, total: 0 },
                 weekends: { count: 0, price: 0, total: 0 },
@@ -55,13 +52,8 @@ export const useBookingStore = create<BookingState>()(
 
             setNotes: (notes) => set({ notes }),
 
-            setRefundable: (isRefundable) => {
-                set({ isRefundable });
-                get().calculatePricing();
-            },
-
             calculatePricing: () => {
-                const { selectedVilla, checkIn, checkOut, isRefundable } = get();
+                const { selectedVilla, checkIn, checkOut } = get();
 
                 if (!selectedVilla || !checkIn || !checkOut) {
                     set({
@@ -111,12 +103,7 @@ export const useBookingStore = create<BookingState>()(
 
                 const weekdayTotal = weekdayCount * weekdayPrice;
                 const weekendTotal = weekendCount * weekendPrice;
-                let totalAmount = weekdayTotal + weekendTotal;
-
-                // Add refundable fee if applicable
-                if (isRefundable) {
-                    totalAmount += totalAmount * 0.1; // 10% refundable fee
-                }
+                const totalAmount = weekdayTotal + weekendTotal;
 
                 set({
                     totalNights,
@@ -136,7 +123,6 @@ export const useBookingStore = create<BookingState>()(
                 notes: '',
                 totalNights: 0,
                 totalAmount: 0,
-                isRefundable: false,
                 priceBreakdown: {
                     weekdays: { count: 0, price: 0, total: 0 },
                     weekends: { count: 0, price: 0, total: 0 },
@@ -144,7 +130,7 @@ export const useBookingStore = create<BookingState>()(
             }),
         }),
         {
-            name: 'pusatvillabali-booking-store',
+            name: 'pusatvillaid-booking-store',
         }
     )
 );

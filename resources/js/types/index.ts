@@ -35,12 +35,12 @@ export interface Villa {
     cancellation_policy?: string | null;
     safety_property?: string[] | null;
     neighborhood_desc?: string | null;
-    refundable_surcharge_rate?: number;
     cancellation_free_days?: number;
     beds?: number | null;
     cleaning_fee?: number | null;
     reviews_avg_rating?: string | number | null;
     reviews_count?: number;
+    reviews?: Review[];
     destination_id?: number | null;
     destination?: Destination | null;
     created_at?: string;
@@ -90,9 +90,12 @@ export interface Payment {
     status: 'pending' | 'paid' | 'failed' | 'expired' | 'refunded';
     payment_url?: string | null;
     payment_code?: string | null;
+    payment_type?: string | null;
     proof_image?: string | null;
     paid_at?: string | null;
     expired_at?: string | null;
+    snap_token?: string | null;
+    payment_method?: PaymentMethod | null;
     created_at: string;
     updated_at: string;
 }
@@ -106,6 +109,7 @@ export interface PaymentMethod {
     account_name?: string | null;
     logo?: string | null;
     instructions?: string | null;
+    admin_fee?: number;
     is_active: boolean;
     sort_order?: number;
     created_at?: string;

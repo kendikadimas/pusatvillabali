@@ -8,7 +8,7 @@ import { id as localeID } from 'date-fns/locale';
 import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import axios from 'axios';
 import {
-    Clock, CheckCircle, XCircle, AlertCircle, Calendar, Users,
+    CheckCircle, XCircle, AlertCircle, Calendar, Users,
     Download, MessageCircle, Home, MapPin, CreditCard, RefreshCw,
 } from 'lucide-react';
 
@@ -267,6 +267,18 @@ export default function BookingStatusPage({ booking, settings, code }: Props) {
                     {booking.payment_status === 'pending' && (
                         <div className="flex items-center justify-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 font-semibold px-6 py-3 rounded-xl text-sm text-center">
                             <AlertCircle className="w-4 h-4" /> Bukti pembayaran sedang diverifikasi
+                        </div>
+                    )}
+                    {booking.payment_status === 'expired' && (
+                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
+                            <p className="font-semibold text-slate-700 text-sm mb-1">Booking Kadaluarsa</p>
+                            <p className="text-xs text-slate-500 mb-3">Batas waktu pembayaran telah habis. Buat booking baru untuk melanjutkan.</p>
+                            <Link
+                                href={booking.villa ? `/villas/${booking.villa.slug}` : '/villas'}
+                                className="inline-block bg-blue-600 text-white font-bold px-5 py-2 rounded-xl text-sm hover:bg-blue-700 transition-colors"
+                            >
+                                Pesan Lagi
+                            </Link>
                         </div>
                     )}
                     <button

@@ -20,10 +20,6 @@ Artisan::command('inspire', function () {
 |
 */
 
-Schedule::command('bookings:expire-pending --hours=1')->everyFiveMinutes()
+Schedule::command('bookings:expire-pending --hours=24')->everyFiveMinutes()
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/expire-bookings.log'));
-
-Schedule::command('ical:sync')->everyFifteenMinutes()
-    ->withoutOverlapping()
-    ->appendOutputTo(storage_path('logs/ical-sync.log'));

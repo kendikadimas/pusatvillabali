@@ -159,15 +159,12 @@ export default function ProfilePage({ userBookings, settings }: Props) {
                                     >
                                         <div className="flex gap-0">
                                             {/* Villa thumbnail */}
-                                            {villaPhoto && (
-                                                <div className="w-28 sm:w-36 flex-shrink-0">
-                                                    <img
-                                                        src={villaPhoto}
-                                                        alt={booking.villa?.name ?? 'Villa'}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                </div>
-                                            )}
+                                            <div className="w-28 sm:w-32 h-20 sm:h-24 rounded-xl overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center self-center ml-3 mt-3 mb-3">
+                                                {villaPhoto
+                                                    ? <img src={villaPhoto} alt={booking.villa?.name ?? 'Villa'} className="w-full h-full object-cover" />
+                                                    : <span className="text-xs text-slate-400 text-center px-2">Tidak ada foto</span>
+                                                }
+                                            </div>
 
                                             {/* Content */}
                                             <div className="flex-1 p-4 min-w-0">

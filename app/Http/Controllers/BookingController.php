@@ -42,7 +42,6 @@ class BookingController extends Controller
             'utm_source' => 'nullable|string|max:100',
             'utm_medium' => 'nullable|string|max:100',
             'utm_campaign' => 'nullable|string|max:100',
-            'is_refundable' => 'nullable|boolean',
             'ktp_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
@@ -78,14 +77,13 @@ class BookingController extends Controller
 
         // Wrap availability check and database record insertion in a transaction
         // to prevent race conditions (two people booking the same dates simultaneously)
+        $ktpImagePath = null;
         try {
-            // Upload KTP image to private disk (not publicly accessible)
-            $ktpImagePath = null;
-            if ($request->hasFile('ktp_image')) {
-                $ktpImagePath = $request->file('ktp_image')->store('ktp-images', 'private');
-            }
-
-            $bookingData = DB::transaction(function () use ($villa, $checkIn, $checkOut, $totalNights, $request, $ktpImagePath) {
+            $bookingData = DB::transaction(function () use ($villa, $checkIn, $checkOut, $totalNights, $request, &$ktpImagePath) {
+                // Upload KTP image inside transaction so we can clean up on failure
+                if ($request->hasFile('ktp_image')) {
+                    $ktpImagePath = $request->file('ktp_image')->store('ktp-images', 'private');
+                }
                 // 1. Check overlapping bookings (confirmed/completed, or pending with proof uploaded)
                 $overlappingBookings = Booking::where('villa_id', $villa->id)
                     ->where(function ($q) {
@@ -136,11 +134,6 @@ class BookingController extends Controller
                     }
                 }
 
-                if ($request->input('is_refundable')) {
-                    $surchargeRate = (float) Setting::getValue('refundable_surcharge_rate', 0.11111);
-                    $baseAmount = round($baseAmount * (1 + $surchargeRate));
-                }
-
                 // Load tax percentage from settings
                 $taxPercentage = (int) Setting::getValue('tax_percentage', 0);
                 $taxAmount = round(($taxPercentage / 100) * $baseAmount);
@@ -176,11 +169,6 @@ class BookingController extends Controller
                 }
 
                 $notes = $request->notes;
-                if ($request->input('is_refundable')) {
-                    $notes = trim(($notes ? $notes."\n" : '').'[Pilihan Tarif: Bisa dikembalikan (Refundable)]');
-                } else {
-                    $notes = trim(($notes ? $notes."\n" : '').'[Pilihan Tarif: Tanpa pengembalian dana (Non-refundable)]');
-                }
 
                 // 5. Save Booking
                 $booking = Booking::create([
@@ -195,7 +183,7 @@ class BookingController extends Controller
                     'check_out' => $checkOut,
                     'total_nights' => $totalNights,
                     'num_guests' => $request->num_guests,
-                    'base_price' => $villa->price_per_night,
+                    'base_price' => $baseAmount,
                     'tax_amount' => $taxAmount,
                     'admin_fee' => $adminFee,
                     'total_amount' => $totalAmount,
@@ -238,6 +226,11 @@ class BookingController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
+            // Clean up uploaded KTP file if transaction failed
+            if ($ktpImagePath && Storage::disk('private')->exists($ktpImagePath)) {
+                Storage::disk('private')->delete($ktpImagePath);
+            }
+
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
@@ -255,14 +248,13 @@ class BookingController extends Controller
         $query = Booking::where('booking_code', $code);
 
         if ($user) {
-            // If admin/super_admin, can view any booking.
-            // If regular user, can view if they are the owner OR if email parameter matches guest_email.
+            // Admin/super_admin bisa lihat semua booking
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
-                $query->where(function ($q) use ($email, $user) {
-                    $q->where('user_id', $user->id);
-                    if ($email) {
-                        $q->orWhere('guest_email', $email);
-                    }
+                // User biasa: hanya bisa lihat booking milik sendiri
+                // Gunakan email dari token, BUKAN dari input parameter (mencegah IDOR)
+                $query->where(function ($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                      ->orWhere('guest_email', $user->email);
                 });
             }
         } else {
@@ -299,6 +291,22 @@ class BookingController extends Controller
 
         if (! $booking) {
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
+        }
+
+        // Ownership check: authenticated users can only upload for their own booking
+        $user = auth('sanctum')->user() ?? $request->user('sanctum');
+        if ($user && $user->role !== 'admin' && $user->role !== 'super_admin') {
+            if ($booking->user_id && $booking->user_id !== $user->id) {
+                return response()->json(['message' => 'Akses ditolak.'], 403);
+            }
+        }
+
+        // Untuk guest booking (tanpa akun), wajib verifikasi email
+        if (! $user) {
+            $guestEmail = $request->input('guest_email');
+            if (! $guestEmail || strtolower($guestEmail) !== strtolower($booking->guest_email)) {
+                return response()->json(['message' => 'Akses ditolak. Verifikasi email diperlukan.'], 403);
+            }
         }
 
         if ($booking->payment_status === 'paid') {
@@ -433,7 +441,7 @@ class BookingController extends Controller
         $bookings = Booking::where('user_id', $user->id)
             ->with(['villa', 'payment'])
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(20);
 
         return response()->json($bookings);
     }
@@ -468,7 +476,7 @@ class BookingController extends Controller
             return response()->json(['message' => 'File KTP tidak tersedia.'], 404);
         }
 
-        return Storage::disk('private')->response($booking->ktp_image);
+        return Storage::disk('private')->download($booking->ktp_image, 'ktp-'.$booking->booking_code.'.jpg');
     }
 
     /**

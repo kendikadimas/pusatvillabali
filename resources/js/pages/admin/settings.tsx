@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import type { PaymentMethod } from '@/types';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { router } from '@inertiajs/react';
+import { Plus, ToggleLeft, ToggleRight, Loader2 } from 'lucide-react';
 
 interface Settings {
     [key: string]: string | null | undefined;
@@ -14,7 +14,7 @@ interface Props {
     paymentMethods: PaymentMethod[];
 }
 
-export default function AdminSettingsPage({ settings, paymentMethods }: Props) {
+export default function AdminSettingsPage({ settings, paymentMethods: initialPaymentMethods }: Props) {
     const [tab, setTab] = useState<'general' | 'payment'>('general');
     const [form, setForm] = useState({
         settings_prop_name: settings.settings_prop_name ?? '',
@@ -25,6 +25,10 @@ export default function AdminSettingsPage({ settings, paymentMethods }: Props) {
         settings_meta_description: settings.settings_meta_description ?? '',
     });
     const [saving, setSaving] = useState(false);
+
+    // Payment methods local state so toggling updates UI immediately
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(initialPaymentMethods);
+    const [togglingId, setTogglingId] = useState<number | null>(null);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,6 +43,23 @@ export default function AdminSettingsPage({ settings, paymentMethods }: Props) {
         }
     };
 
+    const handleToggleActive = async (pm: PaymentMethod) => {
+        setTogglingId(pm.id);
+        try {
+            await axios.patch(`/api/v1/admin/payment-methods/${pm.id}`, {
+                is_active: !pm.is_active,
+            });
+            setPaymentMethods((prev) =>
+                prev.map((p) => (p.id === pm.id ? { ...p, is_active: !p.is_active } : p))
+            );
+            toast.success(`${pm.name} ${!pm.is_active ? 'diaktifkan' : 'dinonaktifkan'}`);
+        } catch (err: any) {
+            toast.error(err.response?.data?.message ?? 'Gagal mengubah status metode pembayaran');
+        } finally {
+            setTogglingId(null);
+        }
+    };
+
     return (
         <>
             <Head title="Pengaturan" />
@@ -50,7 +71,15 @@ export default function AdminSettingsPage({ settings, paymentMethods }: Props) {
 
                 <div className="flex gap-2 border-b border-slate-200">
                     {(['general', 'payment'] as const).map((t) => (
-                        <button key={t} onClick={() => setTab(t)} className={`px-4 py-2.5 text-sm font-medium transition-colors ${tab === t ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 hover:text-slate-700'}`}>
+                        <button
+                            key={t}
+                            onClick={() => setTab(t)}
+                            className={`px-4 py-2.5 text-sm font-medium transition-colors ${
+                                tab === t
+                                    ? 'text-blue-600 border-b-2 border-blue-600'
+                                    : 'text-slate-500 hover:text-slate-700'
+                            }`}
+                        >
                             {t === 'general' ? 'Umum' : 'Metode Pembayaran'}
                         </button>
                     ))}
@@ -87,30 +116,100 @@ export default function AdminSettingsPage({ settings, paymentMethods }: Props) {
                                 )}
                             </div>
                         ))}
-                        <button type="submit" disabled={saving} className="bg-blue-600 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60">
+                        <button
+                            type="submit"
+                            disabled={saving}
+                            className="bg-blue-600 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60"
+                        >
                             {saving ? 'Menyimpan...' : 'Simpan Pengaturan'}
                         </button>
                     </form>
                 )}
 
                 {tab === 'payment' && (
-                    <div className="space-y-3">
-                        {paymentMethods.map((pm) => (
-                            <div key={pm.id} className="bg-white border border-slate-200 rounded-2xl p-5 flex items-center justify-between">
-                                <div>
-                                    <p className="font-semibold text-slate-800">{pm.name}</p>
-                                    <p className="text-xs text-slate-500">{pm.type} · {pm.account_number} · {pm.account_name}</p>
+                    <div className="space-y-4">
+                        {/* Header row with add button */}
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm text-slate-500">{paymentMethods.length} metode pembayaran</p>
+                            <Link
+                                href="/admin/payment-methods/create"
+                                className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Tambah Metode
+                            </Link>
+                        </div>
+
+                        <div className="space-y-3">
+                            {paymentMethods.map((pm) => {
+                                const isToggling = togglingId === pm.id;
+                                return (
+                                    <div
+                                        key={pm.id}
+                                        className="bg-white border border-slate-200 rounded-2xl p-5 flex items-center justify-between gap-4 hover:border-slate-300 transition-colors"
+                                    >
+                                        {/* Info */}
+                                        <div className="min-w-0">
+                                            <p className="font-semibold text-slate-800">{pm.name}</p>
+                                            <p className="text-xs text-slate-500 mt-0.5">
+                                                {pm.type}
+                                                {pm.account_number ? ` · ${pm.account_number}` : ''}
+                                                {pm.account_name ? ` · ${pm.account_name}` : ''}
+                                            </p>
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex items-center gap-3 shrink-0">
+                                            {/* Active badge */}
+                                            <span
+                                                className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                                                    pm.is_active
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : 'bg-slate-100 text-slate-500'
+                                                }`}
+                                            >
+                                                {pm.is_active ? 'Aktif' : 'Nonaktif'}
+                                            </span>
+
+                                            {/* Toggle button */}
+                                            <button
+                                                onClick={() => handleToggleActive(pm)}
+                                                disabled={isToggling}
+                                                title={pm.is_active ? 'Nonaktifkan' : 'Aktifkan'}
+                                                className={`p-1.5 rounded-lg transition-colors disabled:opacity-50 ${
+                                                    pm.is_active
+                                                        ? 'text-green-600 hover:bg-green-50'
+                                                        : 'text-slate-400 hover:bg-slate-100'
+                                                }`}
+                                            >
+                                                {isToggling ? (
+                                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                                ) : pm.is_active ? (
+                                                    <ToggleRight className="w-5 h-5" />
+                                                ) : (
+                                                    <ToggleLeft className="w-5 h-5" />
+                                                )}
+                                            </button>
+
+                                             {/* Edit link */}
+                                             <Link
+                                                 href={`/admin/payment-methods/${pm.id}/edit`}
+                                                 className="text-xs text-slate-500 hover:text-blue-600 border border-slate-200 hover:border-blue-300 px-3 py-1.5 rounded-lg transition-colors"
+                                             >
+                                                 Edit
+                                             </Link>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+
+                            {paymentMethods.length === 0 && (
+                                <div className="text-center py-12 text-slate-400 bg-white border border-slate-200 rounded-2xl">
+                                    <p className="text-sm">Belum ada metode pembayaran</p>
+                                    <p className="text-xs mt-1">Klik "Tambah Metode" untuk membuat yang pertama</p>
                                 </div>
-                                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${pm.is_active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
-                                    {pm.is_active ? 'Aktif' : 'Nonaktif'}
-                                </span>
-                            </div>
-                        ))}
-                        {paymentMethods.length === 0 && (
-                            <div className="text-center py-12 text-slate-400 bg-white border border-slate-200 rounded-2xl">
-                                Belum ada metode pembayaran
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 )}
             </div>

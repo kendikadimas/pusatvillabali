@@ -12,7 +12,6 @@ use App\Http\Controllers\Admin\SettingAdminController;
 use App\Http\Controllers\Admin\VillaAdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
-use App\Http\Controllers\IcalController;
 use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
@@ -47,8 +46,8 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::get('/villas/{slug}/availability', [VillaController::class, 'availability']);
     Route::get('/destinations', [DestinationController::class, 'index']);
 
-    Route::get('/bookings/{code}', [BookingController::class, 'show']);
-    Route::post('/bookings/{code}/confirm-manual-payment', [BookingController::class, 'confirmManualPayment']);
+    Route::get('/bookings/{code}', [BookingController::class, 'show'])->middleware('throttle:10,1');
+    Route::post('/bookings/{code}/confirm-manual-payment', [BookingController::class, 'confirmManualPayment'])->middleware('throttle:5,1');
     Route::get('/payment-methods', [PaymentMethodController::class, 'indexPublic']);
     Route::get('/settings/public', [SettingController::class, 'indexPublic']);
 
@@ -57,9 +56,6 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::get('/reviews/{villa_slug}', [ReviewController::class, 'getByVilla']);
     Route::get('/review/{token}', [ReviewController::class, 'showByToken']);
     Route::post('/review/{token}', [ReviewController::class, 'storeByToken']);
-
-    // iCal Feed Export (public — OTAs subscribe to this URL)
-    Route::get('/villas/{id}/ical.ics', [IcalController::class, 'export']);
 
     // Auth Public Endpoints (rate-limited)
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
@@ -137,15 +133,10 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::post('/villas/{id}/host-avatar', [VillaAdminController::class, 'uploadHostAvatar'])->middleware('permission:villas.manage');
         Route::delete('/villas/{id}/photos', [VillaAdminController::class, 'deletePhoto'])->middleware('permission:villas.manage');
 
-        // ── Blocked Dates & iCal (requires villas.manage) ──
+        // ── Blocked Dates (requires villas.manage) ──
         Route::get('/blocked-dates', [VillaAdminController::class, 'listBlockedDates'])->middleware('permission:villas.manage');
         Route::post('/blocked-dates', [VillaAdminController::class, 'blockDate'])->middleware('permission:villas.manage');
         Route::delete('/blocked-dates/{id}', [VillaAdminController::class, 'unblockDate'])->middleware('permission:villas.manage');
-        Route::get('/villas/{villaId}/ical-links', [VillaAdminController::class, 'listIcalLinks'])->middleware('permission:villas.manage');
-        Route::post('/villas/{villaId}/ical-links', [VillaAdminController::class, 'storeIcalLink'])->middleware('permission:villas.manage');
-        Route::delete('/ical-links/{id}', [VillaAdminController::class, 'destroyIcalLink'])->middleware('permission:villas.manage');
-        Route::post('/ical-links/{linkId}/sync', [VillaAdminController::class, 'syncIcalLinks'])->middleware('permission:villas.manage');
-        Route::post('/ical/verify', [VillaAdminController::class, 'verifyIcal'])->middleware('permission:villas.manage');
 
         // ── Destinations (requires destinations.view / destinations.manage) ──
         Route::get('/destinations', [DestinationAdminController::class, 'index'])->middleware('permission:destinations.view');

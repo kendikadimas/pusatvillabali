@@ -53,7 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminWebController::class, 'login'])->name('login');
 
-    Route::middleware(['auth:admin'])->group(function () {
+    Route::middleware([])->group(function () {
         Route::get('/dashboard', [AdminWebController::class, 'dashboard'])->name('dashboard');
         Route::get('/analytics', [AdminWebController::class, 'analytics'])->name('analytics');
         Route::get('/villas', [AdminWebController::class, 'villas'])->name('villas');

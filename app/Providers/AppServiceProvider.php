@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
 
-        // Custom URL for Reset Password notification to point to Next.js frontend
+        // Custom URL for Reset Password notification
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url').'/reset-password?token='.$token.'&email='.urlencode($notifiable->getEmailForPasswordReset());
         });

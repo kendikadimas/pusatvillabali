@@ -166,11 +166,17 @@ export default function BookingSuccessPage({ booking, settings, code }: Props) {
 
                 {/* Payment notice */}
                 {booking.payment_status === 'unpaid' && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-                        <p className="text-sm font-semibold text-amber-800 mb-1">Menunggu Pembayaran</p>
-                        <p className="text-xs text-amber-700">
-                            Silakan lakukan pembayaran sesuai instruksi yang dikirimkan ke email Anda. Pemesanan akan dikonfirmasi setelah pembayaran diverifikasi.
-                        </p>
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-5 flex items-center justify-between gap-3">
+                        <div>
+                            <p className="font-semibold text-yellow-800 text-sm">Pembayaran Belum Diterima</p>
+                            <p className="text-xs text-yellow-600">Segera lakukan pembayaran untuk mengkonfirmasi booking.</p>
+                        </div>
+                        <Link
+                            href={`/booking/payment?code=${booking.booking_code}`}
+                            className="shrink-0 bg-yellow-500 text-white font-bold px-4 py-2 rounded-xl text-sm hover:bg-yellow-600 transition-colors"
+                        >
+                            Bayar Sekarang
+                        </Link>
                     </div>
                 )}
 

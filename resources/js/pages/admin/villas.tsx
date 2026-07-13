@@ -37,7 +37,7 @@ export default function AdminVillasPage({ villas, destinations }: Props) {
 
     const toggleActive = async (id: number, current: boolean) => {
         try {
-            await axios.put(`/api/v1/admin/villas/${id}`, { is_active: !current });
+            await axios.patch(`/api/v1/admin/villas/${id}`, { is_active: !current });
             toast.success(current ? 'Villa dinonaktifkan' : 'Villa diaktifkan');
             router.reload();
         } catch {
@@ -82,7 +82,37 @@ export default function AdminVillasPage({ villas, destinations }: Props) {
 
                 {/* Table */}
                 <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-                    <div className="overflow-x-auto">
+                    {/* Mobile cards */}
+                    <div className="md:hidden divide-y divide-slate-100">
+                        {villas.data.map((villa) => (
+                            <div key={villa.id} className="p-4 flex items-center gap-3">
+                                <div className="w-14 h-12 rounded-lg overflow-hidden bg-slate-100 shrink-0">
+                                    <img src={getPhotoUrl(villa.photos?.[0])} alt={villa.name} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-slate-800 text-sm truncate">{villa.name}</p>
+                                    <p className="text-xs text-slate-500 truncate">{villa.location}</p>
+                                    <p className="text-xs font-bold text-slate-700 mt-0.5">{formatPrice(villa.price_per_night)}/malam</p>
+                                </div>
+                                <div className="flex items-center gap-1 shrink-0">
+                                    <button onClick={() => toggleActive(villa.id, villa.is_active)}
+                                        className={`text-xs px-2 py-1 rounded-full font-semibold ${villa.is_active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
+                                        {villa.is_active ? 'Aktif' : 'Nonaktif'}
+                                    </button>
+                                    <Link href={`/admin/villas/${villa.id}/edit`} className="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg">
+                                        <Edit className="w-4 h-4" />
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
+                        {villas.data.length === 0 && (
+                            <div className="p-8 text-center text-slate-400 text-sm">
+                                Belum ada villa. <Link href="/admin/villas/new" className="text-blue-600 hover:underline">Tambah villa pertama</Link>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="hidden md:block overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="bg-slate-50 border-b border-slate-200">
@@ -173,7 +203,7 @@ export default function AdminVillasPage({ villas, destinations }: Props) {
                                 {Array.from({ length: villas.last_page }, (_, i) => i + 1).map((page) => (
                                     <button
                                         key={page}
-                                        onClick={() => router.get('/admin/villas', { page: String(page) })}
+                                        onClick={() => router.get('/admin/villas', { search, page: String(page) })}
                                         className={`w-7 h-7 rounded text-xs font-medium ${
                                             page === villas.current_page ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-200'
                                         }`}

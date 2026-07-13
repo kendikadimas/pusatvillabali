@@ -31,14 +31,15 @@ class OAuthController extends Controller
         $user = User::where('email', $googleUser->getEmail())->first();
 
         if (! $user) {
-            $user = User::create([
-                'name' => $googleUser->getName(),
-                'email' => $googleUser->getEmail(),
-                'google_id' => $googleUser->getId(),
-                'avatar' => $googleUser->getAvatar(),
-                'password' => Hash::make(Str::password(32)),
-                'role' => 'user',
-            ]);
+                $user = User::create([
+                    'name'               => $googleUser->getName(),
+                    'email'              => $googleUser->getEmail(),
+                    'google_id'          => $googleUser->getId(),
+                    'avatar'             => $googleUser->getAvatar(),
+                    'password'           => Hash::make(Str::password(32)),
+                    'role'               => 'user',
+                    'email_verified_at'  => now(), // Google sudah verifikasi email
+                ]);
         } else {
             $user->update([
                 'google_id' => $googleUser->getId(),

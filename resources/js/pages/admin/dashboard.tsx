@@ -28,7 +28,7 @@ function StatCard({ label, value, icon, color = 'blue' }: { label: string; value
                 <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</span>
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${colors[color]}`}>{icon}</div>
             </div>
-            <p className="text-2xl font-black text-slate-800">{value}</p>
+            <p className="text-2xl font-black text-slate-800 truncate">{value}</p>
         </div>
     );
 }
@@ -56,7 +56,7 @@ export default function AdminDashboardPage({ stats, recentBookings, todayCheckin
                 </div>
 
                 {/* Stats grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                     <StatCard label="Check-in Hari Ini" value={stats.checkins_today} icon={<UserCheck className="w-4 h-4" />} color="green" />
                     <StatCard label="Booking Bulan Ini" value={stats.bookings_this_month} icon={<BookOpen className="w-4 h-4" />} color="blue" />
                     <StatCard label="Pendapatan Bulan Ini" value={formatPrice(stats.revenue_this_month)} icon={<TrendingUp className="w-4 h-4" />} color="purple" />

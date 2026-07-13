@@ -12,11 +12,17 @@ interface Props {
 }
 
 export default function AdminReviewsPage({ reviews }: Props) {
-    const [filter, setFilter] = useState('pending');
+    const [filter, setFilter] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('filter') ?? 'pending';
+        }
+        return 'pending';
+    });
 
     const handleApprove = async (id: number) => {
         try {
-            await axios.put(`/api/v1/admin/reviews/${id}/approve`);
+            await axios.patch(`/api/v1/admin/reviews/${id}/approve`);
             toast.success('Ulasan disetujui');
             router.reload();
         } catch {
@@ -97,6 +103,32 @@ export default function AdminReviewsPage({ reviews }: Props) {
                         <div className="text-center py-12 text-slate-400">Tidak ada ulasan</div>
                     )}
                 </div>
+
+                {/* Pagination */}
+                {reviews.last_page > 1 && (
+                    <div className="flex items-center justify-between px-5 py-3 border border-slate-100 rounded-2xl bg-slate-50">
+                        <span className="text-xs text-slate-500">
+                            {reviews.from}–{reviews.to} dari {reviews.total}
+                        </span>
+                        <div className="flex gap-1">
+                            {Array.from({ length: reviews.last_page }, (_, i) => i + 1).map((page) => (
+                                <button
+                                    key={page}
+                                    onClick={() => {
+                                        const params: Record<string, string> = { page: String(page) };
+                                        if (filter && filter !== 'all') params.filter = filter;
+                                        router.get('/admin/reviews', params, { preserveScroll: true });
+                                    }}
+                                    className={`w-7 h-7 rounded text-xs font-medium ${
+                                        page === reviews.current_page ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-200'
+                                    }`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </>
     );

@@ -75,7 +75,7 @@ export default function VillasPage({ villas, filters, settings }: Props) {
 
             {/* Top bar */}
             <div className="sticky top-16 z-40 bg-white border-b border-slate-200 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center gap-3">
+                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex flex-wrap items-center gap-3">
                     {/* Search input */}
                     <div className="flex items-center gap-2 flex-1 bg-slate-100 rounded-lg px-3 py-2 max-w-sm">
                         <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
@@ -124,7 +124,7 @@ export default function VillasPage({ villas, filters, settings }: Props) {
                         </button>
                     )}
 
-                    <span className="text-xs text-slate-500 ml-auto">{villas.total} villa</span>
+                    <span className="hidden sm:block text-xs text-slate-500 ml-auto">{villas.total} villa</span>
                 </div>
 
                 {/* Filters panel */}
@@ -186,7 +186,7 @@ export default function VillasPage({ villas, filters, settings }: Props) {
                     </div>
                 ) : (
                     <>
-                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+                        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                             {villas.data.map((villa) => (
                                 <VillaCard
                                     key={villa.id}

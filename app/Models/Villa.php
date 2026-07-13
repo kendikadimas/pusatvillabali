@@ -92,9 +92,4 @@ class Villa extends Model
     {
         return $this->hasMany(BlockedDate::class);
     }
-
-    public function icalLinks(): HasMany
-    {
-        return $this->hasMany(VillaIcalLink::class);
-    }
 }

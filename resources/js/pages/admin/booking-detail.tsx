@@ -59,7 +59,10 @@ export default function AdminBookingDetailPage({ booking, settings }: Props) {
         if (!confirm(`Ubah status menjadi "${statusLabels[status] ?? status}"?`)) return;
         setUpdatingStatus(true);
         try {
-            await axios.put(`/api/v1/admin/bookings/${booking.id}`, { status });
+            await axios.patch(`/api/v1/admin/bookings/${booking.id}/status`, {
+                status,
+                payment_status: booking.payment_status,
+            });
             toast.success('Status pemesanan diperbarui');
             router.reload();
         } catch (err: any) {
@@ -73,7 +76,10 @@ export default function AdminBookingDetailPage({ booking, settings }: Props) {
         if (!confirm(`Ubah status pembayaran menjadi "${paymentLabels[payment_status] ?? payment_status}"?`)) return;
         setUpdatingPayment(true);
         try {
-            await axios.put(`/api/v1/admin/bookings/${booking.id}`, { payment_status });
+            await axios.patch(`/api/v1/admin/bookings/${booking.id}/status`, {
+                status: booking.status,
+                payment_status,
+            });
             toast.success('Status pembayaran diperbarui');
             router.reload();
         } catch (err: any) {
@@ -228,6 +234,19 @@ export default function AdminBookingDetailPage({ booking, settings }: Props) {
                                         <p className="text-slate-600 italic">{booking.notes}</p>
                                     </div>
                                 )}
+                                {booking.ktp_image && (
+                                    <div className="mt-4 pt-4 border-t border-slate-100">
+                                        <p className="text-xs font-semibold text-slate-500 mb-2">Foto KTP</p>
+                                        <a
+                                            href={`/api/v1/bookings/${booking.booking_code}/ktp`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline"
+                                        >
+                                            <FileText className="w-4 h-4" /> Lihat Foto KTP
+                                        </a>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -241,6 +260,18 @@ export default function AdminBookingDetailPage({ booking, settings }: Props) {
                                     <span className="text-slate-500">Harga dasar</span>
                                     <span className="text-slate-700">{formatPrice(booking.base_price)}</span>
                                 </div>
+                                {booking.tax_amount != null && booking.tax_amount > 0 && (
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-slate-500">Pajak</span>
+                                        <span>{formatPrice(booking.tax_amount)}</span>
+                                    </div>
+                                )}
+                                {booking.admin_fee != null && booking.admin_fee > 0 && (
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-slate-500">Biaya Admin</span>
+                                        <span>{formatPrice(booking.admin_fee)}</span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between text-sm border-t border-slate-100 pt-2 mt-2">
                                     <span className="font-bold text-slate-800">Total</span>
                                     <span className="font-black text-slate-800 text-base">{formatPrice(booking.total_amount)}</span>

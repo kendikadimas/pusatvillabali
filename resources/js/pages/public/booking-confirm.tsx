@@ -3,7 +3,7 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import type { Villa, PaymentMethod, AppSettings } from '@/types';
 import { formatPrice } from '@/lib/format';
 import { getPhotoUrl } from '@/lib/villaUtils';
-import { differenceInDays, parseISO, format } from 'date-fns';
+import { differenceInDays, parseISO, format, eachDayOfInterval } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -53,17 +53,48 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
     }, []);
 
     const nights = checkIn && checkOut ? differenceInDays(parseISO(checkOut), parseISO(checkIn)) : 0;
-    const basePrice = villa ? (nights * villa.price_per_night) : 0;
-    const cleaningFee = villa?.cleaning_fee ?? 0;
-    const total = basePrice + cleaningFee;
 
+    // Kalkulasi harga konsisten dengan backend (weekday vs weekend per malam)
+    const { subtotal, weekdayCount, weekendCount } = React.useMemo(() => {
+        if (!villa || !checkIn || !checkOut || nights <= 0) {
+            return { subtotal: 0, weekdayCount: 0, weekendCount: 0 };
+        }
+        const days = eachDayOfInterval({
+            start: parseISO(checkIn),
+            end: new Date(parseISO(checkOut).getTime() - 86400000),
+        });
+        let wdCount = 0, weCount = 0, total = 0;
+        days.forEach(day => {
+            const dow = day.getDay(); // 0=Sun,5=Fri,6=Sat
+            const isWeekend = dow === 5 || dow === 6;
+            if (isWeekend && villa.weekend_price) {
+                total += Number(villa.weekend_price);
+                weCount++;
+            } else {
+                total += Number(villa.price_per_night);
+                wdCount++;
+            }
+        });
+        return { subtotal: total, weekdayCount: wdCount, weekendCount: weCount };
+    }, [villa, checkIn, checkOut, nights]);
+
+    const taxPercentage = Number(settings?.tax_percentage ?? 0);
+    const taxAmount = Math.round((taxPercentage / 100) * subtotal);
     const selectedPM = paymentMethods.find(pm => pm.id === selectedPaymentMethod);
+    const adminFee = selectedPM?.admin_fee ?? 0;
+    const total = subtotal + taxAmount + adminFee;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!villa) return;
         setProcessing(true);
         setErrors({});
+
+        if (!ktpFile) {
+            toast.error('Foto KTP wajib diunggah.');
+            setProcessing(false);
+            return;
+        }
 
         try {
             const formData = new FormData();
@@ -84,6 +115,8 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
             const code = res.data.booking_code ?? res.data.data?.booking_code;
             setBookingCode(code);
             setStep('created');
+            // Bersihkan store setelah booking berhasil dibuat
+            try { localStorage.removeItem('pusatvillaid-booking-store'); } catch {}
         } catch (err: any) {
             if (err.response?.data?.errors) {
                 setErrors(err.response.data.errors);
@@ -137,6 +170,14 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
                     ← {step === 'form' ? 'Kembali ke detail villa' : 'Kembali ke beranda'}
                 </Link>
 
+                {/* Mobile price summary bar */}
+                {villa && nights > 0 && (
+                    <div className="lg:hidden bg-blue-50 border border-blue-100 rounded-xl p-3 mb-4 flex items-center justify-between">
+                        <span className="text-sm font-semibold text-slate-800 truncate mr-2">{villa.name}</span>
+                        <span className="text-sm font-bold text-blue-700 shrink-0">{formatPrice(total)}</span>
+                    </div>
+                )}
+
                 {step === 'form' ? (
                     <>
                         <h1 className="text-2xl font-black text-slate-800 mb-8 font-heading">Pesan Villa</h1>
@@ -176,7 +217,7 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
                                         </div>
                                         <div className="mt-4">
                                             <label className="block text-xs font-medium text-slate-600 mb-1">Jumlah Tamu</label>
-                                            <select value={guests} onChange={(e) => setGuests(Number(e.target.value))} className="border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                                            <select value={guests} onChange={(e) => setGuests(Number(e.target.value))} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                                                 {Array.from({ length: villa.max_guests }, (_, i) => i + 1).map(n => (
                                                     <option key={n} value={n}>{n} tamu</option>
                                                 ))}
@@ -272,14 +313,28 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
                                         <h2 className="font-bold text-slate-800 mb-3 text-sm">Ringkasan Harga</h2>
                                         {nights > 0 ? (
                                             <div className="space-y-2 text-sm">
-                                                <div className="flex justify-between text-slate-600">
-                                                    <span>{formatPrice(villa.price_per_night)} × {nights} malam</span>
-                                                    <span>{formatPrice(basePrice)}</span>
-                                                </div>
-                                                {cleaningFee > 0 && (
+                                                {weekdayCount > 0 && (
                                                     <div className="flex justify-between text-slate-600">
-                                                        <span>Biaya kebersihan</span>
-                                                        <span>{formatPrice(cleaningFee)}</span>
+                                                        <span>{formatPrice(villa.price_per_night)} × {weekdayCount} malam (weekday)</span>
+                                                        <span>{formatPrice(weekdayCount * Number(villa.price_per_night))}</span>
+                                                    </div>
+                                                )}
+                                                {weekendCount > 0 && villa.weekend_price && (
+                                                    <div className="flex justify-between text-slate-600">
+                                                        <span>{formatPrice(villa.weekend_price)} × {weekendCount} malam (weekend)</span>
+                                                        <span>{formatPrice(weekendCount * Number(villa.weekend_price))}</span>
+                                                    </div>
+                                                )}
+                                                {taxAmount > 0 && (
+                                                    <div className="flex justify-between text-slate-600">
+                                                        <span>Pajak ({taxPercentage}%)</span>
+                                                        <span>{formatPrice(taxAmount)}</span>
+                                                    </div>
+                                                )}
+                                                {adminFee > 0 && (
+                                                    <div className="flex justify-between text-slate-600">
+                                                        <span>Biaya admin</span>
+                                                        <span>{formatPrice(adminFee)}</span>
                                                     </div>
                                                 )}
                                                 <div className="flex justify-between font-black text-slate-800 border-t border-slate-100 pt-3 text-base">
@@ -389,7 +444,7 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
                                         <span className="text-xs text-slate-500 text-center">
                                             {proofFile ? proofFile.name : 'Klik untuk pilih file (JPG, PNG, PDF)'}
                                         </span>
-                                        <input type="file" accept="image/*,.pdf" className="hidden" onChange={(e) => setProofFile(e.target.files?.[0] ?? null)} />
+                                        <input type="file" accept="image/jpeg,image/png,image/jpg,image/webp" className="hidden" onChange={(e) => setProofFile(e.target.files?.[0] ?? null)} />
                                     </label>
                                     <button type="submit" disabled={!proofFile || uploading} className="mt-4 w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 text-sm">
                                         {uploading ? 'Mengirim...' : 'Kirim Bukti Pembayaran'}

@@ -39,7 +39,13 @@ export default function BookingPaymentPage({ booking, settings, code }: Props) {
         if (!proofFile) return;
         setUploading(true);
         const form = new FormData();
-        form.append('proof_image', proofFile);
+        form.append('payment_proof', proofFile);
+        // Sertakan payment_method_id dari booking jika ada
+        if (booking.payment_method_id) {
+            form.append('payment_method_id', String(booking.payment_method_id));
+        } else if (booking.payment?.payment_type) {
+            // fallback: cari payment method id dari payment record
+        }
         try {
             await axios.post(`/api/v1/bookings/${booking.booking_code}/confirm-manual-payment`, form, {
                 headers: { 'Content-Type': 'multipart/form-data' },
@@ -107,11 +113,11 @@ export default function BookingPaymentPage({ booking, settings, code }: Props) {
                         <label className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-slate-300 rounded-xl p-8 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors">
                             <Upload className="w-8 h-8 text-slate-400" />
                             <span className="text-sm text-slate-500">
-                                {proofFile ? proofFile.name : 'Pilih file gambar (JPG, PNG, PDF)'}
+                                {proofFile ? proofFile.name : 'Pilih file gambar (JPG, PNG, WebP)'}
                             </span>
                             <input
                                 type="file"
-                                accept="image/*,.pdf"
+                                accept="image/jpeg,image/png,image/jpg,image/webp"
                                 className="hidden"
                                 onChange={(e) => setProofFile(e.target.files?.[0] ?? null)}
                             />

@@ -145,12 +145,21 @@ class AnalyticsController extends Controller
      */
     public function export(Request $request): StreamedResponse
     {
-        $from = $request->query('from', Carbon::now()->subDays(30)->toDateString());
-        $to = $request->query('to', Carbon::now()->toDateString());
+        $from = preg_replace('/[^0-9\-]/', '', $request->query('from', Carbon::now()->subDays(30)->toDateString()));
+        $to   = preg_replace('/[^0-9\-]/', '', $request->query('to',   Carbon::now()->toDateString()));
+
+        try {
+            $fromDate = Carbon::parse($from)->startOfDay();
+            $toDate   = Carbon::parse($to)->endOfDay();
+        } catch (\Exception $e) {
+            $fromDate = Carbon::now()->subDays(30)->startOfDay();
+            $toDate   = Carbon::now()->endOfDay();
+        }
 
         $bookings = Booking::with(['villa', 'payment'])
-            ->whereBetween('created_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()])
+            ->whereBetween('created_at', [$fromDate, $toDate])
             ->orderBy('created_at', 'asc')
+            ->limit(10000)
             ->get();
 
         $spreadsheet = new Spreadsheet;

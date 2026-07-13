@@ -19,7 +19,12 @@ export default function AdminLoginPage() {
         setProcessing(true);
         setErrors({});
         try {
-            await axios.post('/api/v1/admin/login', { email, password });
+            const res = await axios.post('/api/v1/admin/login', { email, password });
+            const token = res.data.token ?? res.data.data?.token;
+            if (token) {
+                localStorage.setItem('admin_token', token);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            }
             router.get('/admin/dashboard');
         } catch (err: any) {
             if (err.response?.data?.errors) {

@@ -3,6 +3,7 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import type { Villa, AppSettings } from '@/types';
 import { getPhotoUrl, getPhotoCategory, getPhotoDesc } from '@/lib/villaUtils';
 import { formatPrice } from '@/lib/format';
+import { eachDayOfInterval, parseISO } from 'date-fns';
 import { MapPin, BedDouble, Bath, Users, Star, Calendar, ChevronLeft, ChevronRight, Check, X, Grid3X3, Minus, Plus, LayoutGrid, SlidersHorizontal } from 'lucide-react';
 
 // ─── Mobile Booking Bar ───────────────────────────────────────────────────────
@@ -83,8 +84,8 @@ interface MobileBookingSheetProps {
     setCheckIn: (v: string) => void;
     setCheckOut: (v: string) => void;
     setGuests: (v: number) => void;
-    checkInRef: React.RefObject<HTMLInputElement>;
-    checkOutRef: React.RefObject<HTMLInputElement>;
+    checkInRef: React.RefObject<HTMLInputElement | null>;
+    checkOutRef: React.RefObject<HTMLInputElement | null>;
     onClose: () => void;
     onBook: (e: React.FormEvent) => void;
     formatDate: (d: string) => string | null;
@@ -362,14 +363,27 @@ export default function VillaDetailPage({ villa, settings }: Props) {
     const checkOutRef = useRef<HTMLInputElement>(null);
 
     const photos = villa.photos && villa.photos.length > 0 ? villa.photos : [];
-    const ratingVal = villa.reviews_avg_rating ? parseFloat(String(villa.reviews_avg_rating)) : 4.8;
+    const ratingVal = villa.reviews_avg_rating && villa.reviews_count && villa.reviews_count > 0
+        ? parseFloat(String(villa.reviews_avg_rating))
+        : null;
 
     // Calculate nights between dates
     const nights = checkIn && checkOut
         ? Math.max(0, Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000))
         : 0;
 
-    const totalPrice = nights > 0 ? nights * villa.price_per_night : 0;
+    const totalPrice = React.useMemo(() => {
+        if (!checkIn || !checkOut || nights <= 0 || !villa) return 0;
+        const days = eachDayOfInterval({
+            start: parseISO(checkIn),
+            end: new Date(parseISO(checkOut).getTime() - 86400000),
+        });
+        return days.reduce((sum: number, day: Date) => {
+            const dow = day.getDay();
+            const isWeekend = dow === 5 || dow === 6;
+            return sum + (isWeekend && villa.weekend_price ? Number(villa.weekend_price) : Number(villa.price_per_night));
+        }, 0);
+    }, [checkIn, checkOut, nights, villa]);
 
     const formatDate = (d: string) => {
         if (!d) return null;
@@ -486,7 +500,7 @@ export default function VillaDetailPage({ villa, settings }: Props) {
                 )}
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-10 lg:py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-10 lg:py-12 pb-28 lg:pb-0">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                     {/* Left: Details */}
                     <div className="lg:col-span-2 space-y-10">
@@ -502,7 +516,11 @@ export default function VillaDetailPage({ villa, settings }: Props) {
                                 <span className="w-[3px] h-[3px] rounded-full bg-slate-300 hidden sm:block" />
                                 <span className="flex items-center gap-1.5"><Users className="w-[18px] h-[18px] text-slate-400" />{villa.max_guests} Tamu</span>
                                 <span className="w-[3px] h-[3px] rounded-full bg-slate-300 hidden sm:block" />
-                                <span className="flex items-center gap-1.5"><Star className="w-[18px] h-[18px] fill-amber-400 text-amber-400" /><span className="font-semibold text-slate-800">{ratingVal.toFixed(1)}</span><span className="text-slate-400">({villa.reviews_count ?? 0} ulasan)</span></span>
+                                {ratingVal !== null ? (
+                                    <span className="flex items-center gap-1.5"><Star className="w-[18px] h-[18px] fill-amber-400 text-amber-400" /><span className="font-semibold text-slate-800">{ratingVal.toFixed(1)}</span><span className="text-slate-400">({villa.reviews_count ?? 0} ulasan)</span></span>
+                                ) : (
+                                    <span className="flex items-center gap-1.5 text-slate-400">Belum ada ulasan</span>
+                                )}
                             </div>
                         </div>
 

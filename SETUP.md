@@ -123,25 +123,16 @@ php artisan optimize
 
 ---
 
-## 🌐 Frontend (Next.js)
+## 🌐 Frontend Assets (Inertia + React)
 
-**Build:**
+Build frontend assets (TSX/React dikompilasi via Vite — tidak butuh Node.js server di production):
 
 ```bash
-cd frontend
 npm ci
 npm run build
 ```
 
-**cPanel Node.js Setup:**
-1. cPanel → **Setup Node.js App**
-2. Pilih folder `frontend/`
-3. Application mode: **Production**
-4. Startup file: `node_modules/next/dist/bin/next start`
-5. Environment:
-   - `NODE_ENV=production`
-   - `NEXT_PUBLIC_API_URL=https://domain-anda.com/api/v1`
-   - `NEXT_PUBLIC_BACKEND_URL=https://domain-anda.com`
+Hasil build ada di `public/build/`. Semua halaman dilayani oleh Laravel + Inertia, tidak perlu Setup Node.js App di cPanel.
 
 ---
 

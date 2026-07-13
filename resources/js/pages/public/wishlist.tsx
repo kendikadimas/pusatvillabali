@@ -79,8 +79,13 @@ export default function WishlistPage({ settings }: Props) {
                 {/* Content */}
                 {loading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {Array.from({ length: 4 }).map((_, i) => (
-                            <div key={i} className="bg-slate-100 rounded-2xl h-72 animate-pulse" />
+                        {[1,2,3,4].map(i => (
+                            <div key={i} className="flex flex-col gap-2 animate-pulse">
+                                <div className="aspect-[4/3] bg-slate-100 rounded-2xl" />
+                                <div className="h-4 bg-slate-100 rounded w-3/4" />
+                                <div className="h-3 bg-slate-100 rounded w-1/2" />
+                                <div className="h-4 bg-slate-100 rounded w-1/3" />
+                            </div>
                         ))}
                     </div>
                 ) : wishlist.length === 0 ? (

@@ -132,15 +132,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <span className="text-sm text-gray-600">
                             {auth?.user?.name ?? 'Admin'}
                         </span>
-                        <Link
-                            href="/admin/logout"
-                            method="post"
-                            as="button"
+                        <button
                             onClick={handleLogout}
                             className="text-xs text-red-500 hover:text-red-700 font-medium"
                         >
                             Keluar
-                        </Link>
+                        </button>
                     </div>
                 </header>
 

@@ -1,15 +1,22 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { BarChart2, Calendar, ClipboardList, Globe, Home, LayoutDashboard, MapPin, Settings, Star, Users } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
 import type { Auth } from '@/types/auth';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const { auth } = usePage<{ auth: Auth }>().props;
+    const { auth, flash } = usePage<{ auth: Auth; flash?: { admin_token?: string } }>().props;
     const { url: currentUrl } = usePage();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
+
+    // Sync admin_token from flash (set after login) into localStorage
+    useEffect(() => {
+        if (flash?.admin_token) {
+            localStorage.setItem('admin_token', flash.admin_token);
+        }
+    }, [flash?.admin_token]);
 
     const handleLogout = () => {
         localStorage.removeItem('admin_token');

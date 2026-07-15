@@ -312,10 +312,24 @@ params.guests = String(searchGuests);
                     <div className="hidden md:flex items-center gap-2 shrink-0">
                         {auth?.user ? (
                             <Link
-                                href="/profile"
-                                className="text-xs font-bold px-4 py-2 rounded-full bg-slate-900 text-white hover:bg-slate-700 transition-colors active:scale-95"
+                                href="/settings/profile"
+                                className="flex items-center gap-2 p-2 rounded-full hover:bg-slate-100 transition-colors"
+                                title="Profil Saya"
                             >
-                                Profil Saya
+                                {auth.user.avatar ? (
+                                    <img
+                                        src={auth.user.avatar}
+                                        alt={auth.user.name}
+                                        className="w-8 h-8 rounded-full object-cover border-2 border-slate-200"
+                                    />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">
+                                        <User className="w-4 h-4 text-slate-600" />
+                                    </div>
+                                )}
+                                <span className="text-sm font-medium text-slate-700 hidden lg:block">
+                                    {auth.user.name}
+                                </span>
                             </Link>
                         ) : (
                             <>
@@ -389,10 +403,18 @@ params.guests = String(searchGuests);
                         </nav>
                         <div className="px-4 py-5 border-t border-slate-100 flex flex-col gap-2">
                             {auth?.user ? (
-                                <Link href="/profile" onClick={() => setMobileOpen(false)}
+                                <Link href="/settings/profile" onClick={() => setMobileOpen(false)}
                                     className="flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold">
-                                    <User className="w-4 h-4" />
-                                    Profil Saya
+                                    {auth.user.avatar ? (
+                                        <img
+                                            src={auth.user.avatar}
+                                            alt={auth.user.name}
+                                            className="w-6 h-6 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        <User className="w-4 h-4" />
+                                    )}
+                                    {auth.user.name}
                                 </Link>
                             ) : (
                                 <>

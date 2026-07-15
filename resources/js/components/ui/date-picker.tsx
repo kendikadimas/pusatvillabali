@@ -8,7 +8,9 @@ import { Calendar } from "@/components/ui/calendar"
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog"
 
 interface DatePickerProps {
@@ -62,6 +64,8 @@ export function DatePicker({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-auto p-0">
+        <DialogTitle className="sr-only">Pilih Tanggal</DialogTitle>
+        <DialogDescription className="sr-only">Pilih tanggal dari kalender</DialogDescription>
         <Calendar
           mode="single"
           selected={selectedDate}

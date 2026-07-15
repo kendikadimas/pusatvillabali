@@ -293,7 +293,11 @@ class BookingController extends Controller
         $user = auth('sanctum')->user() ?? $request->user('sanctum');
         if ($user && $user->role !== 'admin' && $user->role !== 'super_admin') {
             if ($booking->user_id && $booking->user_id !== $user->id) {
-                return response()->json(['message' => 'Akses ditolak.'], 403);
+                // Fallback: allow if guest_email matches (booking may be guest-originated)
+                $guestEmail = $request->input('guest_email');
+                if (! $guestEmail || strtolower($guestEmail) !== strtolower($booking->guest_email)) {
+                    return response()->json(['message' => 'Akses ditolak.'], 403);
+                }
             }
         }
 

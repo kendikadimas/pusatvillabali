@@ -16,7 +16,8 @@ axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 // Attach Sanctum Bearer token from localStorage on every request
 axios.interceptors.request.use((config) => {
-    const token = localStorage.getItem('sanctum_token');
+    // Check for admin token first (for admin panel), then regular sanctum token
+    const token = localStorage.getItem('admin_token') || localStorage.getItem('sanctum_token');
 
     if (token) {
         config.headers = config.headers ?? {};

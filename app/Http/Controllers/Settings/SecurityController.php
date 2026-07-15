@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
 use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
+use Inertia\Inertia;
+use Inertia\Response;
 use Laravel\Fortify\Features;
 
 class SecurityController extends Controller
@@ -14,7 +17,7 @@ class SecurityController extends Controller
     /**
      * Show the user's security settings page.
      */
-    public function edit(TwoFactorAuthenticationRequest $request): JsonResponse
+    public function edit(TwoFactorAuthenticationRequest $request): Response|JsonResponse
     {
         $props = [
             'canManageTwoFactor' => Features::canManageTwoFactorAuthentication(),
@@ -28,7 +31,13 @@ class SecurityController extends Controller
             $props['requiresConfirmation'] = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm');
         }
 
-        return response()->json($props);
+        // If it's an API request (has Bearer token), return JSON
+        if ($request->bearerToken()) {
+            return response()->json($props);
+        }
+
+        // Otherwise return Inertia response for web
+        return Inertia::render('settings/security', $props);
     }
 
     /**

@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import React, { useState } from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
@@ -9,6 +9,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const { url: currentUrl } = usePage();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
+
+    const handleLogout = () => {
+        localStorage.removeItem('admin_token');
+        router.post('/admin/logout');
+    };
 
     const navItems = [
         { href: '/admin/dashboard', label: 'Dashboard', icon: '⊞' },
@@ -128,9 +133,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             {auth?.user?.name ?? 'Admin'}
                         </span>
                         <Link
-                            href="/api/v1/admin/logout"
+                            href="/admin/logout"
                             method="post"
                             as="button"
+                            onClick={handleLogout}
                             className="text-xs text-red-500 hover:text-red-700 font-medium"
                         >
                             Keluar

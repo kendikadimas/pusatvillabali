@@ -1,5 +1,6 @@
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, usePage } from '@inertiajs/react';
 import axios from 'axios';
+import { useEffect } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
@@ -27,6 +28,19 @@ axios.interceptors.request.use((config) => {
     return config;
 });
 
+// Component to sync admin_token from flash to localStorage
+function AdminTokenSync() {
+    const { flash } = usePage().props as { flash?: { admin_token?: string } };
+
+    useEffect(() => {
+        if (flash?.admin_token) {
+            localStorage.setItem('admin_token', flash.admin_token);
+        }
+    }, [flash?.admin_token]);
+
+    return null;
+}
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
@@ -51,6 +65,7 @@ createInertiaApp({
     withApp(app) {
         return (
             <TooltipProvider delayDuration={0}>
+                <AdminTokenSync />
                 {app}
                 <Toaster />
             </TooltipProvider>

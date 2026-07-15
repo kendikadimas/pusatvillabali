@@ -54,11 +54,20 @@ class AdminWebController extends Controller
 
         $request->session()->regenerate();
 
+        // Create Sanctum token for API calls from admin frontend
+        $token = $user->createToken('admin-token')->plainTextToken;
+        $request->session()->put('admin_token', $token);
+
         return redirect()->intended(route('admin.dashboard'));
     }
 
     public function handleLogout(Request $request): RedirectResponse
     {
+        // Revoke all Sanctum tokens for the user
+        if ($request->user()) {
+            $request->user()->tokens()->delete();
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();

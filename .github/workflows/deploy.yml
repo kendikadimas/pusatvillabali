@@ -78,6 +78,12 @@ jobs:
             set -e
             cd ~/pusatvillabali
 
+            echo "==> Installing Node dependencies..."
+            npm ci
+
+            echo "==> Building frontend assets..."
+            npm run build
+
             echo "==> Installing PHP dependencies..."
             composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
 

@@ -18,7 +18,7 @@ class WebAdminMiddleware
         $user = $request->user();
 
         if (! $user) {
-            return redirect('/admin/login');
+            return redirect()->guest('/admin/login');
         }
 
         if (! $user->isAdmin()) {

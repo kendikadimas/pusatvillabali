@@ -16,27 +16,34 @@ export default function AuthCallback() {
             return;
         }
 
+        console.log('[OAuth Debug] Exchanging code:', code.substring(0, 10) + '...');
+
         // Exchange one-time code for a Sanctum Bearer token
         axios.post('/auth/exchange-code', { code })
             .then((res) => {
+                console.log('[OAuth Debug] Exchange success:', res.data);
                 const token = res.data.token;
 
                 if (token) {
                     localStorage.setItem('sanctum_token', token);
+                    console.log('[OAuth Debug] Token stored in localStorage');
 
                     // Store user info for Inertia shared props fallback
                     if (res.data.user) {
                         localStorage.setItem('auth_user', JSON.stringify(res.data.user));
+                        console.log('[OAuth Debug] User stored:', res.data.user);
                     }
                 }
 
                 const redirectTo = sessionStorage.getItem('oauth_redirect') || '/profile';
                 sessionStorage.removeItem('oauth_redirect');
 
+                console.log('[OAuth Debug] Redirecting to:', redirectTo);
                 // Full page reload so server session picks up the Sanctum token
                 window.location.href = redirectTo;
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error('[OAuth Debug] Exchange failed:', err.response?.data || err.message);
                 setError('Gagal menukar kode otorisasi. Silakan coba login kembali.');
             });
     }, [code, errorMsg]);

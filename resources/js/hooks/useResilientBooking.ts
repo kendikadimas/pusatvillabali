@@ -60,7 +60,6 @@ function writeCache(code: string, booking: Booking) {
 export function useResilientBooking(codeFromUrl?: string, emailFromUrl?: string) {
     const generationRef = useRef(0);
     const mountedRef = useRef(true);
-    const fetchedRef = useRef(false);
 
     useEffect(() => {
         mountedRef.current = true;
@@ -139,15 +138,11 @@ export function useResilientBooking(codeFromUrl?: string, emailFromUrl?: string)
     }, [anchor.code, anchor.email]);
 
     const refetch = useCallback(() => {
-        fetchedRef.current = false;
         fetchBooking();
     }, [fetchBooking]);
 
     useEffect(() => {
-        if (!fetchedRef.current) {
-            fetchedRef.current = true;
-            fetchBooking();
-        }
+        fetchBooking();
     }, [fetchBooking]);
 
     useEffect(() => {

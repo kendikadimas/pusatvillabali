@@ -288,12 +288,9 @@ return;
     }, [current]);
 
     // Reset current index when category changes
-    const [prevCategory, setPrevCategory] = useState(activeCategory);
-
-    if (prevCategory !== activeCategory) {
-        setPrevCategory(activeCategory);
+    useEffect(() => {
         setCurrent(0);
-    }
+    }, [activeCategory]);
 
     const currentPhoto = filtered[current];
     const desc = getPhotoDesc(currentPhoto);

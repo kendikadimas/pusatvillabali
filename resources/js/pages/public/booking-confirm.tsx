@@ -3,7 +3,7 @@ import axios from 'axios';
 import { differenceInDays, parseISO, format, eachDayOfInterval } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import { CheckCircle, Upload, MapPin, BedDouble, Users, Calendar } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
 import { getPhotoUrl } from '@/lib/villaUtils';
@@ -19,27 +19,10 @@ interface Props {
 export default function BookingConfirmPage({ villa: initialVilla, paymentMethods, settings, query }: Props) {
     const { auth } = usePage<{ auth: { user: { name: string; email: string } | null } }>().props;
 
-    // Restore booking intent from sessionStorage (after login redirect)
-    const intent = typeof window !== 'undefined' ? sessionStorage.getItem('booking_intent') : null;
-    const restoredParams = React.useMemo(() => {
-        if (!intent) {
-            return null;
-        }
-
-        try {
-            const params = JSON.parse(intent) as Record<string, string>;
-            sessionStorage.removeItem('booking_intent');
-
-            return params;
-        } catch {
-            return null;
-        }
-    }, [intent]);
-
     const [villa] = useState<Villa | null>(initialVilla);
-    const [checkIn, setCheckIn] = useState(restoredParams?.checkIn || query.checkIn || '');
-    const [checkOut, setCheckOut] = useState(restoredParams?.checkOut || query.checkOut || '');
-    const [guests, setGuests] = useState(Number(restoredParams?.guests || query.guests || 2));
+    const [checkIn, setCheckIn] = useState(query.checkIn ?? '');
+    const [checkOut, setCheckOut] = useState(query.checkOut ?? '');
+    const [guests, setGuests] = useState(Number(query.guests ?? 2));
     const [guestName, setGuestName] = useState(auth?.user?.name ?? '');
     const [guestEmail, setGuestEmail] = useState(auth?.user?.email ?? '');
     const [guestPhone, setGuestPhone] = useState('');
@@ -54,6 +37,33 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
     const [proofFile, setProofFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [proofUploaded, setProofUploaded] = useState(false);
+
+    // Restore booking intent dari sessionStorage (setelah login redirect)
+    useEffect(() => {
+        const intent = sessionStorage.getItem('booking_intent');
+
+        if (intent) {
+            try {
+                const params = JSON.parse(intent) as Record<string, string>;
+
+                if (params.checkIn && !query.checkIn) {
+                    setCheckIn(params.checkIn);
+                }
+
+                if (params.checkOut && !query.checkOut) {
+                    setCheckOut(params.checkOut);
+                }
+
+                if (params.guests && !query.guests) {
+                    setGuests(Number(params.guests));
+                }
+            } catch {
+                // ignore
+            }
+
+            sessionStorage.removeItem('booking_intent');
+        }
+    }, []);
 
     const nights = checkIn && checkOut ? differenceInDays(parseISO(checkOut), parseISO(checkIn)) : 0;
 

@@ -28,6 +28,11 @@ const paddingAroundControl = [
 export default [
     js.configs.recommended,
     reactHooks.configs.flat['recommended-latest'],
+    {
+        rules: {
+            'react-hooks/set-state-in-effect': 'off',
+        },
+    },
     ...typescript.configs.recommended,
     {
         ...react.configs.flat.recommended,

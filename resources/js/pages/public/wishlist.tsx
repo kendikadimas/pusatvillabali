@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
 import { Heart, ArrowLeft } from 'lucide-react';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import VillaCard from '@/components/public/villa-card';
 import type { Villa, AppSettings } from '@/types';
@@ -11,37 +11,39 @@ interface Props {
 }
 
 export default function WishlistPage({ settings: _settings }: Props) {
-    const initialWishlist = useMemo(() => {
+    const [wishlist, setWishlist] = useState<number[]>([]);
+    const [villas, setVillas] = useState<Villa[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
         try {
-            return JSON.parse(localStorage.getItem('wishlist') ?? '[]') as number[];
+            const stored = JSON.parse(localStorage.getItem('wishlist') ?? '[]') as number[];
+            setWishlist(stored);
+
+            if (stored.length === 0) {
+                setLoading(false);
+
+                return;
+            }
+
+            axios.get('/api/v1/villas', { params: { ids: stored.join(','), per_page: 50 } })
+                .then((res) => {
+                    const all: Villa[] = res.data.data ?? res.data;
+                    setVillas(all.filter((v) => stored.includes(v.id)));
+                })
+                .catch(() => {
+                    toast.error('Gagal memuat data wishlist');
+                    setVillas([]);
+                })
+                .finally(() => setLoading(false));
         } catch {
-            return [];
+            setLoading(false);
         }
     }, []);
 
-    const [wishlist] = useState<number[]>(initialWishlist);
-    const [villas, setVillas] = useState<Villa[]>([]);
-    const [loading, setLoading] = useState(initialWishlist.length > 0);
-
-    useEffect(() => {
-        if (initialWishlist.length === 0) {
-            return;
-        }
-
-        axios.get('/api/v1/villas', { params: { ids: initialWishlist.join(','), per_page: 50 } })
-            .then((res) => {
-                const all: Villa[] = res.data.data ?? res.data;
-                setVillas(all.filter((v) => initialWishlist.includes(v.id)));
-            })
-            .catch(() => {
-                toast.error('Gagal memuat data wishlist');
-                setVillas([]);
-            })
-            .finally(() => setLoading(false));
-    }, [initialWishlist]);
-
     const removeFromWishlist = (id: number) => {
         const updated = wishlist.filter((x) => x !== id);
+        setWishlist(updated);
         localStorage.setItem('wishlist', JSON.stringify(updated));
         setVillas((prev) => prev.filter((v) => v.id !== id));
     };

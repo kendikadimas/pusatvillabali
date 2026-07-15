@@ -1,6 +1,6 @@
+import { X } from 'lucide-react';
 import React from 'react';
 import { getPhotoUrl, getPhotoDesc } from '@/lib/villaUtils';
-import { X } from 'lucide-react';
 
 interface VillaGallerySectionProps {
     photos: Array<string | { url: string; description: string; category?: string }>;
@@ -18,7 +18,9 @@ export default function VillaGallerySection({ photos, villaName }: VillaGalleryS
             <div className="relative mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3 rounded-2xl overflow-hidden bg-white">
                     <div
-                        onClick={() => { setCurrentImageIndex(0); setIsLightboxOpen(true); }}
+                        onClick={() => {
+ setCurrentImageIndex(0); setIsLightboxOpen(true); 
+}}
                         className="md:col-span-2 aspect-[4/3] overflow-hidden rounded-l-2xl cursor-pointer relative group"
                     >
                         <img src={mainPhoto} alt={villaName} className="w-full h-full object-cover group-hover:brightness-90 transition duration-300" />
@@ -28,10 +30,19 @@ export default function VillaGallerySection({ photos, villaName }: VillaGalleryS
                     <div className="md:col-span-2 grid grid-cols-2 gap-3 h-full" style={{ gridTemplateRows: 'repeat(2, minmax(0, 1fr))' }}>
                         {thumbPhotos.map((photo, i) => {
                             let cornerClass = '';
-                            if (i === 1) cornerClass = 'md:rounded-tr-2xl';
-                            if (i === 3) cornerClass = 'md:rounded-br-2xl';
+
+                            if (i === 1) {
+cornerClass = 'md:rounded-tr-2xl';
+}
+
+                            if (i === 3) {
+cornerClass = 'md:rounded-br-2xl';
+}
+
                             return (
-                                <div key={i} onClick={() => { setCurrentImageIndex(i + 1); setIsLightboxOpen(true); }} className={`overflow-hidden cursor-pointer relative group min-h-0 ${cornerClass}`}>
+                                <div key={i} onClick={() => {
+ setCurrentImageIndex(i + 1); setIsLightboxOpen(true); 
+}} className={`overflow-hidden cursor-pointer relative group min-h-0 ${cornerClass}`}>
                                     <img src={getPhotoUrl(photo)} alt={getPhotoDesc(photo) || `Thumbnail ${i}`} className="w-full h-full object-cover group-hover:brightness-90 transition duration-300" />
                                     <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
                                 </div>

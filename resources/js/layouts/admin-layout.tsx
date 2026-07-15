@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { home } from '@/routes';
+import React, { useState } from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
+import { home } from '@/routes';
 import type { Auth } from '@/types/auth';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -48,6 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
                 {navItems.map((item) => {
                     const isActive = currentUrl.startsWith(item.href);
+
                     return (
                         <Link
                             key={item.href}

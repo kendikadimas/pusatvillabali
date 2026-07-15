@@ -1,15 +1,20 @@
-import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { MapPin, Mail, Heart, Phone, ArrowUpRight } from 'lucide-react';
+import { MapPin, Mail, Heart, Phone } from 'lucide-react';
+import React from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import type { AppSettings } from '@/types';
 
 const formatWhatsAppDisplay = (num: string): string => {
-    if (!num) return '';
+    if (!num) {
+return '';
+}
+
     const clean = num.replace(/\D/g, '');
+
     if (clean.length >= 12) {
         return `+${clean.slice(0, 2)} ${clean.slice(2, 5)} ${clean.slice(5, 9)} ${clean.slice(9)}`;
     }
+
     return `+${clean}`;
 };
 

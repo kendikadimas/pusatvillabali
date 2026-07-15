@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import axios from 'axios';
-import { toast } from 'sonner';
 import { Plus, Trash2, RefreshCw, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 interface AdminUser {
     id: number;
@@ -67,6 +67,7 @@ export default function AdminUsersPage() {
 
     const fetchAdmins = async () => {
         setLoading(true);
+
         try {
             const res = await axios.get('/api/v1/admin/admins');
             setAdmins(res.data.data);
@@ -77,11 +78,14 @@ export default function AdminUsersPage() {
         }
     };
 
+    const fetchedRef = React.useRef(false);
+
     useEffect(() => {
-        if (isSuperAdmin) {
+        if (isSuperAdmin && !fetchedRef.current) {
+            fetchedRef.current = true;
             fetchAdmins();
         }
-    }, [isSuperAdmin]);
+    }, [isSuperAdmin, fetchAdmins]);
 
     const togglePermission = (perm: string) => {
         setForm((prev) => ({
@@ -96,6 +100,7 @@ export default function AdminUsersPage() {
         e.preventDefault();
         setSubmitting(true);
         setErrors({});
+
         try {
             await axios.post('/api/v1/admin/admins', form);
             toast.success('Admin berhasil dibuat');
@@ -114,7 +119,10 @@ export default function AdminUsersPage() {
     };
 
     const handleDelete = async (admin: AdminUser) => {
-        if (!window.confirm(`Hapus admin "${admin.name}"? Semua sesinya akan diakhiri.`)) return;
+        if (!window.confirm(`Hapus admin "${admin.name}"? Semua sesinya akan diakhiri.`)) {
+return;
+}
+
         try {
             await axios.delete(`/api/v1/admin/admins/${admin.id}`);
             toast.success('Admin berhasil dihapus');
@@ -153,7 +161,9 @@ export default function AdminUsersPage() {
                         <p className="text-sm text-slate-500">Kelola akun sub-admin dan hak akses</p>
                     </div>
                     <button
-                        onClick={() => { setShowModal(true); setForm({ ...emptyForm }); setErrors({}); }}
+                        onClick={() => {
+ setShowModal(true); setForm({ ...emptyForm }); setErrors({}); 
+}}
                         className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors"
                     >
                         <Plus className="w-4 h-4" />

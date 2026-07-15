@@ -1,7 +1,7 @@
-import React from 'react';
-import { Star, Search, X } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
+import { Star, Search, X } from 'lucide-react';
+import React from 'react';
 import type { Review } from '@/types/index';
 
 interface VillaReviewsSectionProps {
@@ -26,7 +26,9 @@ export default function VillaReviewsSection({ reviews, avgRating }: VillaReviews
     ];
 
     const tagMap: Record<string, string[]> = {};
-    TAGS.forEach(t => { tagMap[t.label] = t.keywords; });
+    TAGS.forEach(t => {
+ tagMap[t.label] = t.keywords; 
+});
 
     const keywordTagCounts = TAGS.map(tag => ({
         label: tag.label,
@@ -35,14 +37,17 @@ export default function VillaReviewsSection({ reviews, avgRating }: VillaReviews
 
     const filteredReviews = React.useMemo(() => {
         let list = [...reviews];
+
         if (selectedTag) {
             const kws = tagMap[selectedTag] || [];
             list = list.filter(r => kws.some(kw => (r.comment || '').toLowerCase().includes(kw)));
         }
+
         if (searchQuery.trim()) {
             const q = searchQuery.toLowerCase();
             list = list.filter(r => (r.comment || '').toLowerCase().includes(q));
         }
+
         if (sortOrder === 'recent') {
             list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         } else if (sortOrder === 'highest') {
@@ -50,12 +55,15 @@ export default function VillaReviewsSection({ reviews, avgRating }: VillaReviews
         } else if (sortOrder === 'lowest') {
             list.sort((a, b) => a.rating - b.rating);
         }
+
         return list;
     }, [reviews, selectedTag, searchQuery, sortOrder]);
 
     const previewReviews = filteredReviews.slice(0, 6);
 
-    if (reviews.length === 0) return null;
+    if (reviews.length === 0) {
+return null;
+}
 
     return (
         <>

@@ -1,8 +1,8 @@
 import {
-    Star, MapPin, BedDouble, Bath, Users, Calendar,
-    ArrowRight, Shield, X, Check, ChevronLeft, Key,
-    Waves, Trophy, Share2, Heart, Globe, Wind, Car,
-    Coffee, Sparkles, Search, Tv, Wifi, Flame, Utensils,
+    Star, Bath, Users,
+    Shield, Check, Key,
+    Waves, Trophy, Heart, Globe, Wind, Car,
+    Coffee, Sparkles, Tv, Wifi, Flame, Utensils,
     Briefcase, Thermometer, ShieldCheck, Languages, Dumbbell,
     CookingPot, WashingMachine, ParkingCircle, Lock, Music,
 } from 'lucide-react';
@@ -49,11 +49,13 @@ const fuzzyKeywords: Record<string, string[]> = {
 
 export function getIconByAmenityName(name: string): React.ComponentType<any> {
     const lower = name.toLowerCase();
+
     for (const [iconKey, keywords] of Object.entries(fuzzyKeywords)) {
         if (keywords.some(kw => lower.includes(kw))) {
             return allIcons[iconKey] ?? Check;
         }
     }
+
     return Check;
 }
 
@@ -87,14 +89,28 @@ export const iconCatalog: Array<{ key: string; label: string; component: React.C
 
 export function getIconComponentByKey(key: string): React.ComponentType<any> {
     const found = iconCatalog.find(i => i.key === key);
+
     return found?.component ?? Check;
 }
 
 export function getHostAboutIcon(text: string, index: number): React.ComponentType<any> {
     const t = text.toLowerCase();
-    if (t.includes('lahir') || t.includes('tahun')) return Sparkles;
-    if (t.includes('sekolah') || t.includes('kuliah') || t.includes('universitas') || t.includes('rmit') || t.includes('kerja')) return Briefcase;
-    if (t.includes('bahasa')) return Languages;
-    if (t.includes('hobi') || t.includes('suka') || t.includes('cinta')) return Heart;
+
+    if (t.includes('lahir') || t.includes('tahun')) {
+return Sparkles;
+}
+
+    if (t.includes('sekolah') || t.includes('kuliah') || t.includes('universitas') || t.includes('rmit') || t.includes('kerja')) {
+return Briefcase;
+}
+
+    if (t.includes('bahasa')) {
+return Languages;
+}
+
+    if (t.includes('hobi') || t.includes('suka') || t.includes('cinta')) {
+return Heart;
+}
+
     return index % 2 === 0 ? Sparkles : Globe;
 }

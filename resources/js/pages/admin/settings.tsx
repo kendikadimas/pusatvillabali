@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import type { PaymentMethod } from '@/types';
 import axios from 'axios';
-import { toast } from 'sonner';
 import { Plus, ToggleLeft, ToggleRight, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import type { PaymentMethod } from '@/types';
 
 interface Settings {
     [key: string]: string | null | undefined;
@@ -33,6 +33,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
+
         try {
             await axios.put('/api/v1/admin/settings', form);
             toast.success('Pengaturan berhasil disimpan');
@@ -45,6 +46,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
 
     const handleToggleActive = async (pm: PaymentMethod) => {
         setTogglingId(pm.id);
+
         try {
             await axios.patch(`/api/v1/admin/payment-methods/${pm.id}`, {
                 is_active: !pm.is_active,
@@ -143,6 +145,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
                         <div className="space-y-3">
                             {paymentMethods.map((pm) => {
                                 const isToggling = togglingId === pm.id;
+
                                 return (
                                     <div
                                         key={pm.id}

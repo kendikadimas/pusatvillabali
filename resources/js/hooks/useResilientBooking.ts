@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import axios from 'axios';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import type { Booking } from '@/types/index';
 
 type Status = 'idle' | 'loading' | 'error' | 'success';
@@ -15,20 +15,27 @@ const cacheKey = (code: string) => `pusatvillabali-booking-cache-${code}`;
 function readAnchorFromStorage(): Anchor {
     try {
         const raw = localStorage.getItem(ANCHOR_KEY);
+
         if (raw) {
             const parsed = JSON.parse(raw);
+
             return { code: parsed.code, email: parsed.email };
         }
     } catch {
         // ignore
     }
+
     return {};
 }
 
 function readCache(code?: string): Booking | null {
-    if (!code) return null;
+    if (!code) {
+        return null;
+    }
+
     try {
         const raw = localStorage.getItem(cacheKey(code));
+
         return raw ? JSON.parse(raw) : null;
     } catch {
         return null;
@@ -51,39 +58,40 @@ function writeCache(code: string, booking: Booking) {
  * - TIDAK PERNAH redirect/reset otomatis saat error.
  */
 export function useResilientBooking(codeFromUrl?: string, emailFromUrl?: string) {
-    const [booking, setBooking] = useState<Booking | null>(null);
-    const [status, setStatus] = useState<Status>('idle');
-    const [isFromCache, setIsFromCache] = useState(false);
     const generationRef = useRef(0);
     const mountedRef = useRef(true);
+    const fetchedRef = useRef(false);
 
     useEffect(() => {
         mountedRef.current = true;
-        return () => { mountedRef.current = false; };
+
+        return () => {
+            mountedRef.current = false;
+        };
     }, []);
 
     const anchor = useMemo<Anchor>(() => {
-        if (codeFromUrl && emailFromUrl) return { code: codeFromUrl, email: emailFromUrl };
+        if (codeFromUrl && emailFromUrl) {
+            return { code: codeFromUrl, email: emailFromUrl };
+        }
+
         const fromStorage = readAnchorFromStorage();
+
         return {
             code: codeFromUrl || fromStorage.code,
             email: emailFromUrl || fromStorage.email,
         };
     }, [codeFromUrl, emailFromUrl]);
 
-    // Hydrate instan dari cache
-    useEffect(() => {
-        if (!anchor.code) return;
-        const cached = readCache(anchor.code);
-        if (cached) {
-            setBooking(cached);
-            setIsFromCache(true);
-        }
-    }, [anchor.code]);
+    const initialCache = useMemo(() => readCache(anchor.code), [anchor.code]);
+    const [booking, setBooking] = useState<Booking | null>(initialCache);
+    const [status, setStatus] = useState<Status>('idle');
+    const [isFromCache, setIsFromCache] = useState(!!initialCache);
 
     const fetchBooking = useCallback(async () => {
         if (!anchor.code) {
             setStatus('error');
+
             return;
         }
 
@@ -91,24 +99,34 @@ export function useResilientBooking(codeFromUrl?: string, emailFromUrl?: string)
         setStatus('loading');
 
         for (let attempt = 0; attempt < 4; attempt++) {
-            if (!mountedRef.current || gen !== generationRef.current) return;
+            if (!mountedRef.current || gen !== generationRef.current) {
+                return;
+            }
 
             try {
                 const params: Record<string, string> = { code: anchor.code };
-                if (anchor.email) params.email = anchor.email;
+
+                if (anchor.email) {
+                    params.email = anchor.email;
+                }
 
                 const res = await axios.get('/api/v1/bookings/by-code', { params });
                 const data = res.data?.data ?? res.data;
 
-                if (!mountedRef.current || gen !== generationRef.current) return;
+                if (!mountedRef.current || gen !== generationRef.current) {
+                    return;
+                }
 
                 setBooking(data);
                 setIsFromCache(false);
                 setStatus('success');
                 writeCache(anchor.code, data);
+
                 return;
-            } catch (err) {
-                if (!mountedRef.current || gen !== generationRef.current) return;
+            } catch {
+                if (!mountedRef.current || gen !== generationRef.current) {
+                    return;
+                }
 
                 if (attempt === 3) {
                     setStatus('error');
@@ -121,11 +139,15 @@ export function useResilientBooking(codeFromUrl?: string, emailFromUrl?: string)
     }, [anchor.code, anchor.email]);
 
     const refetch = useCallback(() => {
+        fetchedRef.current = false;
         fetchBooking();
     }, [fetchBooking]);
 
     useEffect(() => {
-        fetchBooking();
+        if (!fetchedRef.current) {
+            fetchedRef.current = true;
+            fetchBooking();
+        }
     }, [fetchBooking]);
 
     useEffect(() => {
@@ -135,6 +157,7 @@ export function useResilientBooking(codeFromUrl?: string, emailFromUrl?: string)
             }
         };
         document.addEventListener('visibilitychange', handleVisibility);
+
         return () => document.removeEventListener('visibilitychange', handleVisibility);
     }, [status, fetchBooking]);
 

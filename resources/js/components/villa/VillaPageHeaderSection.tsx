@@ -1,5 +1,5 @@
-import React from 'react';
 import { Star, Users, Bed, Bath } from 'lucide-react';
+import React from 'react';
 import type { Villa } from '@/types/index';
 
 interface VillaPageHeaderSectionProps {
@@ -44,6 +44,7 @@ export default function VillaPageHeaderSection({
                         <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
                             {meta.map((m, idx) => {
                                 const Icon = m.icon;
+
                                 return (
                                     <React.Fragment key={idx}>
                                         <span className="flex items-center space-x-1.5 text-slate-700">

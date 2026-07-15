@@ -1,10 +1,10 @@
-import React from 'react';
 import { Head, Link } from '@inertiajs/react';
-import type { AdminStats, Booking, AppSettings } from '@/types';
-import { formatPrice } from '@/lib/format';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { Calendar, Home, BookOpen, Star, TrendingUp, Percent, Clock, ArrowUpRight, UserCheck, UserMinus } from 'lucide-react';
+import { BookOpen, Star, TrendingUp, Percent, Clock, ArrowUpRight, UserCheck, UserMinus } from 'lucide-react';
+import React from 'react';
+import { formatPrice } from '@/lib/format';
+import type { AdminStats, Booking } from '@/types';
 
 interface Props {
     stats: AdminStats;
@@ -22,6 +22,7 @@ function StatCard({ label, value, icon, color = 'blue' }: { label: string; value
         red: 'bg-red-50 text-red-600',
         indigo: 'bg-indigo-50 text-indigo-600',
     };
+
     return (
         <div className="bg-white border border-slate-200 rounded-2xl p-5">
             <div className="flex items-center justify-between mb-3">

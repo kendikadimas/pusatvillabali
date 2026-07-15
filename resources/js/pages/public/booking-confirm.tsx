@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
-import type { Villa, PaymentMethod, AppSettings } from '@/types';
-import { formatPrice } from '@/lib/format';
-import { getPhotoUrl } from '@/lib/villaUtils';
+import axios from 'axios';
 import { differenceInDays, parseISO, format, eachDayOfInterval } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import axios from 'axios';
-import { toast } from 'sonner';
 import { CheckCircle, Upload, MapPin, BedDouble, Users, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import { formatPrice } from '@/lib/format';
+import { getPhotoUrl } from '@/lib/villaUtils';
+import type { Villa, PaymentMethod, AppSettings } from '@/types';
 
 interface Props {
     villa: Villa | null;
@@ -19,10 +19,27 @@ interface Props {
 export default function BookingConfirmPage({ villa: initialVilla, paymentMethods, settings, query }: Props) {
     const { auth } = usePage<{ auth: { user: { name: string; email: string } | null } }>().props;
 
+    // Restore booking intent from sessionStorage (after login redirect)
+    const intent = typeof window !== 'undefined' ? sessionStorage.getItem('booking_intent') : null;
+    const restoredParams = React.useMemo(() => {
+        if (!intent) {
+            return null;
+        }
+
+        try {
+            const params = JSON.parse(intent) as Record<string, string>;
+            sessionStorage.removeItem('booking_intent');
+
+            return params;
+        } catch {
+            return null;
+        }
+    }, [intent]);
+
     const [villa] = useState<Villa | null>(initialVilla);
-    const [checkIn, setCheckIn] = useState(query.checkIn ?? '');
-    const [checkOut, setCheckOut] = useState(query.checkOut ?? '');
-    const [guests, setGuests] = useState(Number(query.guests ?? 2));
+    const [checkIn, setCheckIn] = useState(restoredParams?.checkIn || query.checkIn || '');
+    const [checkOut, setCheckOut] = useState(restoredParams?.checkOut || query.checkOut || '');
+    const [guests, setGuests] = useState(Number(restoredParams?.guests || query.guests || 2));
     const [guestName, setGuestName] = useState(auth?.user?.name ?? '');
     const [guestEmail, setGuestEmail] = useState(auth?.user?.email ?? '');
     const [guestPhone, setGuestPhone] = useState('');
@@ -38,20 +55,6 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
     const [uploading, setUploading] = useState(false);
     const [proofUploaded, setProofUploaded] = useState(false);
 
-    // Restore booking intent dari sessionStorage (setelah login redirect)
-    useEffect(() => {
-        const intent = sessionStorage.getItem('booking_intent');
-        if (intent) {
-            try {
-                const params = JSON.parse(intent) as Record<string, string>;
-                if (params.checkIn && !query.checkIn) setCheckIn(params.checkIn);
-                if (params.checkOut && !query.checkOut) setCheckOut(params.checkOut);
-                if (params.guests && !query.guests) setGuests(Number(params.guests));
-            } catch {}
-            sessionStorage.removeItem('booking_intent');
-        }
-    }, []);
-
     const nights = checkIn && checkOut ? differenceInDays(parseISO(checkOut), parseISO(checkIn)) : 0;
 
     // Kalkulasi harga konsisten dengan backend (weekday vs weekend per malam)
@@ -59,6 +62,7 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
         if (!villa || !checkIn || !checkOut || nights <= 0) {
             return { subtotal: 0, weekdayCount: 0, weekendCount: 0 };
         }
+
         const days = eachDayOfInterval({
             start: parseISO(checkIn),
             end: new Date(parseISO(checkOut).getTime() - 86400000),
@@ -67,6 +71,7 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
         days.forEach(day => {
             const dow = day.getDay(); // 0=Sun,5=Fri,6=Sat
             const isWeekend = dow === 5 || dow === 6;
+
             if (isWeekend && villa.weekend_price) {
                 total += Number(villa.weekend_price);
                 weCount++;
@@ -75,6 +80,7 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
                 wdCount++;
             }
         });
+
         return { subtotal: total, weekdayCount: wdCount, weekendCount: weCount };
     }, [villa, checkIn, checkOut, nights]);
 
@@ -86,13 +92,18 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!villa) return;
+
+        if (!villa) {
+return;
+}
+
         setProcessing(true);
         setErrors({});
 
         if (!ktpFile) {
             toast.error('Foto KTP wajib diunggah.');
             setProcessing(false);
+
             return;
         }
 
@@ -106,8 +117,14 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
             formData.append('guest_email', guestEmail);
             formData.append('guest_phone', guestPhone);
             formData.append('notes', notes);
-            if (selectedPaymentMethod) formData.append('payment_method_id', String(selectedPaymentMethod));
-            if (ktpFile) formData.append('ktp_image', ktpFile);
+
+            if (selectedPaymentMethod) {
+formData.append('payment_method_id', String(selectedPaymentMethod));
+}
+
+            if (ktpFile) {
+formData.append('ktp_image', ktpFile);
+}
 
             const res = await axios.post('/api/v1/bookings', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
@@ -115,8 +132,13 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
             const code = res.data.booking_code ?? res.data.data?.booking_code;
             setBookingCode(code);
             setStep('created');
+
             // Bersihkan store setelah booking berhasil dibuat
-            try { localStorage.removeItem('pusatvillaid-booking-store'); } catch {}
+            try {
+                localStorage.removeItem('pusatvillaid-booking-store');
+            } catch {
+                // ignore
+            }
         } catch (err: any) {
             if (err.response?.data?.errors) {
                 setErrors(err.response.data.errors);
@@ -130,11 +152,19 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
 
     const handleUploadProof = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!proofFile || !bookingCode) return;
+
+        if (!proofFile || !bookingCode) {
+return;
+}
+
         setUploading(true);
         const form = new FormData();
         form.append('payment_proof', proofFile);
-        if (selectedPaymentMethod) form.append('payment_method_id', String(selectedPaymentMethod));
+
+        if (selectedPaymentMethod) {
+form.append('payment_method_id', String(selectedPaymentMethod));
+}
+
         try {
             await axios.post(`/api/v1/bookings/${bookingCode}/confirm-manual-payment`, form, {
                 headers: { 'Content-Type': 'multipart/form-data' },

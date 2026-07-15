@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import type { Booking, AppSettings } from '@/types';
-import { formatPrice } from '@/lib/format';
+import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { Upload, Clock, CheckCircle } from 'lucide-react';
-import axios from 'axios';
+import { Upload, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { formatPrice } from '@/lib/format';
+import type { Booking, AppSettings } from '@/types';
 
 interface Props {
     booking: Booking | null;
@@ -14,7 +14,7 @@ interface Props {
     code?: string;
 }
 
-export default function BookingPaymentPage({ booking, settings, code }: Props) {
+export default function BookingPaymentPage({ booking, settings, code: _code }: Props) {
     const [proofFile, setProofFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [uploaded, setUploaded] = useState(false);
@@ -36,16 +36,22 @@ export default function BookingPaymentPage({ booking, settings, code }: Props) {
 
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!proofFile) return;
+
+        if (!proofFile) {
+return;
+}
+
         setUploading(true);
         const form = new FormData();
         form.append('payment_proof', proofFile);
+
         // Sertakan payment_method_id dari booking jika ada
         if (booking.payment_method_id) {
             form.append('payment_method_id', String(booking.payment_method_id));
         } else if (booking.payment?.payment_type) {
             // fallback: cari payment method id dari payment record
         }
+
         try {
             await axios.post(`/api/v1/bookings/${booking.booking_code}/confirm-manual-payment`, form, {
                 headers: { 'Content-Type': 'multipart/form-data' },

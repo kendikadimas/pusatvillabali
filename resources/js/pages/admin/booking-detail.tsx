@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import type { Booking, AppSettings } from '@/types';
-import { formatPrice } from '@/lib/format';
-import { getMainPhoto } from '@/lib/villaUtils';
-import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
+import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import axios from 'axios';
-import { toast } from 'sonner';
 import {
-    ArrowLeft, Calendar, Users, Home, MapPin, Phone, Mail,
+    ArrowLeft, Calendar, Users, MapPin, Phone, Mail,
     CreditCard, Download, CheckCircle, XCircle, AlertCircle,
     Clock, FileText, Edit,
 } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import { formatPrice } from '@/lib/format';
+import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
+import { getMainPhoto } from '@/lib/villaUtils';
+import type { Booking, AppSettings } from '@/types';
 
 interface Props {
     booking: Booking;
@@ -56,8 +56,12 @@ export default function AdminBookingDetailPage({ booking, settings }: Props) {
     const villaPhoto = booking.villa ? getMainPhoto(booking.villa) : null;
 
     const handleStatusChange = async (status: string) => {
-        if (!confirm(`Ubah status menjadi "${statusLabels[status] ?? status}"?`)) return;
+        if (!confirm(`Ubah status menjadi "${statusLabels[status] ?? status}"?`)) {
+return;
+}
+
         setUpdatingStatus(true);
+
         try {
             await axios.patch(`/api/v1/admin/bookings/${booking.id}/status`, {
                 status,
@@ -73,8 +77,12 @@ export default function AdminBookingDetailPage({ booking, settings }: Props) {
     };
 
     const handlePaymentStatusChange = async (payment_status: string) => {
-        if (!confirm(`Ubah status pembayaran menjadi "${paymentLabels[payment_status] ?? payment_status}"?`)) return;
+        if (!confirm(`Ubah status pembayaran menjadi "${paymentLabels[payment_status] ?? payment_status}"?`)) {
+return;
+}
+
         setUpdatingPayment(true);
+
         try {
             await axios.patch(`/api/v1/admin/bookings/${booking.id}/status`, {
                 status: booking.status,

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
-import type { Review, PaginatedData } from '@/types';
+import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import { Star, Check, X } from 'lucide-react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
+import type { Review, PaginatedData } from '@/types';
 
 interface Props {
     reviews: PaginatedData<Review>;
@@ -15,8 +15,10 @@ export default function AdminReviewsPage({ reviews }: Props) {
     const [filter, setFilter] = useState(() => {
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
+
             return params.get('filter') ?? 'pending';
         }
+
         return 'pending';
     });
 
@@ -31,7 +33,10 @@ export default function AdminReviewsPage({ reviews }: Props) {
     };
 
     const handleReject = async (id: number) => {
-        if (!confirm('Hapus ulasan ini?')) return;
+        if (!confirm('Hapus ulasan ini?')) {
+return;
+}
+
         try {
             await axios.delete(`/api/v1/admin/reviews/${id}`);
             toast.success('Ulasan dihapus');
@@ -55,7 +60,9 @@ export default function AdminReviewsPage({ reviews }: Props) {
                     {['all', 'pending', 'approved'].map((f) => (
                         <button
                             key={f}
-                            onClick={() => { setFilter(f); router.get('/admin/reviews', { filter: f === 'all' ? undefined : f }, { preserveScroll: true }); }}
+                            onClick={() => {
+ setFilter(f); router.get('/admin/reviews', { filter: f === 'all' ? undefined : f }, { preserveScroll: true }); 
+}}
                             className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors ${filter === f ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                         >
                             {f === 'all' ? 'Semua' : f === 'pending' ? 'Menunggu' : 'Disetujui'}
@@ -116,7 +123,11 @@ export default function AdminReviewsPage({ reviews }: Props) {
                                     key={page}
                                     onClick={() => {
                                         const params: Record<string, string> = { page: String(page) };
-                                        if (filter && filter !== 'all') params.filter = filter;
+
+                                        if (filter && filter !== 'all') {
+params.filter = filter;
+}
+
                                         router.get('/admin/reviews', params, { preserveScroll: true });
                                     }}
                                     className={`w-7 h-7 rounded text-xs font-medium ${

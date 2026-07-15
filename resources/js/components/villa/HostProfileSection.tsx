@@ -1,5 +1,5 @@
-import React from 'react';
 import { Check, ShieldCheck, Shield } from 'lucide-react';
+import React from 'react';
 import { getHostAboutIcon } from '@/lib/villaIcons';
 
 interface CoHost {
@@ -69,6 +69,7 @@ export default function HostProfileSection({
                         <div className="space-y-3">
                             {hostAboutList.map((item, idx) => {
                                 const IconComponent = getHostAboutIcon(item, idx);
+
                                 return (
                                     <div key={idx} className="flex items-start space-x-3">
                                         <IconComponent className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" strokeWidth={1.5} />

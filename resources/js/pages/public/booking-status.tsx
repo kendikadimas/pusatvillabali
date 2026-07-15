@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import type { Booking, AppSettings } from '@/types';
-import { formatPrice } from '@/lib/format';
-import { getMainPhoto } from '@/lib/villaUtils';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
-import axios from 'axios';
 import {
     CheckCircle, XCircle, AlertCircle, Calendar, Users,
     Download, MessageCircle, Home, MapPin, CreditCard, RefreshCw,
 } from 'lucide-react';
+import React, { useState } from 'react';
+import { formatPrice } from '@/lib/format';
+import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
+import { getMainPhoto } from '@/lib/villaUtils';
+import type { Booking, AppSettings } from '@/types';
 
 interface Props {
     booking: Booking | null;
@@ -59,7 +58,11 @@ export default function BookingStatusPage({ booking, settings, code }: Props) {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!searchCode.trim()) return;
+
+        if (!searchCode.trim()) {
+return;
+}
+
         setSearching(true);
         router.get('/booking/status', { code: searchCode.trim() }, {
             onFinish: () => setSearching(false),
@@ -67,7 +70,10 @@ export default function BookingStatusPage({ booking, settings, code }: Props) {
     };
 
     const handleDownloadPDF = () => {
-        if (!booking) return;
+        if (!booking) {
+return;
+}
+
         generateInvoicePDF(booking, booking.booking_code, {
             settings_prop_name: settings.settings_prop_name,
             settings_email: settings.settings_email,

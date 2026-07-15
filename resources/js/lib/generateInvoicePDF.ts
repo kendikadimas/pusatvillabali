@@ -1,6 +1,6 @@
-import jsPDF from 'jspdf';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
+import jsPDF from 'jspdf';
 
 interface InvoiceSettings {
     settings_prop_name?: string;
@@ -144,8 +144,12 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
     pdf.setTextColor(71, 85, 105);
 
     const formatRp = (amount: number | string | undefined) => {
-        if (amount === undefined || amount === null) return 'Rp 0';
+        if (amount === undefined || amount === null) {
+return 'Rp 0';
+}
+
         const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+
         return 'Rp ' + num.toLocaleString('id-ID');
     };
 
@@ -156,6 +160,7 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
         pdf.text(formatRp(booking.base_price), 80, yPos);
         yPos += 6;
     }
+
     if (booking.tax_amount) {
         pdf.setFont('helvetica', 'bold');
         pdf.text('Pajak:', 20, yPos);
@@ -163,6 +168,7 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
         pdf.text(formatRp(booking.tax_amount), 80, yPos);
         yPos += 6;
     }
+
     if (booking.admin_fee) {
         pdf.setFont('helvetica', 'bold');
         pdf.text('Biaya Admin:', 20, yPos);
@@ -202,6 +208,7 @@ export async function generateInvoicePDF(booking: InvoiceBooking, bookingCode: s
 
     // Important note
     const footerY = pageHeight - 30;
+
     if (yPos < footerY - 20) {
         pdf.setFillColor(254, 249, 195);
         pdf.setDrawColor(234, 179, 8);

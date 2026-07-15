@@ -1,10 +1,10 @@
-﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import type { Villa, AppSettings } from '@/types';
-import { getPhotoUrl, getPhotoCategory, getPhotoDesc } from '@/lib/villaUtils';
-import { formatPrice } from '@/lib/format';
+﻿import { Head, router, usePage } from '@inertiajs/react';
 import { eachDayOfInterval, parseISO } from 'date-fns';
 import { MapPin, BedDouble, Bath, Users, Star, Calendar, ChevronLeft, ChevronRight, Check, X, Grid3X3, Minus, Plus, LayoutGrid, SlidersHorizontal } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { formatPrice } from '@/lib/format';
+import { getPhotoUrl, getPhotoCategory, getPhotoDesc } from '@/lib/villaUtils';
+import type { Villa, AppSettings } from '@/types';
 
 // ─── Mobile Booking Bar ───────────────────────────────────────────────────────
 
@@ -100,12 +100,20 @@ function MobileBookingSheet({
 }: MobileBookingSheetProps) {
     useEffect(() => {
         document.body.style.overflow = 'hidden';
-        return () => { document.body.style.overflow = ''; };
+
+        return () => {
+ document.body.style.overflow = ''; 
+};
     }, []);
 
     useEffect(() => {
-        const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+        const handler = (e: KeyboardEvent) => {
+ if (e.key === 'Escape') {
+onClose();
+} 
+};
         window.addEventListener('keydown', handler);
+
         return () => window.removeEventListener('keydown', handler);
     }, [onClose]);
 
@@ -132,7 +140,13 @@ function MobileBookingSheet({
                         <div>
                             <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Check-in</label>
                             <input ref={checkInRef} type="date" value={checkIn} min={today}
-                                onChange={e => { setCheckIn(e.target.value); if (checkOut && e.target.value >= checkOut) setCheckOut(''); }}
+                                onChange={e => {
+ setCheckIn(e.target.value);
+
+ if (checkOut && e.target.value >= checkOut) {
+setCheckOut('');
+} 
+}}
                                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 cursor-pointer"
                             />
                         </div>
@@ -187,7 +201,9 @@ function MobileBookingSheet({
                             </span>
                         </div>
                     )}
-                    <button type="button" onClick={(e) => { onBook(e); onClose(); }}
+                    <button type="button" onClick={(e) => {
+ onBook(e); onClose(); 
+}}
                         disabled={!checkIn || !checkOut || nights <= 0}
                         className="w-full py-3.5 rounded-2xl bg-blue-600 text-white font-bold text-base transition-all hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
                         {nights > 0 ? 'Pesan Sekarang' : 'Pilih tanggal terlebih dahulu'}
@@ -233,27 +249,51 @@ function PhotoTourModal({ photos, initialIndex, villaName, onClose }: PhotoTourM
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-            if (e.key === 'ArrowLeft' && view === 'slide') prev();
-            if (e.key === 'ArrowRight' && view === 'slide') next();
-            if (e.key === 'g') setView(v => v === 'slide' ? 'grid' : 'slide');
+            if (e.key === 'Escape') {
+onClose();
+}
+
+            if (e.key === 'ArrowLeft' && view === 'slide') {
+prev();
+}
+
+            if (e.key === 'ArrowRight' && view === 'slide') {
+next();
+}
+
+            if (e.key === 'g') {
+setView(v => v === 'slide' ? 'grid' : 'slide');
+}
         };
         window.addEventListener('keydown', handler);
+
         return () => window.removeEventListener('keydown', handler);
     }, [onClose, prev, next, view]);
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
-        return () => { document.body.style.overflow = ''; };
+
+        return () => {
+ document.body.style.overflow = ''; 
+};
     }, []);
 
     useEffect(() => {
-        if (!thumbRef.current) return;
+        if (!thumbRef.current) {
+return;
+}
+
         const active = thumbRef.current.querySelector('[data-active="true"]') as HTMLElement | null;
         active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     }, [current]);
 
-    useEffect(() => { setCurrent(0); }, [activeCategory]);
+    // Reset current index when category changes
+    const [prevCategory, setPrevCategory] = useState(activeCategory);
+
+    if (prevCategory !== activeCategory) {
+        setPrevCategory(activeCategory);
+        setCurrent(0);
+    }
 
     const currentPhoto = filtered[current];
     const desc = getPhotoDesc(currentPhoto);
@@ -325,8 +365,11 @@ function PhotoTourModal({ photos, initialIndex, villaName, onClose }: PhotoTourM
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
                         {filtered.map((photo, i) => {
                             const d = getPhotoDesc(photo);
+
                             return (
-                                <button key={i} type="button" onClick={() => { setCurrent(i); setView('slide'); }}
+                                <button key={i} type="button" onClick={() => {
+ setCurrent(i); setView('slide'); 
+}}
                                     className="relative group aspect-[4/3] overflow-hidden rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <img src={getPhotoUrl(photo)} alt={d || ''} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-300" />
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200" />
@@ -373,21 +416,30 @@ export default function VillaDetailPage({ villa, settings }: Props) {
         : 0;
 
     const totalPrice = React.useMemo(() => {
-        if (!checkIn || !checkOut || nights <= 0 || !villa) return 0;
+        if (!checkIn || !checkOut || nights <= 0 || !villa) {
+return 0;
+}
+
         const days = eachDayOfInterval({
             start: parseISO(checkIn),
             end: new Date(parseISO(checkOut).getTime() - 86400000),
         });
+
         return days.reduce((sum: number, day: Date) => {
             const dow = day.getDay();
             const isWeekend = dow === 5 || dow === 6;
+
             return sum + (isWeekend && villa.weekend_price ? Number(villa.weekend_price) : Number(villa.price_per_night));
         }, 0);
     }, [checkIn, checkOut, nights, villa]);
 
     const formatDate = (d: string) => {
-        if (!d) return null;
+        if (!d) {
+return null;
+}
+
         const dt = new Date(d);
+
         return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     };
 
@@ -399,8 +451,14 @@ export default function VillaDetailPage({ villa, settings }: Props) {
             villa_slug: villa.slug,
             guests: String(guests),
         };
-        if (checkIn) params.checkIn = checkIn;
-        if (checkOut) params.checkOut = checkOut;
+
+        if (checkIn) {
+params.checkIn = checkIn;
+}
+
+        if (checkOut) {
+params.checkOut = checkOut;
+}
 
         if (!auth?.user) {
             // Simpan booking intent ke sessionStorage
@@ -409,6 +467,7 @@ export default function VillaDetailPage({ villa, settings }: Props) {
             const bookingUrl = '/booking/confirm?' + new URLSearchParams(params).toString();
             sessionStorage.setItem('oauth_redirect', bookingUrl);
             router.visit('/login');
+
             return;
         }
 
@@ -424,13 +483,25 @@ export default function VillaDetailPage({ villa, settings }: Props) {
     }, [photos.length]);
 
     useEffect(() => {
-        if (!tourOpen) return;
+        if (!tourOpen) {
+return;
+}
+
         const handler = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setTourOpen(false);
-            if (e.key === 'ArrowLeft') prevPhoto();
-            if (e.key === 'ArrowRight') nextPhoto();
+            if (e.key === 'Escape') {
+setTourOpen(false);
+}
+
+            if (e.key === 'ArrowLeft') {
+prevPhoto();
+}
+
+            if (e.key === 'ArrowRight') {
+nextPhoto();
+}
         };
         window.addEventListener('keydown', handler);
+
         return () => window.removeEventListener('keydown', handler);
     }, [tourOpen, prevPhoto, nextPhoto]);
 
@@ -445,13 +516,17 @@ export default function VillaDetailPage({ villa, settings }: Props) {
                         {/* Desktop: Airbnb-style grid */}
                         <div className="hidden sm:grid grid-cols-4 grid-rows-2 gap-2 h-[420px] lg:h-[500px] rounded-2xl overflow-hidden">
                             {/* Main large photo */}
-                            <button type="button" onClick={() => { setCurrentPhoto(0); setTourOpen(true); }} className="col-span-2 row-span-2 relative overflow-hidden group cursor-pointer">
+                            <button type="button" onClick={() => {
+ setCurrentPhoto(0); setTourOpen(true); 
+}} className="col-span-2 row-span-2 relative overflow-hidden group cursor-pointer">
                                 <img src={getPhotoUrl(photos[0])} alt={villa.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                             </button>
                             {/* 4 smaller photos */}
                             {[1, 2, 3, 4].map(i => (
-                                <button key={i} type="button" onClick={() => { setCurrentPhoto(i); setTourOpen(true); }} className="relative overflow-hidden group cursor-pointer">
+                                <button key={i} type="button" onClick={() => {
+ setCurrentPhoto(i); setTourOpen(true); 
+}} className="relative overflow-hidden group cursor-pointer">
                                     {photos[i] ? (
                                         <>
                                             <img src={getPhotoUrl(photos[i])} alt="" className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-500" />

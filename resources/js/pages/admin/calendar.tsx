@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import { CalendarX, ExternalLink } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface Props {
     villas: { id: number; name: string; slug: string }[];

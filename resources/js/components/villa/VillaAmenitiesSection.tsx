@@ -1,5 +1,5 @@
+import { X } from 'lucide-react';
 import React from 'react';
-import { X, Check } from 'lucide-react';
 import { getIconComponentByKey } from '@/lib/villaIcons';
 
 interface VillaAmenitiesSectionProps {
@@ -22,6 +22,7 @@ export default function VillaAmenitiesSection({ amenities }: VillaAmenitiesSecti
                             const name = typeof amenity === 'string' ? amenity : amenity.name;
                             const icon = typeof amenity === 'string' ? 'Check' : amenity.icon;
                             const IconComponent = getIconComponentByKey(icon);
+
                             return (
                                 <div key={idx} className="flex items-center space-x-3 text-[15px] text-slate-800 font-normal">
                                     <IconComponent className="w-5 h-5 text-slate-700 shrink-0" strokeWidth={1.5} />
@@ -58,6 +59,7 @@ export default function VillaAmenitiesSection({ amenities }: VillaAmenitiesSecti
                                 const name = typeof amenity === 'string' ? amenity : amenity.name;
                                 const icon = typeof amenity === 'string' ? 'Check' : amenity.icon;
                                 const IconComponent = getIconComponentByKey(icon);
+
                                 return (
                                     <div key={idx} className="flex items-center space-x-3.5 text-[15px] text-slate-800 font-normal border-b border-slate-100 pb-3">
                                         <IconComponent className="w-5 h-5 text-slate-700 shrink-0" strokeWidth={1.5} />

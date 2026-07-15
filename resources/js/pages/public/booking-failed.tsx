@@ -1,7 +1,7 @@
-import React from 'react';
 import { Head, Link } from '@inertiajs/react';
-import type { Booking, AppSettings } from '@/types';
 import { XCircle } from 'lucide-react';
+import React from 'react';
+import type { Booking, AppSettings } from '@/types';
 
 interface Props {
     booking: Booking | null;

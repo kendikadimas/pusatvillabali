@@ -1,7 +1,7 @@
-import React from 'react';
 import { usePage } from '@inertiajs/react';
-import PublicHeader from '@/components/public/public-header';
+import React from 'react';
 import PublicFooter from '@/components/public/public-footer';
+import PublicHeader from '@/components/public/public-header';
 import type { AppSettings } from '@/types';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {

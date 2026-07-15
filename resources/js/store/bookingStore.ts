@@ -1,7 +1,7 @@
+import { differenceInDays, parseISO, eachDayOfInterval } from 'date-fns';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Villa } from '@/types/index';
-import { differenceInDays, parseISO, eachDayOfInterval } from 'date-fns';
 
 interface BookingState {
     selectedVilla: Villa | null;
@@ -64,6 +64,7 @@ export const useBookingStore = create<BookingState>()(
                             weekends: { count: 0, price: 0, total: 0 },
                         },
                     });
+
                     return;
                 }
 
@@ -80,6 +81,7 @@ export const useBookingStore = create<BookingState>()(
                             weekends: { count: 0, price: 0, total: 0 },
                         },
                     });
+
                     return;
                 }
 
@@ -91,6 +93,7 @@ export const useBookingStore = create<BookingState>()(
 
                 days.forEach(day => {
                     const dow = day.getDay();
+
                     if (weekendDays.includes(dow)) {
                         weekendCount++;
                     } else {

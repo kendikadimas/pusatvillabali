@@ -1,44 +1,48 @@
-import React, { useEffect, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
-import { Spinner } from '@/components/ui/spinner';
 import axios from 'axios';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function AuthCallback() {
     const { url } = usePage();
     const searchParams = new URLSearchParams(url.split('?')[1] || '');
     const code = searchParams.get('code');
     const errorMsg = searchParams.get('error');
-    const [error, setError] = useState<string | null>(null);
+    const initialError = useMemo(() => errorMsg ? decodeURIComponent(errorMsg) : null, [errorMsg]);
+    const [error, setError] = useState<string | null>(initialError);
 
     useEffect(() => {
-        if (errorMsg) {
-            setError(decodeURIComponent(errorMsg));
+        if (errorMsg || !code) {
             return;
         }
 
-        if (code) {
-            // Exchange one-time code for a Sanctum Bearer token
-            axios.post('/auth/exchange-code', { code })
-                .then((res) => {
-                    const token = res.data.token;
-                    if (token) {
-                        localStorage.setItem('sanctum_token', token);
-                        // Store user info for Inertia shared props fallback
-                        if (res.data.user) {
-                            localStorage.setItem('auth_user', JSON.stringify(res.data.user));
-                        }
+        // Exchange one-time code for a Sanctum Bearer token
+        axios.post('/auth/exchange-code', { code })
+            .then((res) => {
+                const token = res.data.token;
+
+                if (token) {
+                    localStorage.setItem('sanctum_token', token);
+
+                    // Store user info for Inertia shared props fallback
+                    if (res.data.user) {
+                        localStorage.setItem('auth_user', JSON.stringify(res.data.user));
                     }
-                    const redirectTo = sessionStorage.getItem('oauth_redirect') || '/profile';
-                    sessionStorage.removeItem('oauth_redirect');
-                    router.visit(redirectTo, { replace: true });
-                })
-                .catch(() => {
-                    setError('Gagal menukar kode otorisasi. Silakan coba login kembali.');
-                });
-        } else {
-            setError('Kode otorisasi tidak ditemukan. Silakan coba lagi.');
-        }
+                }
+
+                const redirectTo = sessionStorage.getItem('oauth_redirect') || '/profile';
+                sessionStorage.removeItem('oauth_redirect');
+                router.visit(redirectTo, { replace: true });
+            })
+            .catch(() => {
+                setError('Gagal menukar kode otorisasi. Silakan coba login kembali.');
+            });
     }, [code, errorMsg]);
+
+    // Set error for missing code on mount (not in effect)
+    if (!errorMsg && !code && !error) {
+        setError('Kode otorisasi tidak ditemukan. Silakan coba lagi.');
+    }
 
     return (
         <div className="flex min-h-dvh items-center justify-center bg-white">

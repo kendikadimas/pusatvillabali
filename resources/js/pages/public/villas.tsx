@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
-import type { Villa, AppSettings, PaginatedData } from '@/types';
+import { Head, router } from '@inertiajs/react';
+import { SlidersHorizontal, X, Search } from 'lucide-react';
+import React, { useState } from 'react';
 import VillaCard from '@/components/public/villa-card';
-import { SlidersHorizontal, X, Search, MapPin, BedDouble, Users, ArrowRight } from 'lucide-react';
-import { formatPrice } from '@/lib/format';
+import type { Villa, AppSettings, PaginatedData } from '@/types';
 
 interface Filters {
     location?: string;
@@ -24,10 +23,14 @@ interface Props {
     settings: AppSettings;
 }
 
-export default function VillasPage({ villas, filters, settings }: Props) {
+export default function VillasPage({ villas, filters, settings: _settings }: Props) {
     const [showFilters, setShowFilters] = useState(false);
     const [wishlist, setWishlist] = useState<number[]>(() => {
-        try { return JSON.parse(localStorage.getItem('wishlist') ?? '[]'); } catch { return []; }
+        try {
+ return JSON.parse(localStorage.getItem('wishlist') ?? '[]'); 
+} catch {
+ return []; 
+}
     });
 
     // Local filter state
@@ -44,19 +47,42 @@ export default function VillasPage({ villas, filters, settings }: Props) {
         setWishlist((prev) => {
             const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
             localStorage.setItem('wishlist', JSON.stringify(next));
+
             return next;
         });
     };
 
     const applyFilters = () => {
         const params: Record<string, string> = {};
-        if (locationInput) params.location = locationInput;
-        if (filters.checkIn) params.checkIn = filters.checkIn;
-        if (filters.checkOut) params.checkOut = filters.checkOut;
-        if (bedrooms) params.bedrooms = bedrooms;
-        if (guests) params.guests = guests;
-        if (minPrice) params.min_price = minPrice;
-        if (maxPrice) params.max_price = maxPrice;
+
+        if (locationInput) {
+params.location = locationInput;
+}
+
+        if (filters.checkIn) {
+params.checkIn = filters.checkIn;
+}
+
+        if (filters.checkOut) {
+params.checkOut = filters.checkOut;
+}
+
+        if (bedrooms) {
+params.bedrooms = bedrooms;
+}
+
+        if (guests) {
+params.guests = guests;
+}
+
+        if (minPrice) {
+params.min_price = minPrice;
+}
+
+        if (maxPrice) {
+params.max_price = maxPrice;
+}
+
         params.sortBy = sortBy;
         params.sortOrder = sortOrder;
         router.get('/villas', params, { preserveScroll: true });

@@ -1,8 +1,8 @@
+import { addMonths } from 'date-fns';
+import { id as localeID } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 import { DayPicker, UI, DayFlag, SelectionState } from 'react-day-picker';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { id as localeID } from 'date-fns/locale';
-import { addMonths } from 'date-fns';
 import 'react-day-picker/style.css';
 
 interface VillaCalendarSectionProps {

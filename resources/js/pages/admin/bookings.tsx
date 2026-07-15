@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import type { Booking, PaginatedData, Villa } from '@/types';
-import { formatPrice } from '@/lib/format';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import { Search, ExternalLink, Eye } from 'lucide-react';
+import React, { useState } from 'react';
+import { formatPrice } from '@/lib/format';
+import type { Booking, PaginatedData } from '@/types';
 
 interface Props {
     bookings: PaginatedData<Booking>;
@@ -40,14 +40,21 @@ const paymentLabels: Record<string, string> = {
     expired: 'Kadaluarsa',
 };
 
-export default function AdminBookingsPage({ bookings, villas }: Props) {
+export default function AdminBookingsPage({ bookings, villas: _villas }: Props) {
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
 
     const handleFilter = () => {
         const params: Record<string, string> = {};
-        if (search) params.search = search;
-        if (statusFilter) params.status = statusFilter;
+
+        if (search) {
+params.search = search;
+}
+
+        if (statusFilter) {
+params.status = statusFilter;
+}
+
         router.get('/admin/bookings', params, { preserveScroll: true });
     };
 
@@ -76,7 +83,9 @@ export default function AdminBookingsPage({ bookings, villas }: Props) {
                     </div>
                     <select
                         value={statusFilter}
-                        onChange={(e) => { setStatusFilter(e.target.value); }}
+                        onChange={(e) => {
+ setStatusFilter(e.target.value); 
+}}
                         className="text-sm border border-slate-200 bg-white rounded-lg px-3 py-2 outline-none text-slate-700"
                     >
                         <option value="">Semua Status</option>
@@ -201,8 +210,15 @@ export default function AdminBookingsPage({ bookings, villas }: Props) {
                                         key={page}
                                         onClick={() => {
                                             const params: Record<string, string> = { page: String(page) };
-                                            if (search) params.search = search;
-                                            if (statusFilter) params.status = statusFilter;
+
+                                            if (search) {
+params.search = search;
+}
+
+                                            if (statusFilter) {
+params.status = statusFilter;
+}
+
                                             router.get('/admin/bookings', params, { preserveScroll: true });
                                         }}
                                         className={`w-7 h-7 rounded text-xs font-medium ${

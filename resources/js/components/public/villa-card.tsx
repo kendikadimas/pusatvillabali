@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
 import { Link } from '@inertiajs/react';
 import { Star, Heart, ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
-import type { Villa } from '@/types';
-import { getPhotoUrl } from '@/lib/villaUtils';
+import React, { useState, useRef } from 'react';
 import { formatPrice } from '@/lib/format';
+import { getPhotoUrl } from '@/lib/villaUtils';
+import type { Villa } from '@/types';
 
 export interface VillaCardProps {
     villa: Villa;
@@ -24,7 +24,7 @@ export default function VillaCard({
     wishlist = [],
     toggleWishlist,
     searchParams = {},
-    variant = 'home',
+    variant: _variant = 'home',
     onMouseEnter,
     onMouseLeave,
     onClick,
@@ -97,12 +97,20 @@ export default function VillaCard({
                             touchStartX.current = e.touches[0].clientX;
                         }}
                         onTouchEnd={(e) => {
-                            if (touchStartX.current === null) return;
+                            if (touchStartX.current === null) {
+return;
+}
+
                             const delta = e.changedTouches[0].clientX - touchStartX.current;
+
                             if (Math.abs(delta) > 40) {
-                                if (delta < 0) handleNext(e as unknown as React.MouseEvent);
-                                else handlePrev(e as unknown as React.MouseEvent);
+                                if (delta < 0) {
+handleNext(e as unknown as React.MouseEvent);
+} else {
+handlePrev(e as unknown as React.MouseEvent);
+}
                             }
+
                             touchStartX.current = null;
                         }}
                     />

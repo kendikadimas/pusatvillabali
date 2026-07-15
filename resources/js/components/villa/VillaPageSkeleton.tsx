@@ -1,5 +1,5 @@
-import React from 'react';
 import { Share2, Heart } from 'lucide-react';
+import React from 'react';
 
 interface VillaPageSkeletonProps {
     villa: { name: string; location: string; slug: string };
@@ -12,8 +12,8 @@ interface VillaPageSkeletonProps {
 }
 
 export default function VillaPageSkeleton({
-    villa, isSaved, activeSection,
-    onShare, onToggleWishlist, onScrollToSection, children
+    villa, isSaved, activeSection: _activeSection,
+    onShare, onToggleWishlist, onScrollToSection: _onScrollToSection, children
 }: VillaPageSkeletonProps) {
     return (
         <div className="flex-1 flex flex-col bg-white text-slate-900 font-sans antialiased pt-5">

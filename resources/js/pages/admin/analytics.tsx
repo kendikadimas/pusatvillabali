@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
+import { Download, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
-import { Download, RefreshCw } from 'lucide-react';
 
 interface DailyRevenue {
     date: string;
@@ -47,6 +47,7 @@ function todayStr() {
 function daysAgo(n: number) {
     const d = new Date();
     d.setDate(d.getDate() - n);
+
     return d.toISOString().slice(0, 10);
 }
 
@@ -56,9 +57,11 @@ export default function AdminAnalyticsPage() {
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(false);
     const [exporting, setExporting] = useState(false);
+    const fetchedRef = React.useRef(false);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
+
         try {
             const res = await axios.get('/api/v1/admin/analytics', { params: { from, to } });
             setData(res.data);
@@ -70,11 +73,15 @@ export default function AdminAnalyticsPage() {
     }, [from, to]);
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (!fetchedRef.current) {
+            fetchedRef.current = true;
+            fetchData();
+        }
+    }, [fetchData]);
 
     const handleExport = async () => {
         setExporting(true);
+
         try {
             const res = await axios.get('/api/v1/admin/analytics/export', {
                 params: { from, to },
@@ -103,17 +110,21 @@ export default function AdminAnalyticsPage() {
 
     // Group daily_revenue by month for the table
     const byMonth: Record<string, { month: string; bookings: number; revenue: number }> = {};
+
     if (data) {
         data.daily_revenue.forEach((d) => {
             const month = d.date.slice(0, 7); // YYYY-MM
+
             if (!byMonth[month]) {
                 byMonth[month] = { month, bookings: 0, revenue: 0 };
             }
+
             byMonth[month].revenue += parseFloat(d.revenue);
         });
         // Attach booking counts from funnel total spread across months (best effort: count days)
         // We just show revenue per month from daily data
     }
+
     const monthRows = Object.values(byMonth).sort((a, b) => a.month.localeCompare(b.month));
 
     return (
@@ -172,7 +183,9 @@ export default function AdminAnalyticsPage() {
                         ].map(({ label, days }) => (
                             <button
                                 key={days}
-                                onClick={() => { setFrom(daysAgo(days)); setTo(todayStr()); }}
+                                onClick={() => {
+ setFrom(daysAgo(days)); setTo(todayStr()); 
+}}
                                 className="text-xs text-slate-500 hover:text-blue-600 border border-slate-200 hover:border-blue-300 px-3 py-1.5 rounded-lg transition-colors"
                             >
                                 {label}
@@ -233,6 +246,7 @@ export default function AdminAnalyticsPage() {
                                         .map((v) => {
                                             const max = Math.max(...data.bookings_per_villa.map((x) => x.bookings_count));
                                             const pct = max > 0 ? (v.bookings_count / max) * 100 : 0;
+
                                             return (
                                                 <div key={v.villa_name} className="flex items-center gap-3">
                                                     <p className="text-sm text-slate-700 w-40 truncate shrink-0">{v.villa_name}</p>

@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import type { Villa, Destination, PaginatedData } from '@/types';
+import axios from 'axios';
+import { Plus, Edit, Trash2, Search, Star, Eye, EyeOff } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
 import { getPhotoUrl } from '@/lib/villaUtils';
-import { Plus, Edit, Trash2, Search, Star, Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
-import { toast } from 'sonner';
+import type { Villa, Destination, PaginatedData } from '@/types';
 
 interface Props {
     villas: PaginatedData<Villa>;
     destinations: Destination[];
 }
 
-export default function AdminVillasPage({ villas, destinations }: Props) {
+export default function AdminVillasPage({ villas, destinations: _destinations }: Props) {
     const [search, setSearch] = useState('');
     const [deleting, setDeleting] = useState<number | null>(null);
 
@@ -22,8 +22,12 @@ export default function AdminVillasPage({ villas, destinations }: Props) {
     };
 
     const handleDelete = async (id: number, name: string) => {
-        if (!confirm(`Hapus villa "${name}"? Tindakan ini tidak bisa dibatalkan.`)) return;
+        if (!confirm(`Hapus villa "${name}"? Tindakan ini tidak bisa dibatalkan.`)) {
+return;
+}
+
         setDeleting(id);
+
         try {
             await axios.delete(`/api/v1/admin/villas/${id}`);
             toast.success('Villa berhasil dihapus');

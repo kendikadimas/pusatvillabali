@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
-import { ChevronLeft, X, Search, User } from 'lucide-react';
-import { DayPicker } from 'react-day-picker';
-import { id } from 'date-fns/locale';
 import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
+import { ChevronLeft, X, Search, User } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { DayPicker } from 'react-day-picker';
 import type { DateRange } from 'react-day-picker';
 import type { AppSettings } from '@/types';
 import 'react-day-picker/style.css';
@@ -17,7 +17,6 @@ interface PublicHeaderProps {
 }
 
 export default function PublicHeader({
-    headerSolid = true,
     fixed = false,
     showBackButton = false,
     onBackClick,
@@ -35,9 +34,8 @@ export default function PublicHeader({
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
     const [searchGuests, setSearchGuests] = useState(2);
     const pillRef = useRef<HTMLDivElement>(null);
-    const appName = settings?.settings_prop_name ?? 'PusatVilla.id';
+    const appName = settings?.settings_prop_name ?? 'PusatVillaBali';
     const currentUrl = typeof window !== 'undefined' ? window.location.pathname : '';
-    const isHome = currentUrl === '/';
 
     const searchCheckIn = dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : '';
     const searchCheckOut = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : '';
@@ -52,25 +50,42 @@ export default function PublicHeader({
             }
         };
         document.addEventListener('mousedown', handler);
+
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
     // Close on Escape
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') { setSearchExpanded(false); setActiveSegment(null); }
+            if (e.key === 'Escape') {
+ setSearchExpanded(false); setActiveSegment(null); 
+}
         };
         window.addEventListener('keydown', handler);
+
         return () => window.removeEventListener('keydown', handler);
     }, []);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         const params: Record<string, string> = {};
-        if (searchWhere.trim()) params.search = searchWhere.trim();
-        if (searchCheckIn) params.checkIn = searchCheckIn;
-        if (searchCheckOut) params.checkOut = searchCheckOut;
-        if (searchGuests > 0) params.guests = String(searchGuests);
+
+        if (searchWhere.trim()) {
+params.search = searchWhere.trim();
+}
+
+        if (searchCheckIn) {
+params.checkIn = searchCheckIn;
+}
+
+        if (searchCheckOut) {
+params.checkOut = searchCheckOut;
+}
+
+        if (searchGuests > 0) {
+params.guests = String(searchGuests);
+}
+
         router.get('/villas', params);
         setSearchExpanded(false);
         setActiveSegment(null);
@@ -80,13 +95,6 @@ export default function PublicHeader({
     const segmentActive = 'bg-white shadow-md';
     const segmentHover = 'hover:bg-slate-100';
 
-    const whereLabel = searchWhere || 'Ke mana saja';
-    const checkInLabel = dateRange?.from
-        ? format(dateRange.from, 'd MMM', { locale: id })
-        : 'Check-in';
-    const checkOutLabel = dateRange?.to
-        ? format(dateRange.to, 'd MMM', { locale: id })
-        : 'Check-out';
     const dateLabel = dateRange?.from
         ? `${format(dateRange.from, 'd MMM', { locale: id })}${dateRange.to ? ` – ${format(dateRange.to, 'd MMM', { locale: id })}` : ''}`
         : 'Kapan saja';
@@ -98,7 +106,9 @@ export default function PublicHeader({
             {searchExpanded && (
                 <div
                     className="fixed inset-0 bg-black/20 z-40"
-                    onClick={() => { setSearchExpanded(false); setActiveSegment(null); }}
+                    onClick={() => {
+ setSearchExpanded(false); setActiveSegment(null); 
+}}
                 />
             )}
 
@@ -131,7 +141,9 @@ export default function PublicHeader({
                         {/* Collapsed pill */}
                         {!searchExpanded ? (
                             <button
-                                onClick={() => { setSearchExpanded(true); setActiveSegment('where'); }}
+                                onClick={() => {
+ setSearchExpanded(true); setActiveSegment('where'); 
+}}
                                 className="w-full flex items-center border border-slate-200 rounded-full shadow-sm hover:shadow-md transition-shadow bg-white group overflow-hidden"
                             >
                                 {/* Ke mana saja */}
@@ -206,6 +218,7 @@ export default function PublicHeader({
                                                 selected={dateRange}
                                                 onSelect={(range) => {
                                                     setDateRange(range);
+
                                                     if (range?.from && range?.to) {
                                                         setActiveSegment('guests');
                                                     }
@@ -249,13 +262,17 @@ export default function PublicHeader({
                                         <div className="flex items-center gap-1.5">
                                             <button
                                                 type="button"
-                                                onClick={e => { e.stopPropagation(); setSearchGuests(g => Math.max(1, g - 1)); }}
+                                                onClick={e => {
+ e.stopPropagation(); setSearchGuests(g => Math.max(1, g - 1)); 
+}}
                                                 className="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 hover:border-slate-500 text-xs font-bold"
                                             >−</button>
                                             <span className="text-sm font-semibold text-slate-800 w-4 text-center">{searchGuests}</span>
                                             <button
                                                 type="button"
-                                                onClick={e => { e.stopPropagation(); setSearchGuests(g => Math.min(20, g + 1)); }}
+                                                onClick={e => {
+ e.stopPropagation(); setSearchGuests(g => Math.min(20, g + 1)); 
+}}
                                                 className="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 hover:border-slate-500 text-xs font-bold"
                                             >+</button>
                                         </div>

@@ -1,8 +1,8 @@
-﻿import React, { useRef } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
-import type { Villa, Destination, AppSettings } from '@/types';
-import VillaCard from '@/components/public/villa-card';
+﻿import { Head, Link, router } from '@inertiajs/react';
 import { MapPin, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import React, { useRef } from 'react';
+import VillaCard from '@/components/public/villa-card';
+import type { Villa, Destination, AppSettings } from '@/types';
 
 interface Props {
     villas: Villa[];
@@ -40,12 +40,17 @@ function HScrollSection({ title, query, villas }: { title: string; query: string
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const scroll = (dir: 'left' | 'right') => {
-        if (!scrollRef.current) return;
+        if (!scrollRef.current) {
+return;
+}
+
         const amount = scrollRef.current.clientWidth * 0.75;
         scrollRef.current.scrollBy({ left: dir === 'right' ? amount : -amount, behavior: 'smooth' });
     };
 
-    if (villas.length === 0) return null;
+    if (villas.length === 0) {
+return null;
+}
 
     return (
         <section className="py-6">
@@ -105,7 +110,10 @@ export default function Home({ villas, destinations, settings }: Props) {
     const destScrollRef = useRef<HTMLDivElement>(null);
 
     const scrollDest = (dir: 'left' | 'right') => {
-        if (!destScrollRef.current) return;
+        if (!destScrollRef.current) {
+return;
+}
+
         destScrollRef.current.scrollBy({ left: dir === 'right' ? 240 : -240, behavior: 'smooth' });
     };
 

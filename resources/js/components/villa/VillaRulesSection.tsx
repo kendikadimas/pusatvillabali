@@ -1,5 +1,5 @@
-import React from 'react';
 import { Check, X } from 'lucide-react';
+import React from 'react';
 
 interface VillaRulesSectionProps {
     rules: string | null;
@@ -8,7 +8,7 @@ interface VillaRulesSectionProps {
     maxGuests: number;
 }
 
-export default function VillaRulesSection({ rules, safetyList, cancellationPolicy, maxGuests }: VillaRulesSectionProps) {
+export default function VillaRulesSection({ rules, safetyList, cancellationPolicy, maxGuests: _maxGuests }: VillaRulesSectionProps) {
     const rulesList = rules ? rules.split('\n').filter(r => r.trim()) : [];
     const visibleColumns = [
         { show: rulesList.length > 0, key: 'rules' },
@@ -46,6 +46,7 @@ export default function VillaRulesSection({ rules, safetyList, cancellationPolic
                         <div className="space-y-2.5 text-slate-600 font-medium leading-relaxed">
                             {safetyList.map((safety, idx) => {
                                 const isNotReported = safety.toLowerCase().includes('tidak dilaporkan') || safety.toLowerCase().includes('tidak ada');
+
                                 return (
                                     <div key={idx} className="flex items-start space-x-2">
                                         {isNotReported

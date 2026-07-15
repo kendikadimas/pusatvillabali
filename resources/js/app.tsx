@@ -1,13 +1,13 @@
 import { createInertiaApp } from '@inertiajs/react';
+import axios from 'axios';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
+import AdminLayout from '@/layouts/admin-layout';
 import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
 import PublicLayout from '@/layouts/public-layout';
-import AdminLayout from '@/layouts/admin-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import axios from 'axios';
 
 // Base axios config
 axios.defaults.withCredentials = true;
@@ -17,10 +17,12 @@ axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // Attach Sanctum Bearer token from localStorage on every request
 axios.interceptors.request.use((config) => {
     const token = localStorage.getItem('sanctum_token');
+
     if (token) {
         config.headers = config.headers ?? {};
         config.headers['Authorization'] = `Bearer ${token}`;
     }
+
     return config;
 });
 

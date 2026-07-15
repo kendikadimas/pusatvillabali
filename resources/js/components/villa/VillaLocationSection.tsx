@@ -1,5 +1,5 @@
-import React from 'react';
 import { MapPin, ArrowRight } from 'lucide-react';
+import React from 'react';
 
 interface VillaLocationSectionProps {
     mapsUrl: string | null | undefined;
@@ -10,11 +10,15 @@ interface VillaLocationSectionProps {
 export default function VillaLocationSection({ mapsUrl, location, neighborhoodDesc }: VillaLocationSectionProps) {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
-    if (!mapsUrl) return null;
+    if (!mapsUrl) {
+return null;
+}
 
     let cleanMapsUrl = mapsUrl || '';
+
     if (cleanMapsUrl.includes('<iframe')) {
         const match = cleanMapsUrl.match(/src=["']([^"']+)["']/);
+
         if (match && match[1]) {
             cleanMapsUrl = match[1];
         }

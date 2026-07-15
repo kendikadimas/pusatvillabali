@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import type { Booking, Review, AppSettings } from '@/types';
-import { Star } from 'lucide-react';
 import axios from 'axios';
+import { Star } from 'lucide-react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
+import type { Booking, Review, AppSettings } from '@/types';
 
 interface Props {
     booking: Booking | null;
@@ -12,7 +12,7 @@ interface Props {
     settings: AppSettings;
 }
 
-export default function BookingReviewPage({ booking, existingReview, token, settings }: Props) {
+export default function BookingReviewPage({ booking, existingReview, token, settings: _settings }: Props) {
     const [rating, setRating] = useState(existingReview?.rating ?? 5);
     const [hovered, setHovered] = useState(0);
     const [comment, setComment] = useState(existingReview?.comment ?? '');
@@ -35,6 +35,7 @@ export default function BookingReviewPage({ booking, existingReview, token, sett
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
+
         try {
             await axios.post(`/api/v1/reviews`, {
                 booking_code: booking.booking_code,

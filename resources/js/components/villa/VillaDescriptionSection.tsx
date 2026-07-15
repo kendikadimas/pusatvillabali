@@ -1,5 +1,5 @@
-import React from 'react';
 import { ChevronDown } from 'lucide-react';
+import React from 'react';
 
 interface VillaDescriptionSectionProps {
     description: string | null;
@@ -9,7 +9,9 @@ interface VillaDescriptionSectionProps {
 export default function VillaDescriptionSection({ description, maxLength = 600 }: VillaDescriptionSectionProps) {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
-    if (!description) return null;
+    if (!description) {
+return null;
+}
 
     const needsTruncation = description.length > maxLength;
     const displayText = needsTruncation && !isExpanded

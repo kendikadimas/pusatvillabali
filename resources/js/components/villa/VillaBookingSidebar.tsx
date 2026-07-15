@@ -1,8 +1,8 @@
-import React from 'react';
-import { ShieldCheck } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
-import type { Villa } from '@/types/index';
+import { ShieldCheck } from 'lucide-react';
+import React from 'react';
 import { formatPrice } from '@/lib/format';
+import type { Villa } from '@/types/index';
 
 interface VillaBookingSidebarProps {
     villa: Villa;

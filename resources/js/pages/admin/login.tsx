@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
+import axios from 'axios';
+import React, { useState } from 'react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import axios from 'axios';
-import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function AdminLoginPage() {
     const [email, setEmail] = useState('');
@@ -18,13 +17,16 @@ export default function AdminLoginPage() {
         e.preventDefault();
         setProcessing(true);
         setErrors({});
+
         try {
             const res = await axios.post('/api/v1/admin/login', { email, password });
             const token = res.data.token ?? res.data.data?.token;
+
             if (token) {
                 localStorage.setItem('admin_token', token);
                 axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             }
+
             router.get('/admin/dashboard');
         } catch (err: any) {
             if (err.response?.data?.errors) {

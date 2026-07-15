@@ -1,10 +1,4 @@
-import React, { useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
-import type { Villa, Destination, BlockedDate } from '@/types';
-import { formatPrice } from '@/lib/format';
-import { getPhotoUrl, normaliseStorageUrl } from '@/lib/villaUtils';
-import { iconCatalog, getIconComponentByKey } from '@/lib/villaIcons';
-import { toast } from 'sonner';
 import axios from 'axios';
 import {
     format,
@@ -28,13 +22,15 @@ import {
     ChevronDown,
     ChevronLeft,
     ChevronRight,
-    Eye,
-    EyeOff,
     Upload,
     Trash2,
     Calendar as CalendarIcon,
-    Home,
 } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import { iconCatalog, getIconComponentByKey } from '@/lib/villaIcons';
+import { getPhotoUrl, normaliseStorageUrl } from '@/lib/villaUtils';
+import type { Villa, Destination, BlockedDate } from '@/types';
 
 interface Props {
     villa: (Villa & { blocked_dates?: BlockedDate[] }) | null;
@@ -50,23 +46,23 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const [formErrors, setFormErrors] = useState<any>({});
 
     // Form fields states
-    const [name, setName] = useState('');
-    const [location, setLocation] = useState('');
-    const [pricePerNight, setPricePerNight] = useState('');
-    const [weekendPrice, setWeekendPrice] = useState('');
-    const [minNights, setMinNights] = useState('1');
-    const [bedrooms, setBedrooms] = useState('1');
-    const [bathrooms, setBathrooms] = useState('1');
-    const [maxGuests, setMaxGuests] = useState('2');
-    const [checkInTime, setCheckInTime] = useState('14:00');
-    const [checkOutTime, setCheckOutTime] = useState('12:00');
-    const [description, setDescription] = useState('');
-    const [shortDesc, setShortDesc] = useState('');
-    const [mapsUrl, setMapsUrl] = useState('');
-    const [rules, setRules] = useState('');
-    const [isActive, setIsActive] = useState(true);
+    const [name, setName] = useState(villa?.name || '');
+    const [location, setLocation] = useState(villa?.location || '');
+    const [pricePerNight, setPricePerNight] = useState(villa?.price_per_night ? String(Number(villa.price_per_night)) : '');
+    const [weekendPrice, setWeekendPrice] = useState(villa?.weekend_price ? String(Number(villa.weekend_price)) : '');
+    const [minNights, setMinNights] = useState(villa?.min_nights ? String(villa.min_nights) : '1');
+    const [bedrooms, setBedrooms] = useState(villa?.bedrooms ? String(villa.bedrooms) : '1');
+    const [bathrooms, setBathrooms] = useState(villa?.bathrooms ? String(villa.bathrooms) : '1');
+    const [maxGuests, setMaxGuests] = useState(villa?.max_guests ? String(villa.max_guests) : '2');
+    const [checkInTime, setCheckInTime] = useState(villa?.check_in_time ? villa.check_in_time.substring(0, 5) : '14:00');
+    const [checkOutTime, setCheckOutTime] = useState(villa?.check_out_time ? villa.check_out_time.substring(0, 5) : '12:00');
+    const [description, setDescription] = useState(villa?.description || '');
+    const [shortDesc, setShortDesc] = useState(villa?.short_desc || '');
+    const [mapsUrl, setMapsUrl] = useState(villa?.maps_url || '');
+    const [rules, setRules] = useState(villa?.rules || '');
+    const [isActive, setIsActive] = useState(villa?.is_active !== false);
 
-    const [destinationId, setDestinationId] = useState('');
+    const [destinationId, setDestinationId] = useState(villa?.destination_id ? String(villa.destination_id) : '');
 
     // Inline new destination form
     const [showNewDestination, setShowNewDestination] = useState(false);
@@ -76,51 +72,51 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const [savingDestination, setSavingDestination] = useState(false);
 
     // Amenities
-    const [selectedAmenities, setSelectedAmenities] = useState<Array<{ name: string; icon: string }>>([]);
+    const [selectedAmenities, setSelectedAmenities] = useState<Array<{ name: string; icon: string }>>(villa?.amenities || []);
     const [newAmenityName, setNewAmenityName] = useState('');
     const [newAmenityIcon, setNewAmenityIcon] = useState('Check');
     const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
     const [iconSearch, setIconSearch] = useState('');
 
-    const [beds, setBeds] = useState('');
-    const [cleaningFee, setCleaningFee] = useState('');
+    const [beds, setBeds] = useState(villa?.beds ? String(villa.beds) : '');
+    const [cleaningFee, setCleaningFee] = useState(villa?.cleaning_fee ? String(Number(villa.cleaning_fee)) : '');
 
     // Highlights
-    const [highlightsList, setHighlightsList] = useState<Array<{ icon: string; title: string; description: string }>>([]);
+    const [highlightsList, setHighlightsList] = useState<Array<{ icon: string; title: string; description: string }>>(villa?.highlights || []);
     const [hlIcon, setHlIcon] = useState('Wind');
     const [hlTitle, setHlTitle] = useState('');
     const [hlDesc, setHlDesc] = useState('');
 
     // Bedrooms Layout
-    const [bedroomsList, setBedroomsList] = useState<Array<{ image: string; title: string; subtext: string }>>([]);
+    const [bedroomsList, setBedroomsList] = useState<Array<{ image: string; title: string; subtext: string }>>(villa?.bedrooms_layout || []);
     const [brImage, setBrImage] = useState('');
     const [brTitle, setBrTitle] = useState('');
     const [brSubtext, setBrSubtext] = useState('');
     const [uploadingBrImage, setUploadingBrImage] = useState(false);
 
     // Host
-    const [hostName, setHostName] = useState('Admin');
-    const [hostYears, setHostYears] = useState(1);
-    const [hostAvatar, setHostAvatar] = useState('');
+    const [hostName, setHostName] = useState(villa?.host_name || 'Admin');
+    const [hostYears, setHostYears] = useState(villa?.host_years || 1);
+    const [hostAvatar, setHostAvatar] = useState(villa?.host_avatar ? normaliseStorageUrl(villa.host_avatar) : '');
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
-    const [hostJoinedLabel, setHostJoinedLabel] = useState('');
-    const [hostIsVerified, setHostIsVerified] = useState(true);
-    const [hostAboutList, setHostAboutList] = useState<string[]>([]);
+    const [hostJoinedLabel, setHostJoinedLabel] = useState(villa?.host_joined_label || '');
+    const [hostIsVerified, setHostIsVerified] = useState(villa?.host_is_verified !== false);
+    const [hostAboutList, setHostAboutList] = useState<string[]>(villa?.host_about || []);
     const [hostAboutInput, setHostAboutInput] = useState('');
     const [hostPhone, setHostPhone] = useState('');
 
     // Safety and Neighborhood
-    const [safetyList, setSafetyList] = useState<string[]>([]);
+    const [safetyList, setSafetyList] = useState<string[]>(villa?.safety_and_property || []);
     const [safetyInput, setSafetyInput] = useState('');
-    const [neighborhoodDesc, setNeighborhoodDesc] = useState('');
+    const [neighborhoodDesc, setNeighborhoodDesc] = useState(villa?.neighborhood_desc || '');
 
     // Photo states
-    const [photos, setPhotos] = useState<Array<string | { url: string; description: string; category?: string }>>([]);
+    const [photos, setPhotos] = useState<Array<string | { url: string; description: string; category?: string }>>(villa?.photos || []);
     const [uploadingPhotos, setUploadingPhotos] = useState(false);
     const [savingPhotos, setSavingPhotos] = useState(false);
 
     // Blocked Dates states
-    const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
+    const [blockedDates, _setBlockedDates] = useState<BlockedDate[]>(villa?.blocked_dates || []);
     const [blockDateInput, setBlockDateInput] = useState('');
     const [blockReasonInput, setBlockReasonInput] = useState('');
     const [blockingDate, setBlockingDate] = useState(false);
@@ -143,94 +139,27 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const [activeCategoryUpload, setActiveCategoryUpload] = useState<string>('Ruang tamu');
     const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(PHOTO_CATEGORIES));
 
-    // Sync from prop
-    useEffect(() => {
-        if (villa) {
-            setName(villa.name || '');
-            setLocation(villa.location || '');
-            setDestinationId(villa.destination_id ? String(villa.destination_id) : '');
-            setPricePerNight(villa.price_per_night ? String(Number(villa.price_per_night)) : '');
-            setWeekendPrice(villa.weekend_price ? String(Number(villa.weekend_price)) : '');
-            setMinNights(villa.min_nights ? String(villa.min_nights) : '1');
-            setBedrooms(villa.bedrooms ? String(villa.bedrooms) : '1');
-            setBathrooms(villa.bathrooms ? String(villa.bathrooms) : '1');
-            setMaxGuests(villa.max_guests ? String(villa.max_guests) : '2');
-            setCheckInTime(villa.check_in_time ? villa.check_in_time.substring(0, 5) : '14:00');
-            setCheckOutTime(villa.check_out_time ? villa.check_out_time.substring(0, 5) : '12:00');
-            setDescription(villa.description || '');
-            setShortDesc(villa.short_desc || '');
-            setMapsUrl(villa.maps_url || '');
-            setRules(villa.rules || '');
-            setIsActive(villa.is_active !== false);
-            setSelectedAmenities(villa.amenities || []);
-            setPhotos(villa.photos || []);
-            setBlockedDates(villa.blocked_dates || []);
-            setHostName(villa.host_name || 'Admin');
-            setHostYears(villa.host_years || 1);
-            setHostAvatar(villa.host_avatar ? normaliseStorageUrl(villa.host_avatar) : '');
-            setHostJoinedLabel(villa.host_joined_label || '');
-            setHostIsVerified(villa.host_is_verified !== false);
-            setHostAboutList(villa.host_about || []);
-            setHostPhone(villa.host_phone || '');
-            setSafetyList(villa.safety_property || []);
-            setNeighborhoodDesc(villa.neighborhood_desc || '');
-            setHighlightsList(villa.highlights || []);
-            setBedroomsList(villa.bedrooms_info || []);
-            setBeds(villa.beds ? String(villa.beds) : '');
-            setCleaningFee(villa.cleaning_fee ? String(Number(villa.cleaning_fee)) : '');
-        } else {
-            setName('');
-            setLocation('');
-            setDestinationId('');
-            setPricePerNight('');
-            setWeekendPrice('');
-            setMinNights('1');
-            setBedrooms('1');
-            setBathrooms('1');
-            setMaxGuests('2');
-            setCheckInTime('14:00');
-            setCheckOutTime('12:00');
-            setDescription('');
-            setShortDesc('');
-            setMapsUrl('');
-            setRules('');
-            setIsActive(true);
-            setSelectedAmenities([]);
-            setPhotos([]);
-            setBlockedDates([]);
-            setHostName('Admin');
-            setHostYears(1);
-            setHostAvatar('');
-            setHostJoinedLabel('');
-            setHostIsVerified(true);
-            setHostAboutList([]);
-            setHostPhone('');
-            setSafetyList([]);
-            setNeighborhoodDesc('');
-            setHighlightsList([]);
-            setBedroomsList([]);
-            setBeds('');
-            setCleaningFee('');
-        }
-    }, [villa]);
-
     const handleCreateDestination = async () => {
         if (!newDestName.trim() || !newDestCity.trim()) {
             toast.error('Nama dan kota destinasi wajib diisi.');
+
             return;
         }
 
         const matchName = destinations.find(d => d.name.toLowerCase() === newDestName.trim().toLowerCase());
+
         if (matchName) {
             toast.info(`"${newDestName.trim()}" sudah tersedia, menggunakan destinasi yang sudah ada.`);
             setDestinationId(String(matchName.id));
             setNewDestName('');
             setNewDestCity('');
             setShowNewDestination(false);
+
             return;
         }
 
         setSavingDestination(true);
+
         try {
             const response = await axios.post('/api/v1/admin/destinations', {
                 name: newDestName.trim(),
@@ -264,8 +193,10 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const addAmenity = () => {
         if (!newAmenityName.trim()) {
             toast.error('Nama fasilitas tidak boleh kosong');
+
             return;
         }
+
         setSelectedAmenities(prev => [...prev, { name: newAmenityName.trim(), icon: newAmenityIcon }]);
         setNewAmenityName('');
         setNewAmenityIcon('Check');
@@ -277,7 +208,10 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
 
     const handleBrImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return;
+
+        if (!file) {
+return;
+}
 
         setUploadingBrImage(true);
         const formData = new FormData();
@@ -299,7 +233,10 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
 
     const handleHostAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return;
+
+        if (!file) {
+return;
+}
 
         setUploadingAvatar(true);
         const formData = new FormData();
@@ -324,22 +261,43 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
 
     const validateForm = () => {
         const errors: any = {};
-        if (!name.trim()) errors.name = 'Nama villa wajib diisi.';
-        if (!location.trim()) errors.location = 'Alamat/lokasi villa wajib diisi.';
-        if (!destinationId) errors.destination_id = 'Destinasi wilayah wajib dipilih.';
+
+        if (!name.trim()) {
+errors.name = 'Nama villa wajib diisi.';
+}
+
+        if (!location.trim()) {
+errors.location = 'Alamat/lokasi villa wajib diisi.';
+}
+
+        if (!destinationId) {
+errors.destination_id = 'Destinasi wilayah wajib dipilih.';
+}
+
         if (!pricePerNight || Number(pricePerNight) <= 0) {
             errors.price_per_night = 'Harga weekday harus lebih besar dari 0.';
         }
-        if (!description.trim()) errors.description = 'Deskripsi villa wajib diisi.';
+
+        if (!description.trim()) {
+errors.description = 'Deskripsi villa wajib diisi.';
+}
+
         if (!shortDesc.trim()) {
             errors.short_desc = 'Deskripsi singkat wajib diisi.';
         } else if (shortDesc.length > 150) {
             errors.short_desc = 'Deskripsi singkat maksimal berisi 150 karakter.';
         }
-        if (!checkInTime) errors.check_in_time = 'Jam check-in wajib diisi.';
-        if (!checkOutTime) errors.check_out_time = 'Jam check-out wajib diisi.';
+
+        if (!checkInTime) {
+errors.check_in_time = 'Jam check-in wajib diisi.';
+}
+
+        if (!checkOutTime) {
+errors.check_out_time = 'Jam check-out wajib diisi.';
+}
 
         setFormErrors(errors);
+
         return Object.keys(errors).length === 0;
     };
 
@@ -348,6 +306,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
         
         if (!validateForm()) {
             toast.error('Silakan periksa kembali isian form Anda.');
+
             return;
         }
 
@@ -398,17 +357,21 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                 const response = await axios.post('/api/v1/admin/villas', payload);
                 toast.success(response.data.message || 'Villa berhasil ditambahkan!');
                 const newId = response.data?.villa?.id;
+
                 if (!newId) {
                     toast.error('Data villa tersimpan, namun ID tidak ditemukan.');
                     router.visit('/admin/villas');
+
                     return;
                 }
+
                 router.visit(`/admin/villas/${newId}/edit`);
             }
         } catch (err: any) {
             console.error('Failed to save villa:', err);
             const errMsg = err.response?.data?.message || 'Gagal menyimpan villa.';
             toast.error(errMsg);
+
             if (err.response?.data?.errors) {
                 setFormErrors(err.response.data.errors);
             }
@@ -421,11 +384,15 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const handlePhotoUploadForCategory = async (e: React.ChangeEvent<HTMLInputElement>, targetCategory: string) => {
         const filesList = e.target.files ? Array.from(e.target.files) : [];
         e.target.value = '';
-        if (filesList.length === 0) return;
+
+        if (filesList.length === 0) {
+return;
+}
 
         setUploadingPhotos(true);
         setActiveCategoryUpload(targetCategory);
         const formData = new FormData();
+
         for (const file of filesList) {
             formData.append('photos[]', file);
         }
@@ -448,11 +415,13 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
             const updatedPhotos = serverPhotos.map(p => {
                 const url = typeof p === 'string' ? p : p.url;
                 const existing = existingCatMap.get(url);
+
                 if (existing) {
                     return typeof p === 'string'
                         ? { url: p, description: '', category: existing }
                         : { ...p, category: existing };
                 }
+
                 return typeof p === 'string'
                     ? { url: p, description: '', category: targetCategory }
                     : { ...p, category: targetCategory };
@@ -469,7 +438,10 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     };
 
     const handleDeletePhoto = async (photoUrl: string) => {
-        if (!confirm('Hapus foto ini dari galeri?')) return;
+        if (!confirm('Hapus foto ini dari galeri?')) {
+return;
+}
+
         try {
             const response = await axios.delete(`/api/v1/admin/villas/${id}/photos`, {
                 data: { photo_url: photoUrl }
@@ -487,11 +459,13 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
         setPhotos(prev => {
             const updated = [...prev];
             const item = updated[index];
+
             if (typeof item === 'string') {
                 updated[index] = { url: item, description: newDesc, category: 'Lainnya' };
             } else {
                 updated[index] = { ...item, description: newDesc };
             }
+
             return updated;
         });
     };
@@ -500,22 +474,26 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
         setPhotos(prev => {
             const updated = [...prev];
             const item = updated[index];
+
             if (typeof item === 'string') {
                 updated[index] = { url: item, description: '', category: newCategory };
             } else {
                 updated[index] = { ...item, category: newCategory };
             }
+
             return updated;
         });
     };
 
     const savePhotoGallery = async () => {
         setSavingPhotos(true);
+
         try {
             const normalizedPhotos = photos.map(photo => {
                 if (typeof photo === 'string') {
                     return { url: photo, description: '', category: 'Lainnya' };
                 }
+
                 return { 
                     url: photo.url, 
                     description: photo.description || '', 
@@ -571,7 +549,13 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const toggleCategoryExpand = (cat: string) => {
         setExpandedCategories(prev => {
             const next = new Set(prev);
-            next.has(cat) ? next.delete(cat) : next.add(cat);
+
+            if (next.has(cat)) {
+                next.delete(cat);
+            } else {
+                next.add(cat);
+            }
+
             return next;
         });
     };
@@ -579,12 +563,15 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     // Block Date methods
     const handleBlockDate = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (!blockDateInput) {
             toast.error('Silakan tentukan tanggal pemblokiran.');
+
             return;
         }
 
         setBlockingDate(true);
+
         try {
             await axios.post('/api/v1/admin/blocked-dates', {
                 villa_id: id,
@@ -606,10 +593,12 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const handleBulkBlock = async (dates: string[], reason: string) => {
         if (dates.length === 0) {
             toast.error('Pilih minimal satu tanggal.');
+
             return;
         }
 
         setBlockingDate(true);
+
         try {
             const promises = dates.map(date =>
                 axios.post('/api/v1/admin/blocked-dates', {
@@ -633,7 +622,10 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     };
 
     const handleUnblockDate = async (blockedDateId: number) => {
-        if (!confirm('Batalkan pemblokiran tanggal ini?')) return;
+        if (!confirm('Batalkan pemblokiran tanggal ini?')) {
+return;
+}
+
         try {
             await axios.delete(`/api/v1/admin/blocked-dates/${blockedDateId}`);
             toast.success('Pemblokiran tanggal berhasil dibatalkan.');
@@ -645,10 +637,16 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     };
 
     const handleBulkUnblock = async (dates: string[]) => {
-        if (dates.length === 0) return;
-        if (!confirm(`Buka kembali ${dates.length} tanggal terpilih?`)) return;
+        if (dates.length === 0) {
+return;
+}
+
+        if (!confirm(`Buka kembali ${dates.length} tanggal terpilih?`)) {
+return;
+}
 
         setBlockingDate(true);
+
         try {
             const recordsToDelete = blockedDates.filter(bd => dates.includes(bd.date));
             const promises = recordsToDelete.map(bd =>
@@ -669,6 +667,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
 
     const handleBlockDateSingle = async (dateStr: string) => {
         setBlockingDate(true);
+
         try {
             await axios.post('/api/v1/admin/blocked-dates', {
                 villa_id: id,
@@ -732,8 +731,10 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                         onClick={() => {
                             if (!isEdit) {
                                 toast.info('Silakan simpan Informasi Dasar terlebih dahulu untuk dapat mengunggah foto.');
+
                                 return;
                             }
+
                             setActiveTab('photos');
                         }}
                         className={`pb-3 border-b-2 transition-colors flex items-center space-x-1 ${
@@ -753,8 +754,10 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                         onClick={() => {
                             if (!isEdit) {
                                 toast.info('Silakan simpan Informasi Dasar terlebih dahulu untuk dapat memblokir tanggal.');
+
                                 return;
                             }
+
                             setActiveTab('blocked_dates');
                         }}
                         className={`pb-3 border-b-2 transition-colors flex items-center space-x-1 ${
@@ -910,13 +913,17 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 value={mapsUrl}
                                                 onChange={(e) => {
                                                     const val = e.target.value;
+
                                                     if (val.includes('<iframe')) {
                                                         const match = val.match(/src=["']([^"']+)["']/);
+
                                                         if (match && match[1]) {
                                                             setMapsUrl(match[1]);
+
                                                             return;
                                                         }
                                                     }
+
                                                     setMapsUrl(val);
                                                 }}
                                                 placeholder="Tempel embed URL src dari Google Maps iframe"
@@ -1088,6 +1095,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                         <div className="flex flex-wrap gap-2 mb-3">
                                             {selectedAmenities.map((amenity, idx) => {
                                                 const IconComp = getIconComponentByKey(amenity.icon);
+
                                                 return (
                                                     <span key={idx} className="flex items-center gap-1.5 bg-slate-55 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700">
                                                         <IconComp className="w-3.5 h-3.5 text-slate-500" />
@@ -1123,6 +1131,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 {(() => {
                                                     const CurrentIcon = getIconComponentByKey(newAmenityIcon);
                                                     const currentItem = iconCatalog.find(i => i.key === newAmenityIcon);
+
                                                     return (
                                                         <span className="flex items-center space-x-2">
                                                             <CurrentIcon className="w-4 h-4 text-slate-650" />
@@ -1135,7 +1144,9 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
 
                                             {isIconPickerOpen && (
                                                 <>
-                                                    <div className="fixed inset-0 z-10" onClick={() => { setIsIconPickerOpen(false); setIconSearch(''); }} />
+                                                    <div className="fixed inset-0 z-10" onClick={() => {
+ setIsIconPickerOpen(false); setIconSearch(''); 
+}} />
                                                     <div className="absolute right-0 mt-1.5 w-64 bg-white border border-slate-200 rounded-xl shadow-xl z-20 p-3 space-y-2">
                                                         <input 
                                                             type="text"
@@ -1151,6 +1162,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                                 .map((item) => {
                                                                     const IconComp = item.component;
                                                                     const isSelected = item.key === newAmenityIcon;
+
                                                                     return (
                                                                         <button
                                                                             key={item.key}
@@ -1310,7 +1322,11 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                  onKeyDown={(e) => {
                                                      if (e.key === 'Enter') {
                                                          e.preventDefault();
-                                                         if (!hostAboutInput.trim()) return;
+
+                                                         if (!hostAboutInput.trim()) {
+return;
+}
+
                                                          setHostAboutList(prev => [...prev, hostAboutInput.trim()]);
                                                         setHostAboutInput('');
                                                     }
@@ -1318,7 +1334,13 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                             />
                                             <button 
                                                 type="button" 
-                                                onClick={() => { if (!hostAboutInput.trim()) return; setHostAboutList(prev => [...prev, hostAboutInput.trim()]); setHostAboutInput(''); }} 
+                                                onClick={() => {
+ if (!hostAboutInput.trim()) {
+return;
+}
+
+ setHostAboutList(prev => [...prev, hostAboutInput.trim()]); setHostAboutInput(''); 
+}} 
                                                 className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-4 py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer"
                                             >
                                                 <Plus className="w-3.5 h-3.5" />
@@ -1377,7 +1399,12 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                             <button 
                                                 type="button" 
                                                 onClick={() => { 
-                                                    if (!hlTitle.trim() || !hlDesc.trim()) { toast.error('Judul dan Deskripsi wajib diisi.'); return; } 
+                                                    if (!hlTitle.trim() || !hlDesc.trim()) {
+ toast.error('Judul dan Deskripsi wajib diisi.');
+
+ return; 
+}
+ 
                                                     setHighlightsList(prev => [...prev, { icon: hlIcon, title: hlTitle, description: hlDesc }]); 
                                                     setHlTitle(''); 
                                                     setHlDesc(''); 
@@ -1475,7 +1502,12 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                             <button 
                                                 type="button" 
                                                 onClick={() => { 
-                                                    if (!brImage.trim() || !brTitle.trim() || !brSubtext.trim()) { toast.error('Semua field kamar tidur wajib diisi.'); return; } 
+                                                    if (!brImage.trim() || !brTitle.trim() || !brSubtext.trim()) {
+ toast.error('Semua field kamar tidur wajib diisi.');
+
+ return; 
+}
+ 
                                                     setBedroomsList(prev => [...prev, { image: brImage, title: brTitle, subtext: brSubtext }]); 
                                                     setBrImage(''); 
                                                     setBrTitle(''); 
@@ -1518,7 +1550,11 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                  onKeyDown={(e) => {
                                                      if (e.key === 'Enter') {
                                                          e.preventDefault();
-                                                         if (!safetyInput.trim()) return;
+
+                                                         if (!safetyInput.trim()) {
+return;
+}
+
                                                          setSafetyList(prev => [...prev, safetyInput.trim()]);
                                                         setSafetyInput('');
                                                     }
@@ -1526,7 +1562,13 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                             />
                                             <button 
                                                 type="button" 
-                                                onClick={() => { if (!safetyInput.trim()) return; setSafetyList(prev => [...prev, safetyInput.trim()]); setSafetyInput(''); }} 
+                                                onClick={() => {
+ if (!safetyInput.trim()) {
+return;
+}
+
+ setSafetyList(prev => [...prev, safetyInput.trim()]); setSafetyInput(''); 
+}} 
                                                 className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-4 py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer"
                                             >
                                                 <Plus className="w-3.5 h-3.5" />
@@ -1600,6 +1642,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                         .map((p, i) => ({ photo: p, index: i }))
                                         .filter(({ photo }) => {
                                             const category = typeof photo === 'string' ? 'Lainnya' : (photo.category || 'Lainnya');
+
                                             return category === cat;
                                         });
                                     const isExpanded = expandedCategories.has(cat);
@@ -1776,6 +1819,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                             if (day === null) {
                                                 return <div key={`pad-${idx}`} className="h-12 bg-slate-50/50 rounded-xl border border-slate-100" />;
                                             }
+
                                             const dateStr = format(day, 'yyyy-MM-dd');
                                             const dayNum = format(day, 'd');
                                             const isToday = isSameDay(day, new Date());
@@ -1786,6 +1830,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
 
                                             let cellBg = 'bg-white hover:bg-slate-55 border-slate-200';
                                             let textColor = 'text-slate-800';
+
                                             if (isBlocked) {
                                                 cellBg = 'bg-slate-800 border-slate-800';
                                                 textColor = 'text-white';
@@ -1793,6 +1838,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                 cellBg = 'bg-slate-50/50 border-slate-100 cursor-not-allowed opacity-50';
                                                 textColor = 'text-slate-300';
                                             }
+
                                             if (isSelected && !isBlocked) {
                                                 cellBg = 'bg-blue-600 border-blue-600';
                                                 textColor = 'text-white';
@@ -1803,15 +1849,22 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                                                     key={dateStr}
                                                     type="button"
                                                     onClick={() => {
-                                                        if (isPast && !isBlocked) return;
+                                                        if (isPast && !isBlocked) {
+return;
+}
+
                                                         if (isBlocked && !isBulkMode) {
                                                             handleUnblockDate(blockRecord.id);
+
                                                             return;
                                                         }
+
                                                         if (isBlocked && isBulkMode) {
                                                             toast.info('Tanggal yang sudah diblokir tidak dapat dipilih.');
+
                                                             return;
                                                         }
+
                                                         if (isBulkMode) {
                                                             setBulkSelectedDates(prev =>
                                                                 prev.includes(dateStr)

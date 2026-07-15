@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
-import type { Destination } from '@/types';
-import { Plus, Edit, Trash2 } from 'lucide-react';
 import axios from 'axios';
+import { Plus, Edit, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
+import type { Destination } from '@/types';
 
 interface Props {
     destinations: (Destination & { villas_count?: number })[];
@@ -15,12 +15,17 @@ export default function AdminDestinationsPage({ destinations }: Props) {
     const [form, setForm] = useState({ name: '', city: '', query: '', image: '', count_fallback: '' });
     const [saving, setSaving] = useState(false);
 
-    const openNew = () => { setEditing(null); setForm({ name: '', city: '', query: '', image: '', count_fallback: '' }); setShowForm(true); };
-    const openEdit = (d: Destination) => { setEditing(d); setForm({ name: d.name, city: d.city, query: d.query, image: d.image, count_fallback: d.count_fallback ?? '' }); setShowForm(true); };
+    const openNew = () => {
+ setEditing(null); setForm({ name: '', city: '', query: '', image: '', count_fallback: '' }); setShowForm(true); 
+};
+    const openEdit = (d: Destination) => {
+ setEditing(d); setForm({ name: d.name, city: d.city, query: d.query, image: d.image, count_fallback: d.count_fallback ?? '' }); setShowForm(true); 
+};
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
+
         try {
             if (editing) {
                 await axios.put(`/api/v1/admin/destinations/${editing.id}`, form);
@@ -29,6 +34,7 @@ export default function AdminDestinationsPage({ destinations }: Props) {
                 await axios.post('/api/v1/admin/destinations', form);
                 toast.success('Destinasi ditambahkan');
             }
+
             setShowForm(false);
             router.reload();
         } catch (err: any) {
@@ -39,12 +45,17 @@ export default function AdminDestinationsPage({ destinations }: Props) {
     };
 
     const handleDelete = async (id: number, name: string) => {
-        if (!confirm(`Hapus destinasi "${name}"?`)) return;
+        if (!confirm(`Hapus destinasi "${name}"?`)) {
+return;
+}
+
         try {
             await axios.delete(`/api/v1/admin/destinations/${id}`);
             toast.success('Destinasi dihapus');
             router.reload();
-        } catch { toast.error('Gagal menghapus'); }
+        } catch {
+ toast.error('Gagal menghapus'); 
+}
     };
 
     return (
@@ -101,7 +112,9 @@ export default function AdminDestinationsPage({ destinations }: Props) {
                     {destinations.map((d) => (
                         <div key={d.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
                             <div className="h-36 bg-slate-100 overflow-hidden">
-                                <img src={d.image} alt={d.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&q=80'; }} />
+                                <img src={d.image} alt={d.name} className="w-full h-full object-cover" onError={(e) => {
+ (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&q=80'; 
+}} />
                             </div>
                             <div className="p-4">
                                 <div className="flex items-start justify-between">

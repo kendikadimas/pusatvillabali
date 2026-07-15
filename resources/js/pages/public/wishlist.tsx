@@ -1,141 +1,100 @@
-import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import type { Villa, AppSettings } from '@/types';
-import VillaCard from '@/components/public/villa-card';
-import { Heart, ArrowLeft } from 'lucide-react';
-import { toast } from 'sonner';
 import axios from 'axios';
+import { Heart, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { toast } from 'sonner';
+import VillaCard from '@/components/public/villa-card';
+import type { Villa, AppSettings } from '@/types';
 
 interface Props {
     settings: AppSettings;
 }
 
-export default function WishlistPage({ settings }: Props) {
-    const [wishlist, setWishlist] = useState<number[]>([]);
-    const [villas, setVillas] = useState<Villa[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
+export default function WishlistPage({ settings: _settings }: Props) {
+    const initialWishlist = useMemo(() => {
         try {
-            const stored = JSON.parse(localStorage.getItem('wishlist') ?? '[]') as number[];
-            setWishlist(stored);
-
-            if (stored.length === 0) {
-                setLoading(false);
-                return;
-            }
-
-            axios.get('/api/v1/villas', { params: { ids: stored.join(','), per_page: 50 } })
-                .then((res) => {
-                    const all: Villa[] = res.data.data ?? res.data;
-                    setVillas(all.filter((v) => stored.includes(v.id)));
-                })
-                .catch(() => {
-                    toast.error('Gagal memuat data wishlist');
-                    setVillas([]);
-                })
-                .finally(() => setLoading(false));
+            return JSON.parse(localStorage.getItem('wishlist') ?? '[]') as number[];
         } catch {
-            setLoading(false);
+            return [];
         }
     }, []);
 
-    const toggleWishlist = (id: number, e: React.MouseEvent) => {
-        e.preventDefault();
-        setWishlist((prev) => {
-            const next = prev.filter((x) => x !== id);
-            localStorage.setItem('wishlist', JSON.stringify(next));
-            setVillas((v) => v.filter((villa) => villa.id !== id));
-            toast.success('Dihapus dari wishlist');
-            return next;
-        });
+    const [wishlist] = useState<number[]>(initialWishlist);
+    const [villas, setVillas] = useState<Villa[]>([]);
+    const [loading, setLoading] = useState(initialWishlist.length > 0);
+
+    useEffect(() => {
+        if (initialWishlist.length === 0) {
+            return;
+        }
+
+        axios.get('/api/v1/villas', { params: { ids: initialWishlist.join(','), per_page: 50 } })
+            .then((res) => {
+                const all: Villa[] = res.data.data ?? res.data;
+                setVillas(all.filter((v) => initialWishlist.includes(v.id)));
+            })
+            .catch(() => {
+                toast.error('Gagal memuat data wishlist');
+                setVillas([]);
+            })
+            .finally(() => setLoading(false));
+    }, [initialWishlist]);
+
+    const removeFromWishlist = (id: number) => {
+        const updated = wishlist.filter((x) => x !== id);
+        localStorage.setItem('wishlist', JSON.stringify(updated));
+        setVillas((prev) => prev.filter((v) => v.id !== id));
     };
 
     return (
         <>
-            <Head title="Wishlist Saya" />
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-10">
-                {/* Header */}
-                <div className="flex items-center gap-4 mb-8">
-                    <Link
-                        href="/villas"
-                        className="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors"
-                        title="Kembali ke daftar villa"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                    </Link>
-                    <div className="flex items-center gap-3">
-                        <Heart className="w-6 h-6 fill-rose-500 text-rose-500" />
-                        <div>
-                            <h1 className="text-2xl font-black text-slate-800 font-heading">Wishlist Saya</h1>
-                            <p className="text-sm text-slate-500">
-                                {loading ? 'Memuat...' : `${wishlist.length} villa tersimpan`}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Content */}
-                {loading ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {[1,2,3,4].map(i => (
-                            <div key={i} className="flex flex-col gap-2 animate-pulse">
-                                <div className="aspect-[4/3] bg-slate-100 rounded-2xl" />
-                                <div className="h-4 bg-slate-100 rounded w-3/4" />
-                                <div className="h-3 bg-slate-100 rounded w-1/2" />
-                                <div className="h-4 bg-slate-100 rounded w-1/3" />
-                            </div>
-                        ))}
-                    </div>
-                ) : wishlist.length === 0 ? (
-                    <div className="text-center py-20">
-                        <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Heart className="w-8 h-8 text-rose-300" />
-                        </div>
-                        <h2 className="text-lg font-bold text-slate-700 mb-2 font-heading">Wishlist masih kosong</h2>
-                        <p className="text-sm text-slate-500 mb-6">
-                            Simpan villa favorit Anda dengan menekan ikon hati di kartu villa.
-                        </p>
+            <Head title="Wishlist" />
+            <div className="min-h-dvh bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="flex items-center gap-4 mb-8">
                         <Link
-                            href="/villas"
-                            className="inline-block bg-blue-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors"
+                            href="/"
+                            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
                         >
-                            Jelajahi Villa
+                            <ArrowLeft className="w-5 h-5" />
+                            <span className="text-sm font-medium">Kembali</span>
                         </Link>
+                        <h1 className="text-2xl font-bold text-slate-900">Wishlist</h1>
                     </div>
-                ) : (
-                    <>
+
+                    {loading ? (
+                        <div className="text-center py-20">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 mx-auto"></div>
+                            <p className="mt-4 text-slate-500">Memuat wishlist...</p>
+                        </div>
+                    ) : villas.length === 0 ? (
+                        <div className="text-center py-20">
+                            <Heart className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                            <h2 className="text-xl font-semibold text-slate-900 mb-2">Wishlist kosong</h2>
+                            <p className="text-slate-500 mb-6">Simpan villa favoritmu di sini</p>
+                            <Link
+                                href="/villas"
+                                className="inline-flex items-center px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
+                            >
+                                Jelajahi Villa
+                            </Link>
+                        </div>
+                    ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {villas.map((villa) => (
                                 <VillaCard
                                     key={villa.id}
                                     villa={villa}
                                     wishlist={wishlist}
-                                    toggleWishlist={toggleWishlist}
-                                    searchParams={{}}
+                                    toggleWishlist={(id, e) => {
+                                        e.preventDefault();
+                                        removeFromWishlist(id);
+                                    }}
                                 />
                             ))}
                         </div>
-
-                        {/* Clear all hint */}
-                        {villas.length > 0 && (
-                            <div className="mt-8 text-center">
-                                <button
-                                    onClick={() => {
-                                        localStorage.setItem('wishlist', '[]');
-                                        setWishlist([]);
-                                        setVillas([]);
-                                        toast.success('Wishlist dikosongkan');
-                                    }}
-                                    className="text-sm text-slate-400 hover:text-red-500 transition-colors"
-                                >
-                                    Kosongkan semua wishlist
-                                </button>
-                            </div>
-                        )}
-                    </>
-                )}
+                    )}
+                </div>
             </div>
         </>
     );

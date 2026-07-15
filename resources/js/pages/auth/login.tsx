@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
+import React, { useState } from 'react';
 import GoogleLoginButton from '@/components/google-login-button';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
@@ -33,12 +33,15 @@ export default function Login({ status, canResetPassword }: Props) {
         try {
             const res = await axios.post('/api/v1/login', { email, password, remember });
             const token = res.data.token;
+
             if (token) {
                 localStorage.setItem('sanctum_token', token);
+
                 if (res.data.user) {
                     localStorage.setItem('auth_user', JSON.stringify(res.data.user));
                 }
             }
+
             // Redirect to intended page or dashboard
             const redirectTo = sessionStorage.getItem('oauth_redirect') || '/profile';
             sessionStorage.removeItem('oauth_redirect');

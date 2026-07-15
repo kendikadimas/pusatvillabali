@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
-import type { Booking, AppSettings } from '@/types';
-import { formatPrice } from '@/lib/format';
-import { getMainPhoto } from '@/lib/villaUtils';
-import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import {
     Calendar, MapPin, Users, CheckCircle, XCircle, AlertCircle,
-    Download, CreditCard, Settings, LogOut,
+    Download, CreditCard, Settings,
 } from 'lucide-react';
+import React, { useState } from 'react';
+import { formatPrice } from '@/lib/format';
+import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
+import { getMainPhoto } from '@/lib/villaUtils';
+import type { Booking, AppSettings } from '@/types';
 
 interface Props {
     userBookings: Booking[];
@@ -44,8 +44,14 @@ export default function ProfilePage({ userBookings, settings }: Props) {
     const [tab, setTab] = useState<'all' | 'active' | 'past'>('all');
 
     const filtered = userBookings.filter((b) => {
-        if (tab === 'active') return ['pending', 'confirmed'].includes(b.status);
-        if (tab === 'past') return ['completed', 'cancelled'].includes(b.status);
+        if (tab === 'active') {
+return ['pending', 'confirmed'].includes(b.status);
+}
+
+        if (tab === 'past') {
+return ['completed', 'cancelled'].includes(b.status);
+}
+
         return true;
     });
 

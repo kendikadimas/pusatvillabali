@@ -6,6 +6,7 @@ import type { Villa, Destination, AppSettings } from '@/types';
 
 interface Props {
     villas: Villa[];
+    villasByDestination: Record<string, Villa[]>;
     destinations: Destination[];
     settings: AppSettings;
 }
@@ -21,18 +22,6 @@ const DEFAULT_DESTINATIONS: Destination[] = [
     { id: 8,  name: 'Legian',         city: 'Legian, Badung',             query: 'Legian',         image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '7+ Villa' },
     { id: 9,  name: 'Sanur',          city: 'Sanur, Denpasar',            query: 'Sanur',          image: 'https://images.unsplash.com/photo-1604999333679-b86d54738315?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '10+ Villa' },
     { id: 10, name: 'Nusa Lembongan', city: 'Nusa Lembongan, Klungkung',  query: 'Nusa Lembongan', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '6+ Villa' },
-];
-
-// Locations to group villas by
-const LOCATION_GROUPS = [
-    { label: 'Seminyak',    query: 'Seminyak' },
-    { label: 'Canggu',      query: 'Canggu' },
-    { label: 'Ubud',        query: 'Ubud' },
-    { label: 'Uluwatu',     query: 'Uluwatu' },
-    { label: 'Jimbaran',    query: 'Jimbaran' },
-    { label: 'Nusa Dua',    query: 'Nusa Dua' },
-    { label: 'Kuta',        query: 'Kuta' },
-    { label: 'Sanur',       query: 'Sanur' },
 ];
 
 // Horizontal scroll section with prev/next buttons
@@ -105,7 +94,7 @@ return null;
     );
 }
 
-export default function Home({ villas, destinations, settings }: Props) {
+export default function Home({ villas, villasByDestination, destinations, settings }: Props) {
     const destList = destinations && destinations.length > 0 ? destinations : DEFAULT_DESTINATIONS;
     const destScrollRef = useRef<HTMLDivElement>(null);
 
@@ -117,18 +106,8 @@ return;
         destScrollRef.current.scrollBy({ left: dir === 'right' ? 240 : -240, behavior: 'smooth' });
     };
 
-    // Group villas by location
-    const grouped = LOCATION_GROUPS.map(({ label, query }) => ({
-        label,
-        query,
-        villas: villas.filter((v) =>
-            v.location?.toLowerCase().includes(query.toLowerCase()) ||
-            v.name?.toLowerCase().includes(query.toLowerCase())
-        ),
-    })).filter((g) => g.villas.length > 0);
-
-    // Fallback: if no groups matched, show all villas in one section
-    const showFallback = grouped.length === 0 && villas.length > 0;
+    // Use villasByDestination from controller if available, otherwise fallback to client-side grouping
+    const hasGroupedData = villasByDestination && Object.keys(villasByDestination).length > 0;
 
     const appName = settings?.settings_prop_name ?? 'PusatVillaBali';
 
@@ -200,34 +179,42 @@ return;
                 </div>
             </div>
 
-            {/* ── Villa sections per lokasi ── */}
+            {/* ── Villa sections per destinasi ── */}
             <div className="bg-white min-h-screen">
-                {grouped.map(({ label, query, villas: groupVillas }) => (
-                    <HScrollSection key={label} title={label} query={query} villas={groupVillas} />
-                ))}
-
-                {/* Fallback: tampilkan semua villa dalam satu section */}
-                {showFallback && (
-                    <section className="py-8">
-                        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
-                            <div className="flex items-center justify-between mb-5">
-                                <h2 className="text-xl sm:text-2xl font-semibold text-[#222222]">
-                                    Villa di Bali
-                                </h2>
-                                <Link
-                                    href="/villas"
-                                    className="text-sm font-semibold text-[#222222] underline underline-offset-2 hover:text-[#484848] transition-colors flex items-center gap-1 shrink-0 ml-4"
-                                >
-                                    Tampilkan semua <ArrowRight className="w-4 h-4" />
-                                </Link>
+                {hasGroupedData ? (
+                    // Grouped by destination from controller
+                    Object.entries(villasByDestination).map(([destination, destVillas]) => (
+                        <HScrollSection
+                            key={destination}
+                            title={destination}
+                            query={destination}
+                            villas={destVillas}
+                        />
+                    ))
+                ) : (
+                    // Fallback: show all villas in one section
+                    villas.length > 0 && (
+                        <section className="py-8">
+                            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
+                                <div className="flex items-center justify-between mb-5">
+                                    <h2 className="text-xl sm:text-2xl font-semibold text-[#222222]">
+                                        Villa di Bali
+                                    </h2>
+                                    <Link
+                                        href="/villas"
+                                        className="text-sm font-semibold text-[#222222] underline underline-offset-2 hover:text-[#484848] transition-colors flex items-center gap-1 shrink-0 ml-4"
+                                    >
+                                        Tampilkan semua <ArrowRight className="w-4 h-4" />
+                                    </Link>
+                                </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+                                    {villas.map((villa) => (
+                                        <VillaCard key={villa.id} villa={villa} variant="home" />
+                                    ))}
+                                </div>
                             </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
-                                {villas.map((villa) => (
-                                    <VillaCard key={villa.id} villa={villa} variant="home" />
-                                ))}
-                            </div>
-                        </div>
-                    </section>
+                        </section>
+                    )
                 )}
 
                 {/* Empty state */}

@@ -18,9 +18,16 @@ class HomeController extends Controller
             ->with('destination')
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
-            ->latest()
-            ->take(12)
+            ->orderBy('destination_id')
+            ->orderBy('name')
             ->get();
+
+        // Group villas by destination
+        $villasByDestination = $villas->groupBy(function ($villa) {
+            return $villa->destination?->name ?? 'Lainnya';
+        })->map(function ($group) {
+            return $group->values();
+        });
 
         $destinations = Destination::orderBy('name')->get();
 
@@ -28,6 +35,7 @@ class HomeController extends Controller
 
         return Inertia::render('public/home', [
             'villas' => $villas,
+            'villasByDestination' => $villasByDestination,
             'destinations' => $destinations,
             'settings' => $settings,
         ]);

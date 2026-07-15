@@ -15,21 +15,21 @@ return [
     |
     */
 
-    'paths' => ['*'],
+    'paths' => ['api/*', 'login', 'logout', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 
     'allowed_origins' => [
         env('FRONTEND_URL', 'http://localhost:3000'),
-        'https://pusatvillaid.com',
-        'https://www.pusatvillaid.com',
+        'https://pusatvillabali.com',
+        'https://www.pusatvillabali.com',
     ],
 
     'allowed_origins_patterns' => [
-        '#^https?://(?:.+\.)?pusatvillaid\.com$#',
+        '#^https?://(?:.+\.)?pusatvillabali\.com$#',
     ],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['Content-Type', 'X-Requested-With', 'Authorization', 'Accept', 'X-XSRF-TOKEN'],
 
     'exposed_headers' => [],
 

@@ -38,7 +38,9 @@ Route::prefix('auth')->group(function () {
     // Inertia page that handles the one-time code exchange on the frontend
     Route::get('/callback', fn () => inertia('auth/callback'))->name('auth.callback');
 });
-Route::post('/auth/exchange-code', [OAuthController::class, 'exchangeCode'])->name('auth.exchange-code');
+Route::post('/auth/exchange-code', [OAuthController::class, 'exchangeCode'])
+    ->middleware('throttle:oauth')
+    ->name('auth.exchange-code');
 
 // ==========================================
 // Authenticated User Routes
@@ -54,7 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminWebController::class, 'login'])->name('login');
 
-    Route::middleware([])->group(function () {
+    Route::middleware(['web_admin'])->group(function () {
         Route::get('/dashboard', [AdminWebController::class, 'dashboard'])->name('dashboard');
         Route::get('/analytics', [AdminWebController::class, 'analytics'])->name('analytics');
         Route::get('/villas', [AdminWebController::class, 'villas'])->name('villas');

@@ -250,7 +250,7 @@ class BookingController extends Controller
                 // Gunakan email dari token, BUKAN dari input parameter (mencegah IDOR)
                 $query->where(function ($q) use ($user) {
                     $q->where('user_id', $user->id)
-                      ->orWhere('guest_email', $user->email);
+                        ->orWhere('guest_email', $user->email);
                 });
             }
         } else {
@@ -368,8 +368,8 @@ class BookingController extends Controller
      */
     private function getMidtransSnapToken(Booking $booking, Villa $villa): ?string
     {
-        $serverKey = env('MIDTRANS_SERVER_KEY');
-        $isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        $serverKey = config('midtrans.server_key');
+        $isProduction = config('midtrans.is_production', false);
 
         if (empty($serverKey)) {
             Log::error('Midtrans server key is not configured. Cannot generate Snap token.');

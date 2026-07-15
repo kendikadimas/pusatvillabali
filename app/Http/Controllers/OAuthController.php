@@ -21,7 +21,7 @@ class OAuthController extends Controller
 
     public function handleGoogleCallback(Request $request): RedirectResponse
     {
-        $frontendUrl = config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:3000'));
+        $frontendUrl = config('app.frontend_url', 'http://localhost:3000');
 
         try {
             $googleUser = Socialite::driver('google')->user();
@@ -32,15 +32,15 @@ class OAuthController extends Controller
         $user = User::where('email', $googleUser->getEmail())->first();
 
         if (! $user) {
-                $user = User::create([
-                    'name'               => $googleUser->getName(),
-                    'email'              => $googleUser->getEmail(),
-                    'google_id'          => $googleUser->getId(),
-                    'avatar'             => $googleUser->getAvatar(),
-                    'password'           => Hash::make(Str::password(32)),
-                    'role'               => 'user',
-                    'email_verified_at'  => now(), // Google sudah verifikasi email
-                ]);
+            $user = User::create([
+                'name' => $googleUser->getName(),
+                'email' => $googleUser->getEmail(),
+                'google_id' => $googleUser->getId(),
+                'avatar' => $googleUser->getAvatar(),
+                'password' => Hash::make(Str::password(32)),
+                'role' => 'user',
+                'email_verified_at' => now(), // Google sudah verifikasi email
+            ]);
         } else {
             $user->update([
                 'google_id' => $googleUser->getId(),

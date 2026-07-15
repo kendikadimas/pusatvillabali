@@ -44,10 +44,6 @@ class VillaWebController extends Controller
             $query->where('price_per_night', '<=', (int) $request->max_price);
         }
 
-        if ($request->filled('category') && $request->category !== 'all') {
-            $query->where('category', $request->category);
-        }
-
         $sortBy = in_array($request->sortBy, ['price_per_night', 'created_at', 'name']) ? $request->sortBy : 'created_at';
         $sortOrder = $request->sortOrder === 'asc' ? 'asc' : 'desc';
         $query->orderBy($sortBy, $sortOrder);
@@ -58,7 +54,7 @@ class VillaWebController extends Controller
 
         return Inertia::render('public/villas', [
             'villas' => $villas,
-            'filters' => $request->only(['search', 'location', 'checkIn', 'checkOut', 'guests', 'bedrooms', 'min_price', 'max_price', 'sortBy', 'sortOrder', 'category']),
+            'filters' => $request->only(['search', 'location', 'checkIn', 'checkOut', 'guests', 'bedrooms', 'min_price', 'max_price', 'sortBy', 'sortOrder']),
             'settings' => $settings,
         ]);
     }

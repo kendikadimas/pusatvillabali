@@ -119,7 +119,9 @@ class BookingWebController extends Controller
         $existingReview = null;
 
         if ($request->filled('token')) {
-            $booking = Booking::where('review_token', $request->token)
+            $booking = Booking::whereHas('reviewToken', function ($q) use ($request) {
+                $q->where('token', $request->token)->where('used', false)->where('expires_at', '>', now());
+            })
                 ->with('villa')
                 ->first();
 

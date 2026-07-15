@@ -64,7 +64,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:3,1');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:3,1');
     Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('api.verification.verify');
-    Route::post('/auth/exchange-code', [OAuthController::class, 'exchangeCode']);
+    Route::post('/auth/exchange-code', [OAuthController::class, 'exchangeCode'])->middleware('throttle:oauth');
 
     // ==========================================
     // Protected User/Guest Endpoints (Sanctum Token Required)
@@ -72,7 +72,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', [AuthController::class, 'me']);
         Route::post('/logout', [AuthController::class, 'logout']);
-        Route::post('/bookings', [BookingController::class, 'store']);
+        Route::post('/bookings', [BookingController::class, 'store'])->middleware('throttle:booking');
         Route::get('/user/bookings', [BookingController::class, 'userBookings']);
         Route::get('/bookings/{code}/ktp', [BookingController::class, 'showKtp']);
         Route::get('/bookings/{code}/payment-proof', [BookingController::class, 'showPaymentProof']);

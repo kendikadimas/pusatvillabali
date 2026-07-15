@@ -63,6 +63,54 @@ class VillaWebController extends Controller
         ]);
     }
 
+    /**
+     * Villas grouped by destination for homepage-style display.
+     */
+    public function byDestination(Request $request): Response
+    {
+        $query = Villa::where('is_active', true)
+            ->with('destination')
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews');
+
+        if ($request->filled('location')) {
+            $query->where('location', 'like', '%'.$request->location.'%');
+        }
+
+        if ($request->filled('bedrooms')) {
+            $query->where('bedrooms', '>=', (int) $request->bedrooms);
+        }
+
+        if ($request->filled('guests')) {
+            $query->where('max_guests', '>=', (int) $request->guests);
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price_per_night', '>=', (int) $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price_per_night', '<=', (int) $request->max_price);
+        }
+
+        $villas = $query->orderBy('destination_id')->orderBy('name')->get();
+
+        // Group villas by destination
+        $grouped = $villas->groupBy(function ($villa) {
+            return $villa->destination?->name ?? 'Lainnya';
+        })->map(function ($group) {
+            return $group->values();
+        });
+
+        $settings = Setting::pluck('value', 'key')->toArray();
+
+        return Inertia::render('public/villas-by-destination', [
+            'villasByDestination' => $grouped,
+            'filters' => $request->only(['location', 'bedrooms', 'guests', 'min_price', 'max_price']),
+            'settings' => $settings,
+        ]);
+    }
+
     public function show(string $slug): Response
     {
         $villa = Villa::where('slug', $slug)

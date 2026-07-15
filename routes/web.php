@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 // ==========================================
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/villas', [VillaWebController::class, 'index'])->name('villas.index');
+Route::get('/villas/explore', [VillaWebController::class, 'byDestination'])->name('villas.by-destination');
 Route::get('/villas/{slug}', [VillaWebController::class, 'show'])->name('villas.show');
 
 // Wishlist (public access, stored in session/localStorage)

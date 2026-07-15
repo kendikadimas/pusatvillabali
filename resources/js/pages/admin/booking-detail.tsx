@@ -246,7 +246,7 @@ return;
                                     <div className="mt-4 pt-4 border-t border-slate-100">
                                         <p className="text-xs font-semibold text-slate-500 mb-2">Foto KTP</p>
                                         <a
-                                            href={`/api/v1/bookings/${booking.booking_code}/ktp`}
+                                            href={`/admin/bookings/${booking.booking_code}/ktp`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline"

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Web\AdminWebController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\Web\BookingWebController;
 use App\Http\Controllers\Web\HomeController;
@@ -71,6 +72,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/calendar', [AdminWebController::class, 'calendar'])->name('calendar');
         Route::get('/settings', [AdminWebController::class, 'settings'])->name('settings');
         Route::get('/users', [AdminWebController::class, 'users'])->name('users');
+
+        // Serve private files via session auth
+        Route::get('/bookings/{code}/ktp', [BookingController::class, 'showKtp'])->name('bookings.ktp');
+        Route::get('/bookings/{code}/payment-proof', [BookingController::class, 'showPaymentProof'])->name('bookings.payment-proof');
     });
 });
 

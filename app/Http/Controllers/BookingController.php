@@ -451,7 +451,7 @@ class BookingController extends Controller
      */
     public function showKtp(string $code, Request $request)
     {
-        $user = auth('sanctum')->user() ?? $request->user('sanctum');
+        $user = $request->user();
 
         $query = Booking::where('booking_code', $code);
 
@@ -484,7 +484,7 @@ class BookingController extends Controller
      */
     public function showPaymentProof(string $code, Request $request)
     {
-        $user = auth('sanctum')->user() ?? $request->user('sanctum');
+        $user = $request->user();
 
         $query = Booking::where('booking_code', $code);
 

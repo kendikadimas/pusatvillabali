@@ -55,7 +55,7 @@ jobs:
               --exclude='vendor' \
               -czf /tmp/deploy.tar.gz .
 
-      - name: Upload app files via tar+SSH
+      - name: Upload and deploy via SSH
         run: |
           ssh -i ~/.ssh/deploy_key \
               -p ${{ secrets.SSH_PORT }} \
@@ -63,61 +63,35 @@ jobs:
               -o ServerAliveInterval=30 \
               -o ConnectTimeout=60 \
               ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-              "mkdir -p ~/pusatvillabali && cd ~/pusatvillabali && tar -xzf -" < /tmp/deploy.tar.gz
+              'bash -s' << 'DEPLOY_SCRIPT'
+          set -e
+          cd ~/pusatvillabali
 
-      - name: Run post-deploy commands via SSH
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          timeout: 600s
-          command_timeout: 30m
-          script: |
-            set -e
-            cd ~/pusatvillabali
+          echo "==> Extracting files..."
+          tar -xzf - 
 
-            echo "==> Installing Node.js..."
-            if ! command -v node &> /dev/null; then
-              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-              export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-              nvm install 22
-              nvm use 22
-              nvm alias default 22
-            else
-              export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-              nvm use 22 2>/dev/null || true
-            fi
+          echo "==> Installing PHP dependencies..."
+          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
 
-            echo "==> Installing Node dependencies..."
-            npm ci
+          echo "==> Clearing caches..."
+          php artisan config:clear
+          php artisan route:clear
+          php artisan view:clear
 
-            echo "==> Building frontend assets..."
-            npm run build
+          echo "==> Running migrations..."
+          php artisan migrate --force
 
-            echo "==> Installing PHP dependencies..."
-            composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+          echo "==> Caching for production..."
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
 
-            echo "==> Clearing caches..."
-            php artisan config:clear
-            php artisan route:clear
-            php artisan view:clear
+          echo "==> Storage link..."
+          php artisan storage:link || true
 
-            echo "==> Running migrations..."
-            php artisan migrate --force
+          echo "==> Setting permissions..."
+          chmod -R 775 storage bootstrap/cache
 
-            echo "==> Caching for production..."
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-
-            echo "==> Storage link..."
-            php artisan storage:link || true
-
-            echo "==> Setting permissions..."
-            chmod -R 775 storage bootstrap/cache
-
-            echo "==> Deploy complete."
+          echo "==> Deploy complete."
+          DEPLOY_SCRIPT
+          < /tmp/deploy.tar.gz

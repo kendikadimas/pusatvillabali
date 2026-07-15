@@ -38,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'reset-password',
             'email/verification-notification',
             'user/confirm-password',
+            'auth/exchange-code',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

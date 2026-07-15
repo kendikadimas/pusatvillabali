@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PermissionMiddleware;
 use App\Http\Middleware\RequirePasswordCustom;
 use App\Http\Middleware\SuperAdminMiddleware;
@@ -30,6 +31,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Enable stateful API so Inertia session auth works with Sanctum
         $middleware->statefulApi();
+
+        // Add Inertia middleware to share auth state with frontend
+        $middleware->appendToGroup('web', HandleInertiaRequests::class);
 
         $middleware->validateCsrfTokens(except: [
             'api/*',

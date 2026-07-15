@@ -171,7 +171,7 @@ return;
                 )}
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                    <Link href={`/booking/status?code=${booking.booking_code}`} className="bg-slate-800 text-white font-semibold px-6 py-3 rounded-xl hover:bg-slate-900 transition-colors text-sm text-center">
+                    <Link href={`/booking/status?code=${booking.booking_code}`} className="flex-1 flex items-center justify-center bg-slate-800 text-white font-semibold px-6 py-3 rounded-xl hover:bg-slate-900 transition-colors text-sm text-center">
                         Cek Status Pemesanan
                     </Link>
                     {settings?.settings_whatsapp && (
@@ -179,7 +179,7 @@ return;
                             href={`https://wa.me/${settings.settings_whatsapp}?text=Halo, saya sudah bayar untuk booking %23${booking.booking_code}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="border border-green-500 text-green-600 font-semibold px-6 py-3 rounded-xl hover:bg-green-50 transition-colors text-sm text-center"
+                            className="flex-1 flex items-center justify-center border border-green-500 text-green-600 font-semibold px-6 py-3 rounded-xl hover:bg-green-50 transition-colors text-sm text-center"
                         >
                             Konfirmasi via WhatsApp
                         </a>

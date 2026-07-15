@@ -183,7 +183,7 @@ export default function BookingSuccessPage({ booking, settings, code }: Props) {
                 )}
 
                 {/* Action buttons */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     <button
                         onClick={handleDownloadPDF}
                         className="flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-3 rounded-xl hover:bg-blue-700 transition-colors"

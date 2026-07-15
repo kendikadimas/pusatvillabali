@@ -228,7 +228,7 @@ params.max_price = maxPrice;
 
                         {/* Pagination */}
                         {villas.last_page > 1 && (
-                            <div className="flex items-center justify-center gap-2 mt-12">
+                            <div className="flex flex-wrap items-center justify-center gap-2 mt-12">
                                 {Array.from({ length: villas.last_page }, (_, i) => i + 1).map((page) => (
                                     <button
                                         key={page}

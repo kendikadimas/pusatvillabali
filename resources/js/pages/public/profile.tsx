@@ -204,9 +204,9 @@ return ['completed', 'cancelled'].includes(b.status);
                                                     </span>
                                                 </div>
 
-                                                <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+                                                <div className="flex flex-wrap items-center justify-between gap-2 mt-3 pt-3 border-t border-slate-100">
                                                     <span className="font-black text-slate-800 text-sm">{formatPrice(booking.total_amount)}</span>
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex flex-wrap items-center gap-2">
                                                         {isPendingPayment && (
                                                             <Link
                                                                 href={`/booking/payment?code=${booking.booking_code}`}

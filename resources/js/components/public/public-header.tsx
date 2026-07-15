@@ -27,14 +27,6 @@ export default function PublicHeader({
         settings: AppSettings;
     }>().props;
 
-    // Debug auth state
-    React.useEffect(() => {
-        console.log('[Header Debug] Auth state:', auth);
-        console.log('[Header Debug] User:', auth?.user);
-        console.log('[Header Debug] localStorage sanctum_token:', localStorage.getItem('sanctum_token') ? 'exists' : 'missing');
-        console.log('[Header Debug] localStorage auth_user:', localStorage.getItem('auth_user'));
-    }, [auth]);
-
     const [mobileOpen, setMobileOpen] = useState(false);
     const [searchExpanded, setSearchExpanded] = useState(false);
     const [activeSegment, setActiveSegment] = useState<'where' | 'dates' | 'guests' | null>(null);

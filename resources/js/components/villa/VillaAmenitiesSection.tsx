@@ -34,7 +34,7 @@ export default function VillaAmenitiesSection({ amenities }: VillaAmenitiesSecti
                     {items.length > 8 && (
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="border border-slate-900 hover:bg-slate-50 text-slate-900 text-[15px] font-bold px-5 py-3 rounded-xl transition-all cursor-pointer inline-block mt-4"
+                            className="w-full sm:w-auto border border-slate-900 hover:bg-slate-50 text-slate-900 text-[15px] font-bold px-5 py-3 rounded-xl transition-all cursor-pointer block mt-4"
                         >
                             Tampilkan ke-{items.length} fasilitas
                         </button>

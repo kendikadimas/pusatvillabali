@@ -99,7 +99,7 @@ export default function HostProfileSection({
                     )}
 
                     <div className="pt-2 space-y-3">
-                        <button className="bg-slate-900 hover:bg-black text-white text-sm font-bold py-3 px-6 rounded-xl transition-colors active:scale-95 duration-150">
+                        <button className="w-full bg-slate-900 hover:bg-black text-white text-sm font-bold py-3 px-6 rounded-xl transition-colors active:scale-95 duration-150">
                             Kirimkan pesan kepada tuan rumah
                         </button>
                         <div className="flex items-start space-x-2.5 max-w-xl">

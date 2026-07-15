@@ -64,7 +64,7 @@ return null;
             {canScrollLeft && (
                 <button
                     onClick={() => scroll('left')}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-white -translate-x-1/2"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity hover:bg-white -translate-x-1/2"
                 >
                     <ChevronLeft className="w-5 h-5 text-slate-700" />
                 </button>

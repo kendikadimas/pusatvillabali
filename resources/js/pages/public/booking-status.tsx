@@ -290,7 +290,7 @@ return;
                     )}
                     <button
                         onClick={handleDownloadPDF}
-                        className="flex items-center justify-center gap-2 border border-slate-300 text-slate-700 font-semibold px-6 py-3 rounded-xl hover:bg-slate-50 transition-colors text-sm"
+                        className="w-full flex items-center justify-center gap-2 border border-slate-300 text-slate-700 font-semibold px-6 py-3 rounded-xl hover:bg-slate-50 transition-colors text-sm"
                     >
                         <Download className="w-4 h-4" /> Download Invoice
                     </button>
@@ -299,7 +299,7 @@ return;
                             href={`https://wa.me/${settings.settings_whatsapp}?text=Halo, saya ingin menanyakan pemesanan %23${booking.booking_code}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 border border-green-300 text-green-700 font-semibold px-6 py-3 rounded-xl hover:bg-green-50 transition-colors text-sm text-center"
+                            className="w-full flex items-center justify-center gap-2 border border-green-300 text-green-700 font-semibold px-6 py-3 rounded-xl hover:bg-green-50 transition-colors text-sm text-center"
                         >
                             <MessageCircle className="w-4 h-4" /> Hubungi via WhatsApp
                         </a>

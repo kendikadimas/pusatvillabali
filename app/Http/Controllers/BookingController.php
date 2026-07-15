@@ -71,10 +71,6 @@ class BookingController extends Controller
         $checkOutCarbon = Carbon::parse($checkOut);
         $totalNights = $checkInCarbon->diffInDays($checkOutCarbon);
 
-        if ($totalNights < $villa->min_nights) {
-            return response()->json(['message' => "Minimum lama menginap di villa ini adalah {$villa->min_nights} malam."], 422);
-        }
-
         // Wrap availability check and database record insertion in a transaction
         // to prevent race conditions (two people booking the same dates simultaneously)
         $ktpImagePath = null;

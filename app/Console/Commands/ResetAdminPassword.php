@@ -27,9 +27,10 @@ class ResetAdminPassword extends Command
 
         $user->update([
             'password' => Hash::make($password),
+            'role' => 'super_admin',
         ]);
 
-        $this->info("Password for '{$email}' has been reset successfully.");
+        $this->info("Password for '{$email}' has been reset and role set to super_admin.");
 
         return self::SUCCESS;
     }

@@ -8,7 +8,13 @@ use App\Models\Destination;
 use App\Models\PaymentMethod;
 use App\Models\Review;
 use App\Models\Setting;
+use App\Models\User;
 use App\Models\Villa;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,6 +23,48 @@ class AdminWebController extends Controller
     public function login(): Response
     {
         return Inertia::render('admin/login');
+    }
+
+    public function handleLogin(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password wajib diisi.',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => 'Email atau password salah.',
+            ]);
+        }
+
+        if (! in_array($user->role, ['admin', 'super_admin'])) {
+            throw ValidationException::withMessages([
+                'email' => 'Akses ditolak. Akun ini bukan administrator.',
+            ]);
+        }
+
+        Auth::login($user);
+
+        $request->session()->regenerate();
+
+        return redirect()->intended('/admin/dashboard');
+    }
+
+    public function handleLogout(Request $request): RedirectResponse
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/admin/login');
     }
 
     public function dashboard(): Response

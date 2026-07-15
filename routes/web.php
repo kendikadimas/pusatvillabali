@@ -55,6 +55,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // ==========================================
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminWebController::class, 'login'])->name('login');
+    Route::post('/login', [AdminWebController::class, 'handleLogin'])->name('login.submit');
+    Route::post('/logout', [AdminWebController::class, 'handleLogout'])->name('logout');
 
     Route::middleware(['web_admin'])->group(function () {
         Route::get('/dashboard', [AdminWebController::class, 'dashboard'])->name('dashboard');

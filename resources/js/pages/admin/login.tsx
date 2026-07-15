@@ -1,5 +1,4 @@
 import { Head, router } from '@inertiajs/react';
-import axios from 'axios';
 import React, { useState } from 'react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
@@ -13,30 +12,15 @@ export default function AdminLoginPage() {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setProcessing(true);
         setErrors({});
 
-        try {
-            const res = await axios.post('/api/v1/admin/login', { email, password });
-            const token = res.data.token ?? res.data.data?.token;
-
-            if (token) {
-                localStorage.setItem('admin_token', token);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            }
-
-            router.get('/admin/dashboard');
-        } catch (err: any) {
-            if (err.response?.data?.errors) {
-                setErrors(err.response.data.errors);
-            } else {
-                setErrors({ email: err.response?.data?.message ?? 'Login gagal. Periksa kembali kredensial Anda.' });
-            }
-        } finally {
-            setProcessing(false);
-        }
+        router.post('/admin/login', { email, password }, {
+            onError: (err) => setErrors(err),
+            onFinish: () => setProcessing(false),
+        });
     };
 
     return (

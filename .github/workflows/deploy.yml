@@ -38,12 +38,23 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
+      - name: Verify manifest exists
+        run: |
+          if [ ! -f public/build/manifest.json ]; then
+            echo "ERROR: manifest.json not found after build"
+            exit 1
+          fi
+          echo "manifest.json found"
+
       - name: Deploy to production branch
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           
           git checkout -b production
+          
+          # Remove public/build from .gitignore so it gets tracked
+          sed -i '/\/public\/build/d' .gitignore
           
           git add -f public/build
           git add -f vendor

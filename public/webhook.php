@@ -49,6 +49,7 @@ file_put_contents($logFile, date('[Y-m-d H:i:s] ')."Starting deploy...\n", FILE_
 $commands = [
     "cd $repoDir && git fetch origin $branch --quiet",
     "cd $repoDir && git reset --hard origin/$branch --quiet",
+    "export HOME=/home/pusatvil && cd $repoDir && composer install --no-dev --optimize-autoloader --no-interaction",
     "cd $repoDir && php artisan config:clear",
     "cd $repoDir && php artisan config:cache",
     "cd $repoDir && php artisan view:clear",

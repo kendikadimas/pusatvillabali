@@ -52,6 +52,11 @@ return;
             // fallback: cari payment method id dari payment record
         }
 
+        // Include guest email for guest bookings
+        if (booking.guest_email) {
+            form.append('guest_email', booking.guest_email);
+        }
+
         try {
             await axios.post(`/api/v1/bookings/${booking.booking_code}/confirm-manual-payment`, form, {
                 headers: { 'Content-Type': 'multipart/form-data' },

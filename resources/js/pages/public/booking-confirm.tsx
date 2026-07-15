@@ -175,6 +175,11 @@ return;
 form.append('payment_method_id', String(selectedPaymentMethod));
 }
 
+        // Include guest email for guest bookings
+        if (guestEmail) {
+            form.append('guest_email', guestEmail);
+        }
+
         try {
             await axios.post(`/api/v1/bookings/${bookingCode}/confirm-manual-payment`, form, {
                 headers: { 'Content-Type': 'multipart/form-data' },

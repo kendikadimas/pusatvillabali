@@ -40,7 +40,7 @@ export default function PublicFooter() {
                     <div className="lg:col-span-4 space-y-5">
                         <Link href="/" className="inline-flex items-center gap-3 group">
                             <div className="w-11 h-11 bg-blue-500/15 rounded-xl flex items-center justify-center ring-1 ring-blue-400/20 group-hover:ring-blue-400/40 transition-all">
-                                <AppLogoIcon className="size-6 fill-current text-blue-200" />
+                                <AppLogoIcon className="size-6" />
                             </div>
                             <div>
                                 <span className="text-lg font-black tracking-tight text-white font-heading">{appName}</span>

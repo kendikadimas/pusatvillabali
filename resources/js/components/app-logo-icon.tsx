@@ -2,28 +2,52 @@ import type { SVGAttributes } from 'react';
 
 export default function AppLogoIcon(props: SVGAttributes<SVGElement>) {
     return (
-        <svg {...props} viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-            {/* Balinese-inspired villa mark: meru roof + palm leaf + sun */}
-            <g fill="currentColor">
-                {/* Meru roof (traditional Balinese temple roof) — 3-tiered */}
-                <path d="M20 2L6 14h4v2l-4 2v2h28v-2l-4-2v-2h4L20 2z" />
-                <path d="M20 8L12 15h2v2l-4 2v2h20v-2l-4-2v-2h2L20 8z" opacity="0.7" />
-                {/* Central spire */}
-                <path d="M19 2h2v5h-2z" />
-                {/* Villa base / pillars */}
-                <rect x="14" y="22" width="12" height="4" rx="1" />
-                <rect x="16" y="26" width="8" height="6" rx="0.5" />
-                {/* Door */}
-                <rect x="18.5" y="27" width="3" height="5" rx="0.5" opacity="0.3" />
-                {/* Palm leaf left */}
-                <path d="M6 16c-4-2-6-8-4-12 2 3 4 6 4 10v2z" opacity="0.5" />
-                <path d="M8 18c-3-1-5-2-6-4 2 1 4 2 6 3v1z" opacity="0.4" />
-                {/* Palm leaf right */}
-                <path d="M34 16c4-2 6-8 4-12-2 3-4 6-4 10v2z" opacity="0.5" />
-                <path d="M32 18c3-1 5-2 6-4-2 1-4 2-6 3v1z" opacity="0.4" />
-                {/* Sun / decorative circle above */}
-                <circle cx="20" cy="5" r="1.5" opacity="0.4" />
-            </g>
+        <svg {...props} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Background circle */}
+            <circle cx="100" cy="100" r="96" fill="#15803d" />
+
+            {/* Villa roof — joglo style, 3 layered roofs */}
+            <polygon points="30,118 170,118 155,98 45,98" fill="#f0fdf4" />
+            <polygon points="52,98 148,98 136,80 64,80" fill="#dcfce7" />
+            <polygon points="72,80 128,80 120,65 80,65" fill="#f0fdf4" />
+
+            {/* Roof ridge line top */}
+            <line x1="80" y1="65" x2="120" y2="65" stroke="#15803d" strokeWidth="2.5" strokeLinecap="round" />
+
+            {/* Villa body / walls */}
+            <rect x="72" y="118" width="56" height="36" fill="#f0fdf4" />
+
+            {/* Door arch */}
+            <path d="M91,154 L91,134 Q100,126 109,134 L109,154 Z" fill="#15803d" />
+
+            {/* Window left */}
+            <rect x="77" y="123" width="10" height="10" rx="1" fill="#15803d" opacity="0.5" />
+            {/* Window right */}
+            <rect x="113" y="123" width="10" height="10" rx="1" fill="#15803d" opacity="0.5" />
+
+            {/* Ground line */}
+            <line x1="55" y1="154" x2="145" y2="154" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
+
+            {/* Palm/tropical leaf left */}
+            <path d="M55,154 Q42,130 30,120" stroke="#86efac" strokeWidth="3" strokeLinecap="round" fill="none" />
+            <path d="M55,154 Q38,138 28,138" stroke="#86efac" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <path d="M55,154 Q40,150 30,155" stroke="#86efac" strokeWidth="2" strokeLinecap="round" fill="none" />
+
+            {/* Palm/tropical leaf right */}
+            <path d="M145,154 Q158,130 170,120" stroke="#86efac" strokeWidth="3" strokeLinecap="round" fill="none" />
+            <path d="M145,154 Q162,138 172,138" stroke="#86efac" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <path d="M145,154 Q160,150 170,155" stroke="#86efac" strokeWidth="2" strokeLinecap="round" fill="none" />
+
+            {/* Stars / sparkle top — Bali sun motif */}
+            <circle cx="100" cy="44" r="5" fill="#86efac" />
+            <line x1="100" y1="34" x2="100" y2="32" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
+            <line x1="100" y1="54" x2="100" y2="56" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
+            <line x1="90" y1="44" x2="88" y2="44" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
+            <line x1="110" y1="44" x2="112" y2="44" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
+            <line x1="93" y1="37" x2="92" y2="36" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
+            <line x1="107" y1="51" x2="108" y2="52" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
+            <line x1="107" y1="37" x2="108" y2="36" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
+            <line x1="93" y1="51" x2="92" y2="52" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
         </svg>
     );
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { home } from '@/routes';
+import AppLogoIcon from '@/components/app-logo-icon';
 import type { Auth } from '@/types/auth';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -25,8 +26,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <>
             {/* Logo */}
             <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-700">
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-sm">PVB</span>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <AppLogoIcon className="size-8" />
                 </div>
                 {sidebarOpen && (
                     <span className="font-semibold text-white truncate">Admin Panel</span>

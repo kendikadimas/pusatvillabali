@@ -400,7 +400,7 @@ class BaliLocationSeeder extends Seeder
         // ── BEDUGUL ──
         $bedugul = Destination::where('query', 'Bedugul')->first();
         if ($bedugul) {
-            Villa::firstOrCreate(['slug' => 'bedugul-lake-villa'], [
+            Villa::firstOrCreate(['slug' => 'bedugul-lake-view-villa'], [
                 'name' => 'Bedugul Lake View Villa',
                 'slug' => 'bedugul-lake-view-villa',
                 'description' => 'Villa di kawasan Bedugul dengan pemandangan Danau Beratan dan Pura Ulun Danu. Udara pegunungan yang sejuk, perapian kayu, dan taman bunga yang indah. Tempat istirahat sempurna dari hiruk pikuk kota.',

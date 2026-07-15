@@ -255,7 +255,7 @@
             <p style="margin:0 0 8px;font-weight:600;color:#1e293b">PusatVilla.id</p>
             <p style="margin:0 0 4px">Platform persewaan villa premium terbaik di Indonesia</p>
             <p style="margin:0">
-                <a href="mailto:support@pusatvilla.id">support@pusatvilla.id</a>
+                <a href="mailto:support@pusatvillabali">support@pusatvillabali</a>
                 @if ($booking->villa->maps_url)
                 &nbsp;·&nbsp; <a href="{{ $booking->villa->maps_url }}" target="_blank">Google Maps</a>
                 @endif

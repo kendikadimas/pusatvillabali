@@ -395,12 +395,12 @@ it('validates review comment min 20 characters', function () {
 it('can login as admin', function () {
     $user = User::factory()->create([
         'role' => 'admin',
-        'email' => 'admin@pusatvilla.id',
+        'email' => 'admin@pusatvillabali',
         'password' => bcrypt('password123'),
     ]);
 
     $response = $this->postJson('/api/v1/admin/login', [
-        'email' => 'admin@pusatvilla.id',
+        'email' => 'admin@pusatvillabali',
         'password' => 'password123',
     ]);
 

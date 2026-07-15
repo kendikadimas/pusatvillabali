@@ -166,29 +166,48 @@ formData.append('ktp_image', ktpFile);
         e.preventDefault();
 
         if (!proofFile || !bookingCode) {
-return;
-}
+            console.log('[Upload Debug] Missing proofFile or bookingCode', { proofFile, bookingCode });
+            return;
+        }
 
         setUploading(true);
         const form = new FormData();
         form.append('payment_proof', proofFile);
 
         if (selectedPaymentMethod) {
-form.append('payment_method_id', String(selectedPaymentMethod));
-}
+            form.append('payment_method_id', String(selectedPaymentMethod));
+        }
 
         // Include guest email for guest bookings
         if (guestEmail) {
             form.append('guest_email', guestEmail);
         }
 
+        console.log('[Upload Debug] Sending request', {
+            url: `/api/v1/bookings/${bookingCode}/confirm-manual-payment`,
+            bookingCode,
+            proofFile: proofFile.name,
+            proofFileSize: proofFile.size,
+            selectedPaymentMethod,
+            guestEmail,
+            formDataEntries: Array.from(form.entries()).map(([key, val]) => [key, typeof val === 'string' ? val : val.name]),
+        });
+
         try {
-            await axios.post(`/api/v1/bookings/${bookingCode}/confirm-manual-payment`, form, {
+            const res = await axios.post(`/api/v1/bookings/${bookingCode}/confirm-manual-payment`, form, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
+            console.log('[Upload Debug] Success', res.data);
             toast.success('Bukti pembayaran berhasil dikirim!');
             setProofUploaded(true);
         } catch (err: any) {
+            console.error('[Upload Debug] Error', {
+                status: err.response?.status,
+                statusText: err.response?.statusText,
+                data: err.response?.data,
+                headers: err.response?.headers,
+                message: err.message,
+            });
             toast.error(err.response?.data?.message ?? 'Gagal mengirim bukti pembayaran.');
         } finally {
             setUploading(false);

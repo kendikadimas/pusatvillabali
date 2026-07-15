@@ -16,6 +16,7 @@ interface Props {
 
 export default function BookingPaymentPage({ booking, settings, code: _code }: Props) {
     const [proofFile, setProofFile] = useState<File | null>(null);
+    const [proofPreview, setProofPreview] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
     const [uploaded, setUploaded] = useState(false);
 
@@ -130,7 +131,15 @@ return;
                                 type="file"
                                 accept="image/jpeg,image/png,image/jpg,image/webp"
                                 className="hidden"
-                                onChange={(e) => setProofFile(e.target.files?.[0] ?? null)}
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0] ?? null;
+                                    setProofFile(file);
+                                    if (file) {
+                                        setProofPreview(URL.createObjectURL(file));
+                                    } else {
+                                        setProofPreview(null);
+                                    }
+                                }}
                             />
                         </label>
                         <button
@@ -142,12 +151,19 @@ return;
                         </button>
                     </form>
                 ) : (
-                    <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-6 flex items-center gap-3">
-                        <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-                        <div>
-                            <p className="font-bold text-green-700">Bukti pembayaran diterima!</p>
-                            <p className="text-sm text-green-600">Tim kami akan memverifikasi dalam 1×24 jam.</p>
+                    <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                            <div>
+                                <p className="font-bold text-green-700">Bukti pembayaran diterima!</p>
+                                <p className="text-sm text-green-600">Tim kami akan memverifikasi dalam 1×24 jam.</p>
+                            </div>
                         </div>
+                        {proofPreview && (
+                            <div className="mt-3 rounded-xl overflow-hidden border border-green-200">
+                                <img src={proofPreview} alt="Bukti pembayaran" className="w-full max-h-64 object-contain bg-white" />
+                            </div>
+                        )}
                     </div>
                 )}
 

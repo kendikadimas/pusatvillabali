@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
 import { getPhotoUrl } from '@/lib/villaUtils';
+import { DatePicker } from '@/components/ui/date-picker';
 import type { Villa, PaymentMethod, AppSettings } from '@/types';
 
 interface Props {
@@ -35,6 +36,7 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
     const [bookingCode, setBookingCode] = useState('');
     const [ktpFile, setKtpFile] = useState<File | null>(null);
     const [proofFile, setProofFile] = useState<File | null>(null);
+    const [proofPreview, setProofPreview] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
     const [proofUploaded, setProofUploaded] = useState(false);
 
@@ -251,12 +253,22 @@ form.append('payment_method_id', String(selectedPaymentMethod));
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-xs font-medium text-slate-600 mb-1">Check-in *</label>
-                                                <input type="date" required value={checkIn} onChange={(e) => setCheckIn(e.target.value)} min={new Date().toISOString().split('T')[0]} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                                <DatePicker
+                                                    value={checkIn}
+                                                    onChange={setCheckIn}
+                                                    placeholder="Pilih check-in"
+                                                    minDate={new Date()}
+                                                />
                                                 {errors.check_in && <p className="text-xs text-red-500 mt-1">{errors.check_in}</p>}
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-medium text-slate-600 mb-1">Check-out *</label>
-                                                <input type="date" required value={checkOut} onChange={(e) => setCheckOut(e.target.value)} min={checkIn || new Date().toISOString().split('T')[0]} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                                <DatePicker
+                                                    value={checkOut}
+                                                    onChange={setCheckOut}
+                                                    placeholder="Pilih check-out"
+                                                    minDate={checkIn ? new Date(checkIn + "T00:00:00") : new Date()}
+                                                />
                                                 {errors.check_out && <p className="text-xs text-red-500 mt-1">{errors.check_out}</p>}
                                             </div>
                                         </div>
@@ -489,7 +501,15 @@ form.append('payment_method_id', String(selectedPaymentMethod));
                                         <span className="text-xs text-slate-500 text-center">
                                             {proofFile ? proofFile.name : 'Klik untuk pilih file (JPG, PNG, PDF)'}
                                         </span>
-                                        <input type="file" accept="image/jpeg,image/png,image/jpg,image/webp" className="hidden" onChange={(e) => setProofFile(e.target.files?.[0] ?? null)} />
+                                        <input type="file" accept="image/jpeg,image/png,image/jpg,image/webp" className="hidden" onChange={(e) => {
+                                            const file = e.target.files?.[0] ?? null;
+                                            setProofFile(file);
+                                            if (file) {
+                                                setProofPreview(URL.createObjectURL(file));
+                                            } else {
+                                                setProofPreview(null);
+                                            }
+                                        }} />
                                     </label>
                                     <button type="submit" disabled={!proofFile || uploading} className="mt-4 w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 text-sm">
                                         {uploading ? 'Mengirim...' : 'Kirim Bukti Pembayaran'}
@@ -499,12 +519,19 @@ form.append('payment_method_id', String(selectedPaymentMethod));
                         )}
 
                         {proofUploaded && (
-                            <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-6 flex items-center gap-3">
-                                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-                                <div>
-                                    <p className="font-bold text-green-700 text-sm">Bukti pembayaran diterima!</p>
-                                    <p className="text-xs text-green-600">Tim kami akan memverifikasi dalam 1×24 jam.</p>
+                            <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-6">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                                    <div>
+                                        <p className="font-bold text-green-700 text-sm">Bukti pembayaran diterima!</p>
+                                        <p className="text-xs text-green-600">Tim kami akan memverifikasi dalam 1×24 jam.</p>
+                                    </div>
                                 </div>
+                                {proofPreview && (
+                                    <div className="mt-3 rounded-xl overflow-hidden border border-green-200">
+                                        <img src={proofPreview} alt="Bukti pembayaran" className="w-full max-h-64 object-contain bg-white" />
+                                    </div>
+                                )}
                             </div>
                         )}
 

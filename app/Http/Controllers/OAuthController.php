@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -73,6 +74,9 @@ class OAuthController extends Controller
         if (! $user) {
             return response()->json(['message' => 'User tidak ditemukan.'], 404);
         }
+
+        // Log in via session so Inertia shared props include auth.user
+        Auth::login($user);
 
         $token = $user->createToken('user-token')->plainTextToken;
 

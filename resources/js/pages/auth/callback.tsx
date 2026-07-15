@@ -32,7 +32,9 @@ export default function AuthCallback() {
 
                 const redirectTo = sessionStorage.getItem('oauth_redirect') || '/profile';
                 sessionStorage.removeItem('oauth_redirect');
-                router.visit(redirectTo, { replace: true });
+
+                // Full page reload so server session picks up the Sanctum token
+                window.location.href = redirectTo;
             })
             .catch(() => {
                 setError('Gagal menukar kode otorisasi. Silakan coba login kembali.');

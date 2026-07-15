@@ -2,12 +2,12 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { differenceInDays, parseISO, format, eachDayOfInterval } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { CheckCircle, Upload, MapPin, BedDouble, Users, Calendar } from 'lucide-react';
+import { BedDouble, Calendar, CheckCircle, Home, MapPin, Upload, Users } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { DatePicker } from '@/components/ui/date-picker';
 import { formatPrice } from '@/lib/format';
 import { getPhotoUrl } from '@/lib/villaUtils';
-import { DatePicker } from '@/components/ui/date-picker';
 import type { Villa, PaymentMethod, AppSettings } from '@/types';
 
 interface Props {
@@ -167,6 +167,7 @@ formData.append('ktp_image', ktpFile);
 
         if (!proofFile || !bookingCode) {
             console.log('[Upload Debug] Missing proofFile or bookingCode', { proofFile, bookingCode });
+
             return;
         }
 
@@ -219,7 +220,9 @@ formData.append('ktp_image', ktpFile);
             <>
                 <Head title="Konfirmasi Pemesanan" />
                 <div className="max-w-xl mx-auto px-4 py-20 text-center">
-                    <div className="text-5xl mb-4">🏠</div>
+                    <div className="flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mx-auto mb-4">
+                        <Home className="w-8 h-8 text-slate-400" />
+                    </div>
                     <h2 className="text-xl font-bold text-slate-800 mb-2 font-heading">Villa tidak ditemukan</h2>
                     <Link href="/villas" className="text-blue-600 hover:underline text-sm font-medium">← Kembali ke daftar villa</Link>
                 </div>
@@ -523,6 +526,7 @@ formData.append('ktp_image', ktpFile);
                                         <input type="file" accept="image/jpeg,image/png,image/jpg,image/webp" className="hidden" onChange={(e) => {
                                             const file = e.target.files?.[0] ?? null;
                                             setProofFile(file);
+
                                             if (file) {
                                                 setProofPreview(URL.createObjectURL(file));
                                             } else {

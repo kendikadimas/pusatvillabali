@@ -14,17 +14,18 @@ import {
 import { id as localeID } from 'date-fns/locale';
 import {
     ArrowLeft,
-    Save,
-    Loader2,
-    Plus,
-    X,
+    Calendar as CalendarIcon,
     Check,
     ChevronDown,
     ChevronLeft,
     ChevronRight,
-    Upload,
+    Loader2,
+    Lock,
+    Plus,
+    Save,
     Trash2,
-    Calendar as CalendarIcon,
+    Upload,
+    X,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
@@ -746,7 +747,7 @@ return;
                         }`}
                     >
                         <span>2. Galeri Foto</span>
-                        {!isEdit && <span className="text-[10px]">🔒</span>}
+                        {!isEdit && <Lock className="w-3 h-3 inline-block ml-1" />}
                         {isEdit && <span>({photos.length})</span>}
                     </button>
                     <button 
@@ -769,7 +770,7 @@ return;
                         }`}
                     >
                         <span>3. Blokir Tanggal</span>
-                        {!isEdit && <span className="text-[10px]">🔒</span>}
+                        {!isEdit && <Lock className="w-3 h-3 inline-block ml-1" />}
                         {isEdit && <span>({blockedDates.length})</span>}
                     </button>
                 </div>

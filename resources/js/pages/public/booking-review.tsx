@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
-import { Star } from 'lucide-react';
+import { Search, Star } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import type { Booking, Review, AppSettings } from '@/types';
@@ -24,7 +24,9 @@ export default function BookingReviewPage({ booking, existingReview, token, sett
             <>
                 <Head title="Tulis Ulasan" />
                 <div className="max-w-xl mx-auto px-4 py-20 text-center">
-                    <div className="text-5xl mb-4">🔍</div>
+                    <div className="flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mx-auto mb-4">
+                        <Search className="w-8 h-8 text-slate-400" />
+                    </div>
                     <h2 className="text-xl font-bold text-slate-800 mb-2">Link tidak valid</h2>
                     <Link href="/" className="text-blue-600 hover:underline text-sm">Kembali ke beranda</Link>
                 </div>
@@ -57,7 +59,9 @@ export default function BookingReviewPage({ booking, existingReview, token, sett
             <Head title="Tulis Ulasan" />
             <div className="max-w-lg mx-auto px-4 py-16">
                 <div className="text-center mb-8">
-                    <div className="text-4xl mb-3">⭐</div>
+                    <div className="flex items-center justify-center w-14 h-14 bg-amber-50 rounded-full mx-auto mb-3">
+                        <Star className="w-7 h-7 text-amber-400 fill-amber-400" />
+                    </div>
                     <h1 className="text-2xl font-black text-slate-800 mb-1 font-heading">Bagaimana pengalaman Anda?</h1>
                     <p className="text-sm text-slate-500">{booking.villa?.name}</p>
                 </div>

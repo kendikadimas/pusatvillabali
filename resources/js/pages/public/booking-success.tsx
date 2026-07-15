@@ -25,7 +25,9 @@ export default function BookingSuccessPage({ booking, settings, code }: Props) {
             <>
                 <Head title="Pemesanan Berhasil" />
                 <div className="max-w-xl mx-auto px-4 py-20 text-center">
-                    <div className="text-5xl mb-4">🔍</div>
+                    <div className="flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mx-auto mb-4">
+                        <Search className="w-8 h-8 text-slate-400" />
+                    </div>
                     <h2 className="text-xl font-bold text-slate-800 mb-2">Data pemesanan tidak ditemukan</h2>
                     <p className="text-slate-500 text-sm mb-6">
                         Kode booking "{code}" tidak ditemukan.

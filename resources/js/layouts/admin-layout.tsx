@@ -1,4 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
+import { BarChart2, Calendar, ClipboardList, Globe, Home, LayoutDashboard, MapPin, Settings, Star, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
@@ -16,15 +17,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
 
     const navItems = [
-        { href: '/admin/dashboard', label: 'Dashboard', icon: '⊞' },
-        { href: '/admin/analytics', label: 'Analitik', icon: '📊' },
-        { href: '/admin/villas', label: 'Villa', icon: '🏠' },
-        { href: '/admin/bookings', label: 'Pemesanan', icon: '📋' },
-        { href: '/admin/reviews', label: 'Ulasan', icon: '⭐' },
-        { href: '/admin/destinations', label: 'Destinasi', icon: '📍' },
-        { href: '/admin/calendar', label: 'Kalender', icon: '📅' },
-        { href: '/admin/settings', label: 'Pengaturan', icon: '⚙️' },
-        { href: '/admin/users', label: 'Pengguna', icon: '👥' },
+        { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
+        { href: '/admin/analytics', label: 'Analitik', icon: <BarChart2 className="w-4 h-4" /> },
+        { href: '/admin/villas', label: 'Villa', icon: <Home className="w-4 h-4" /> },
+        { href: '/admin/bookings', label: 'Pemesanan', icon: <ClipboardList className="w-4 h-4" /> },
+        { href: '/admin/reviews', label: 'Ulasan', icon: <Star className="w-4 h-4" /> },
+        { href: '/admin/destinations', label: 'Destinasi', icon: <MapPin className="w-4 h-4" /> },
+        { href: '/admin/calendar', label: 'Kalender', icon: <Calendar className="w-4 h-4" /> },
+        { href: '/admin/settings', label: 'Pengaturan', icon: <Settings className="w-4 h-4" /> },
+        { href: '/admin/users', label: 'Pengguna', icon: <Users className="w-4 h-4" /> },
     ];
 
     const sidebarContent = (
@@ -65,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                     : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                             }`}
                         >
-                            <span className="text-base flex-shrink-0">{item.icon}</span>
+                            <span className="flex-shrink-0">{item.icon}</span>
                             {sidebarOpen && <span className="truncate">{item.label}</span>}
                         </Link>
                     );
@@ -78,7 +79,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     href={home()}
                     className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors text-sm"
                 >
-                    <span className="flex-shrink-0">🌐</span>
+                    <Globe className="w-4 h-4 flex-shrink-0" />
                     {sidebarOpen && <span>Lihat Website</span>}
                 </Link>
             </div>
@@ -129,9 +130,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         </svg>
                     </button>
                     <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-600">
-                            {auth?.user?.name ?? 'Admin'}
-                        </span>
+                        <div className="text-right">
+                            <div className="text-sm font-medium text-gray-700">{auth?.user?.name ?? 'Admin'}</div>
+                            <div className="text-xs text-slate-400 font-mono">
+                                role: <span className="text-blue-600">{auth?.user?.role ?? '—'}</span>
+                                {' · '}
+                                permissions: <span className="text-blue-600">
+                                    {Array.isArray(auth?.user?.permissions) && auth.user.permissions.length > 0
+                                        ? auth.user.permissions.join(', ')
+                                        : auth?.user?.permissions === null ? 'null' : 'none'}
+                                </span>
+                            </div>
+                        </div>
                         <button
                             onClick={handleLogout}
                             className="text-xs text-red-500 hover:text-red-700 font-medium"

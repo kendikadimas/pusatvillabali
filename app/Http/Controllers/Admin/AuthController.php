@@ -8,6 +8,7 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -51,6 +52,9 @@ class AuthController extends Controller
         // Generate Sanctum token with admin-only ability
         // Multi-device sessions are allowed — no existing tokens revoked
         $token = $user->createToken('admin-token', ['admin-access'])->plainTextToken;
+
+        // Log in via session so Inertia requests work
+        Auth::login($user);
 
         return response()->json([
             'token' => $token,
@@ -101,6 +105,9 @@ class AuthController extends Controller
         // Generate Sanctum plain text token
         $token = $user->createToken('user-token')->plainTextToken;
 
+        // Log in via session so Inertia requests work
+        Auth::login($user);
+
         return response()->json([
             'token' => $token,
             'user' => [
@@ -145,6 +152,9 @@ class AuthController extends Controller
 
         $token = $user->createToken('user-token')->plainTextToken;
 
+        // Log in via session so Inertia requests work
+        Auth::login($user);
+
         return response()->json([
             'token' => $token,
             'user' => [
@@ -158,11 +168,15 @@ class AuthController extends Controller
     }
 
     /**
-     * Revoke current token.
+     * Revoke current token and logout session.
      */
     public function logout(Request $request): JsonResponse
     {
+        // Revoke Sanctum token
         $request->user()->currentAccessToken()->delete();
+
+        // Logout session
+        Auth::logout();
 
         return response()->json([
             'message' => 'Logout berhasil. Token telah dinonaktifkan.',
@@ -217,16 +231,16 @@ class AuthController extends Controller
     public function resetPassword(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'token'    => 'required|string',
-            'email'    => 'required|email',
+            'token' => 'required|string',
+            'email' => 'required|email',
             'password' => 'required|string|min:8|confirmed',
         ], [
-            'token.required'    => 'Token wajib disertakan.',
-            'email.required'    => 'Email wajib diisi.',
-            'email.email'       => 'Format email tidak valid.',
+            'token.required' => 'Token wajib disertakan.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
             'password.required' => 'Password baru wajib diisi.',
-            'password.min'      => 'Password minimal 8 karakter.',
-            'password.confirmed'=> 'Konfirmasi password tidak cocok.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
         if ($validator->fails()) {

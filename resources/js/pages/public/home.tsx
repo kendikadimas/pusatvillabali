@@ -12,16 +12,16 @@ interface Props {
 }
 
 const DEFAULT_DESTINATIONS: Destination[] = [
-    { id: 1,  name: 'Seminyak',       city: 'Seminyak, Badung',           query: 'Seminyak',       image: 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '15+ Villa' },
-    { id: 2,  name: 'Canggu',         city: 'Canggu, Badung',             query: 'Canggu',         image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '21+ Villa' },
-    { id: 3,  name: 'Ubud',           city: 'Ubud, Gianyar',              query: 'Ubud',           image: 'https://images.unsplash.com/photo-1549638441-b787d2e11f14?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '14+ Villa' },
-    { id: 4,  name: 'Uluwatu',        city: 'Uluwatu, Badung',            query: 'Uluwatu',        image: 'https://images.unsplash.com/photo-1573790387438-4da905039392?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '11+ Villa' },
-    { id: 5,  name: 'Jimbaran',       city: 'Jimbaran, Badung',           query: 'Jimbaran',       image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '9+ Villa' },
-    { id: 6,  name: 'Nusa Dua',       city: 'Nusa Dua, Badung',           query: 'Nusa Dua',       image: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '8+ Villa' },
-    { id: 7,  name: 'Kuta',           city: 'Kuta, Badung',               query: 'Kuta',           image: 'https://images.unsplash.com/photo-1520454974749-a795c5e0b8f0?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '12+ Villa' },
-    { id: 8,  name: 'Legian',         city: 'Legian, Badung',             query: 'Legian',         image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '7+ Villa' },
-    { id: 9,  name: 'Sanur',          city: 'Sanur, Denpasar',            query: 'Sanur',          image: 'https://images.unsplash.com/photo-1604999333679-b86d54738315?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '10+ Villa' },
-    { id: 10, name: 'Nusa Lembongan', city: 'Nusa Lembongan, Klungkung',  query: 'Nusa Lembongan', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '6+ Villa' },
+    { id: 1,  name: 'Seminyak',  city: 'Seminyak, Badung',  query: 'Seminyak',  image: 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '15+ Villa' },
+    { id: 2,  name: 'Canggu',    city: 'Canggu, Badung',    query: 'Canggu',    image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '21+ Villa' },
+    { id: 3,  name: 'Legian',    city: 'Legian, Badung',    query: 'Legian',    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '7+ Villa' },
+    { id: 4,  name: 'Kuta',      city: 'Kuta, Badung',      query: 'Kuta',      image: 'https://images.unsplash.com/photo-1520454974749-a795c5e0b8f0?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '12+ Villa' },
+    { id: 5,  name: 'Jimbaran',  city: 'Jimbaran, Badung',  query: 'Jimbaran',  image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '9+ Villa' },
+    { id: 6,  name: 'Nusa Dua',  city: 'Nusa Dua, Badung',  query: 'Nusa Dua',  image: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '8+ Villa' },
+    { id: 7,  name: 'Uluwatu',   city: 'Uluwatu, Badung',   query: 'Uluwatu',   image: 'https://images.unsplash.com/photo-1573790387438-4da905039392?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '11+ Villa' },
+    { id: 8,  name: 'Ubud',      city: 'Ubud, Gianyar',     query: 'Ubud',      image: 'https://images.unsplash.com/photo-1549638441-b787d2e11f14?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '14+ Villa' },
+    { id: 9,  name: 'Kintamani', city: 'Kintamani, Bangli', query: 'Kintamani', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '5+ Villa' },
+    { id: 10, name: 'Sanur',     city: 'Sanur, Denpasar',   query: 'Sanur',     image: 'https://images.unsplash.com/photo-1604999333679-b86d54738315?auto=format&fit=crop&w=200&h=200&q=80', count_fallback: '10+ Villa' },
 ];
 
 // Horizontal scroll section with prev/next buttons

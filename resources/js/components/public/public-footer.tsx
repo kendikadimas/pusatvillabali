@@ -80,8 +80,8 @@ export default function PublicFooter() {
                                 { label: 'Semua Villa', href: '/villas' },
                                 { label: 'Villa Seminyak', href: '/villas?location=Seminyak' },
                                 { label: 'Villa Canggu', href: '/villas?location=Canggu' },
-                                { label: 'Villa Ubud', href: '/villas?location=Ubud' },
-                                { label: 'Villa Uluwatu', href: '/villas?location=Uluwatu' },
+                                { label: 'Villa Legian', href: '/villas?location=Legian' },
+                                { label: 'Villa Kuta', href: '/villas?location=Kuta' },
                                 { label: 'Villa Jimbaran', href: '/villas?location=Jimbaran' },
                             ].map((link) => (
                                 <li key={link.href}>
@@ -100,10 +100,10 @@ export default function PublicFooter() {
                         <ul className="space-y-2.5">
                             {[
                                 { label: 'Villa Nusa Dua', href: '/villas?location=Nusa Dua' },
+                                { label: 'Villa Uluwatu', href: '/villas?location=Uluwatu' },
+                                { label: 'Villa Ubud', href: '/villas?location=Ubud' },
+                                { label: 'Villa Kintamani', href: '/villas?location=Kintamani' },
                                 { label: 'Villa Sanur', href: '/villas?location=Sanur' },
-                                { label: 'Villa Kuta', href: '/villas?location=Kuta' },
-                                { label: 'Villa Legian', href: '/villas?location=Legian' },
-                                { label: 'Wishlist', href: '/wishlist' },
                                 { label: 'Cek Status Booking', href: '/booking/status' },
                             ].map((link) => (
                                 <li key={link.href}>

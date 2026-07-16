@@ -42,7 +42,7 @@ it('can list active villas in slim mode', function () {
     $response->assertOk();
     $data = $response->json('data');
     expect($data)->toHaveCount(1);
-    
+
     // Assert included fields
     expect($data[0])->toHaveKey('id')
         ->toHaveKey('name')
@@ -118,17 +118,21 @@ it('returns 404 for inactive villa', function () {
 
 it('can get villa availability with blocked dates', function () {
     $villa = Villa::factory()->create();
-    // Create a booking that covers specific dates
+    $checkIn = now()->addMonth()->startOfMonth()->toDateString();
+    $checkOut = now()->addMonth()->startOfMonth()->addDays(3)->toDateString();
+    $blockedDay = now()->addMonth()->startOfMonth()->addDays(14)->toDateString();
+
+    // Create a booking that covers specific dates (3 nights = 3 disabled dates)
     Booking::factory()->create([
         'villa_id' => $villa->id,
-        'check_in' => '2026-07-01',
-        'check_out' => '2026-07-04',
+        'check_in' => $checkIn,
+        'check_out' => $checkOut,
         'status' => 'confirmed',
     ]);
     // And a blocked date
     BlockedDate::factory()->create([
         'villa_id' => $villa->id,
-        'date' => '2026-07-15',
+        'date' => $blockedDay,
     ]);
 
     $response = $this->getJson("/api/v1/villas/{$villa->slug}/availability");
@@ -140,10 +144,13 @@ it('can get villa availability with blocked dates', function () {
 
 it('does not include cancelled bookings in availability', function () {
     $villa = Villa::factory()->create();
+    $checkIn = now()->addMonth()->startOfMonth()->toDateString();
+    $checkOut = now()->addMonth()->startOfMonth()->addDays(3)->toDateString();
+
     Booking::factory()->create([
         'villa_id' => $villa->id,
-        'check_in' => '2026-07-01',
-        'check_out' => '2026-07-04',
+        'check_in' => $checkIn,
+        'check_out' => $checkOut,
         'status' => 'cancelled',
     ]);
 
@@ -158,6 +165,8 @@ it('does not include cancelled bookings in availability', function () {
 // =====================================================
 
 it('can list destinations', function () {
+    // Clear any destinations seeded by migrations (e.g. Kintamani from cleanup migration)
+    Destination::query()->delete();
     Destination::factory()->count(3)->create();
 
     $response = $this->getJson('/api/v1/destinations');
@@ -171,6 +180,7 @@ it('can list destinations', function () {
 // =====================================================
 
 it('can create a booking', function () {
+    Storage::fake('public');
     Sanctum::actingAs(User::factory()->create());
     $villa = Villa::factory()->create(['price_per_night' => 1000000, 'weekend_price' => null]);
 
@@ -182,10 +192,11 @@ it('can create a booking', function () {
         'check_in' => now()->addDays(7)->toDateString(),
         'check_out' => now()->addDays(10)->toDateString(),
         'num_guests' => 2,
+        'ktp_image' => UploadedFile::fake()->image('ktp.jpg'),
     ]);
 
     $response->assertCreated()
-        ->assertJsonStructure(['booking_code', 'snap_token', 'total_amount']);
+        ->assertJsonStructure(['booking_code', 'total_amount']);
 
     $this->assertDatabaseHas('bookings', [
         'guest_name' => 'Test Guest',
@@ -222,10 +233,12 @@ it('prevents booking if guest count exceeds capacity', function () {
 it('prevents overlapping bookings', function () {
     Sanctum::actingAs(User::factory()->create());
     $villa = Villa::factory()->create();
+    $futureCheckIn = now()->addMonths(2)->startOfMonth()->toDateString();
+    $futureCheckOut = now()->addMonths(2)->startOfMonth()->addDays(5)->toDateString();
     Booking::factory()->create([
         'villa_id' => $villa->id,
-        'check_in' => '2026-07-10',
-        'check_out' => '2026-07-15',
+        'check_in' => $futureCheckIn,
+        'check_out' => $futureCheckOut,
         'status' => 'confirmed',
     ]);
 
@@ -234,9 +247,10 @@ it('prevents overlapping bookings', function () {
         'guest_name' => 'Guest 2',
         'guest_email' => 'guest2@test.com',
         'guest_phone' => '089876543210',
-        'check_in' => '2026-07-12',
-        'check_out' => '2026-07-17',
+        'check_in' => now()->addMonths(2)->startOfMonth()->addDays(2)->toDateString(),
+        'check_out' => now()->addMonths(2)->startOfMonth()->addDays(7)->toDateString(),
         'num_guests' => 2,
+        'ktp_image' => UploadedFile::fake()->image('ktp.jpg'),
     ]);
 
     $response->assertStatus(422);
@@ -245,9 +259,10 @@ it('prevents overlapping bookings', function () {
 it('prevents booking on blocked dates', function () {
     Sanctum::actingAs(User::factory()->create());
     $villa = Villa::factory()->create();
+    $futureDate = now()->addMonths(2)->startOfMonth()->toDateString();
     BlockedDate::factory()->create([
         'villa_id' => $villa->id,
-        'date' => '2026-08-01',
+        'date' => $futureDate,
     ]);
 
     $response = $this->postJson('/api/v1/bookings', [
@@ -255,9 +270,10 @@ it('prevents booking on blocked dates', function () {
         'guest_name' => 'Guest',
         'guest_email' => 'guest@test.com',
         'guest_phone' => '081234567890',
-        'check_in' => '2026-08-01',
-        'check_out' => '2026-08-03',
+        'check_in' => $futureDate,
+        'check_out' => now()->addMonths(2)->startOfMonth()->addDays(2)->toDateString(),
         'num_guests' => 2,
+        'ktp_image' => UploadedFile::fake()->image('ktp.jpg'),
     ]);
 
     $response->assertStatus(422);
@@ -289,6 +305,7 @@ it('returns 404 for invalid booking code/email', function () {
 });
 
 it('calculates weekday vs weekend pricing', function () {
+    Storage::fake('public');
     Sanctum::actingAs(User::factory()->create());
     $villa = Villa::factory()->create([
         'price_per_night' => 1000000,
@@ -305,6 +322,7 @@ it('calculates weekday vs weekend pricing', function () {
         'check_in' => '2026-09-01',
         'check_out' => '2026-09-05',
         'num_guests' => 2,
+        'ktp_image' => UploadedFile::fake()->image('ktp.jpg'),
     ]);
 
     $response->assertCreated();
@@ -427,8 +445,7 @@ it('rejects invalid admin credentials', function () {
 // =====================================================
 
 it('can access dashboard with valid admin token', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    $user = actingAsAdmin();
     Villa::factory()->count(3)->create();
 
     $response = $this->getJson('/api/v1/admin/dashboard');
@@ -441,8 +458,7 @@ it('can access dashboard with valid admin token', function () {
 });
 
 it('can list bookings with filters', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     Booking::factory()->count(3)->confirmed()->create();
     Booking::factory()->cancelled()->create();
@@ -454,8 +470,7 @@ it('can list bookings with filters', function () {
 });
 
 it('can view booking detail', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     $booking = Booking::factory()->create(['guest_name' => 'Detail Guest']);
     Payment::factory()->create(['booking_id' => $booking->id]);
@@ -468,8 +483,7 @@ it('can view booking detail', function () {
 });
 
 it('can update booking status', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     $booking = Booking::factory()->create([
         'status' => 'pending',
@@ -488,8 +502,7 @@ it('can update booking status', function () {
 });
 
 it('can cancel a booking with reason', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     $booking = Booking::factory()->create();
 
@@ -504,8 +517,7 @@ it('can cancel a booking with reason', function () {
 });
 
 it('can list all villas for admin', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     Villa::factory()->count(4)->create();
 
@@ -516,8 +528,7 @@ it('can list all villas for admin', function () {
 });
 
 it('can create a villa via admin API', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
     $destination = Destination::factory()->create();
 
     $response = $this->postJson('/api/v1/admin/villas', [
@@ -542,8 +553,7 @@ it('can create a villa via admin API', function () {
 });
 
 it('can update a villa', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
     $destination = Destination::factory()->create();
 
     $villa = Villa::factory()->create(['name' => 'Old Name']);
@@ -570,8 +580,7 @@ it('can update a villa', function () {
 });
 
 it('can block and unblock dates', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     $villa = Villa::factory()->create();
 
@@ -594,8 +603,7 @@ it('can block and unblock dates', function () {
 });
 
 it('can approve and reject reviews', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     $review = Review::factory()->create(['is_approved' => false]);
 
@@ -612,8 +620,7 @@ it('can approve and reject reviews', function () {
 });
 
 it('can list analytics data', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     $response = $this->getJson('/api/v1/admin/analytics');
 
@@ -644,12 +651,14 @@ it('lets a guest upload a manual payment proof', function () {
     $booking = Booking::factory()->create([
         'booking_code' => 'VB-2026-9001',
         'payment_status' => 'unpaid',
+        'user_id' => null,
     ]);
     $method = PaymentMethod::factory()->create(['is_active' => true]);
 
     $response = $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
         'payment_method_id' => $method->id,
         'payment_proof' => UploadedFile::fake()->image('proof.jpg'),
+        'guest_email' => $booking->guest_email,
     ]);
 
     $response->assertOk()
@@ -664,8 +673,7 @@ it('lets a guest upload a manual payment proof', function () {
 it('admin can approve a manual payment', function () {
     Mail::fake();
 
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     $booking = Booking::factory()->create([
         'status' => 'pending',
@@ -688,8 +696,7 @@ it('admin can approve a manual payment', function () {
 });
 
 it('admin cannot approve a manual payment without proof', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     $booking = Booking::factory()->create(['payment_status' => 'unpaid']);
     Payment::factory()->create([
@@ -706,8 +713,7 @@ it('admin cannot approve a manual payment without proof', function () {
 it('admin can reject a manual payment with a reason', function () {
     Mail::fake();
 
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     $booking = Booking::factory()->create(['payment_status' => 'unpaid']);
     $payment = Payment::factory()->create([
@@ -730,8 +736,7 @@ it('admin can reject a manual payment with a reason', function () {
 });
 
 it('admin reject requires a rejection reason', function () {
-    $user = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($user);
+    actingAsAdmin();
 
     $booking = Booking::factory()->create(['payment_status' => 'unpaid']);
     Payment::factory()->create([
@@ -752,6 +757,7 @@ it('guest re-upload after rejection resets payment to pending', function () {
     $booking = Booking::factory()->create([
         'booking_code' => 'VB-2026-9002',
         'payment_status' => 'unpaid',
+        'user_id' => null,
     ]);
     $method = PaymentMethod::factory()->create(['is_active' => true]);
     $payment = Payment::factory()->create([
@@ -765,6 +771,7 @@ it('guest re-upload after rejection resets payment to pending', function () {
     $response = $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
         'payment_method_id' => $method->id,
         'payment_proof' => UploadedFile::fake()->image('new-proof.jpg'),
+        'guest_email' => $booking->guest_email,
     ]);
 
     $response->assertOk();

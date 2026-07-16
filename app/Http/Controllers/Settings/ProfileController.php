@@ -19,12 +19,12 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response|JsonResponse
     {
-        // If it's an API request (has Bearer token), return JSON
-        if ($request->bearerToken()) {
+        // Return JSON for API/non-Inertia requests (Bearer token or no X-Inertia header on web)
+        if ($request->bearerToken() || ! $request->header('X-Inertia')) {
             return response()->json([
                 'user' => $request->user(),
                 'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-                'status' => $request->session()->get('status'),
+                'status' => session('status'),
             ]);
         }
 

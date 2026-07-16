@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
 use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -31,8 +30,8 @@ class SecurityController extends Controller
             $props['requiresConfirmation'] = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm');
         }
 
-        // If it's an API request (has Bearer token), return JSON
-        if ($request->bearerToken()) {
+        // Return JSON for API/non-Inertia requests (Bearer token or no X-Inertia header on web)
+        if ($request->bearerToken() || ! $request->header('X-Inertia')) {
             return response()->json($props);
         }
 

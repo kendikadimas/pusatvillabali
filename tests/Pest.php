@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -47,4 +48,18 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Authenticate as an admin user with the required 'admin-access' token ability.
+ * Uses a real PersonalAccessToken sent as a Bearer header so AdminMiddleware
+ * can resolve it correctly via $token->can('admin-access').
+ */
+function actingAsAdmin(?User $user = null): User
+{
+    $user = $user ?? User::factory()->create(['role' => 'super_admin']);
+    $tokenResult = $user->createToken('test-admin-token', ['admin-access']);
+    test()->withToken($tokenResult->plainTextToken);
+
+    return $user;
 }

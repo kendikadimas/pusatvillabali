@@ -14,7 +14,20 @@ class ProfileWebController extends Controller
 {
     public function dashboard(Request $request): Response
     {
-        return redirect()->route('profile');
+        /** @var User $user */
+        $user = $request->user();
+
+        $bookings = Booking::where('user_id', $user->id)
+            ->with(['villa', 'payment'])
+            ->latest()
+            ->get();
+
+        $settings = Setting::pluck('value', 'key')->toArray();
+
+        return Inertia::render('public/profile', [
+            'userBookings' => $bookings,
+            'settings' => $settings,
+        ]);
     }
 
     public function profile(Request $request): Response

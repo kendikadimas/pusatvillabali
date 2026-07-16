@@ -14,8 +14,7 @@ use Laravel\Sanctum\Sanctum;
 // =====================================================
 
 it('can list payment methods grouped by type', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    actingAsAdmin();
 
     // Create QRIS method
     PaymentMethod::factory()->create([
@@ -75,8 +74,7 @@ it('public payment methods endpoint returns only active methods', function () {
 it('can upload QR code image for QRIS payment method', function () {
     Storage::fake('public');
 
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    actingAsAdmin();
 
     $qris = PaymentMethod::factory()->create([
         'name' => 'QRIS',
@@ -96,8 +94,7 @@ it('can upload QR code image for QRIS payment method', function () {
 it('can update payment method with QR code', function () {
     Storage::fake('public');
 
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    actingAsAdmin();
 
     $qris = PaymentMethod::factory()->create([
         'name' => 'QRIS',
@@ -135,12 +132,14 @@ it('booking confirm page receives payment methods from API', function () {
 });
 
 it('can select specific payment method when creating booking', function () {
+    Storage::fake('public');
+
     $user = User::factory()->create();
     Sanctum::actingAs($user);
 
     $villa = Villa::factory()->create(['price_per_night' => 1000000]);
-    $bca = PaymentMethod::factory()->create(['code' => 'bca', 'is_active' => true]);
-    $qris = PaymentMethod::factory()->create(['code' => 'qris', 'is_active' => true]);
+    PaymentMethod::factory()->create(['code' => 'bca', 'is_active' => true]);
+    PaymentMethod::factory()->create(['code' => 'qris', 'is_active' => true]);
 
     // Create booking (payment method selection happens on confirm page)
     $response = $this->postJson('/api/v1/bookings', [
@@ -151,6 +150,7 @@ it('can select specific payment method when creating booking', function () {
         'check_in' => now()->addDays(7)->toDateString(),
         'check_out' => now()->addDays(10)->toDateString(),
         'num_guests' => 2,
+        'ktp_image' => UploadedFile::fake()->image('ktp.jpg'),
     ]);
 
     $response->assertCreated();
@@ -162,6 +162,7 @@ it('can upload payment proof with specific payment method', function () {
     $booking = Booking::factory()->create([
         'booking_code' => 'VB-2026-SPECIFIC',
         'payment_status' => 'unpaid',
+        'user_id' => null,
     ]);
 
     $bca = PaymentMethod::factory()->create([
@@ -173,6 +174,7 @@ it('can upload payment proof with specific payment method', function () {
     $response = $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
         'payment_method_id' => $bca->id,
         'payment_proof' => UploadedFile::fake()->image('bca-proof.jpg'),
+        'guest_email' => $booking->guest_email,
     ]);
 
     $response->assertOk();
@@ -217,8 +219,7 @@ it('user with google_id can login via sanctum', function () {
 // =====================================================
 
 it('analytics endpoint returns daily revenue data for charts', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    actingAsAdmin();
 
     $villa = Villa::factory()->create();
 
@@ -255,8 +256,7 @@ it('analytics endpoint returns daily revenue data for charts', function () {
 });
 
 it('analytics export endpoint works', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    actingAsAdmin();
 
     $response = $this->get('/api/v1/admin/analytics/export?from='.now()->subMonth()->toDateString().'&to='.now()->toDateString());
 
@@ -273,6 +273,7 @@ it('payment status transitions correctly: unpaid -> pending -> paid', function (
     $booking = Booking::factory()->create([
         'booking_code' => 'VB-2026-TRANSITION',
         'payment_status' => 'unpaid',
+        'user_id' => null,
     ]);
 
     expect($booking->payment_status)->toBe('unpaid');
@@ -282,13 +283,13 @@ it('payment status transitions correctly: unpaid -> pending -> paid', function (
     $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
         'payment_method_id' => $method->id,
         'payment_proof' => UploadedFile::fake()->image('proof.jpg'),
+        'guest_email' => $booking->guest_email,
     ]);
 
     expect($booking->fresh()->payment_status)->toBe('pending');
 
     // Admin approves -> paid
-    $admin = User::factory()->create(['role' => 'admin', 'email' => 'different@admin.com']);
-    Sanctum::actingAs($admin);
+    actingAsAdmin();
 
     $this->postJson("/api/v1/admin/bookings/{$booking->id}/approve-manual-payment");
 
@@ -309,8 +310,7 @@ it('payment status can go from pending to unpaid after rejection', function () {
         'payment_proof' => 'https://example.test/proof.jpg',
     ]);
 
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    actingAsAdmin();
 
     $this->postJson("/api/v1/admin/bookings/{$booking->id}/reject-manual-payment", [
         'rejection_reason' => 'Invalid proof',
@@ -321,8 +321,7 @@ it('payment status can go from pending to unpaid after rejection', function () {
 });
 
 it('cannot approve booking that is already paid', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    actingAsAdmin();
 
     $booking = Booking::factory()->create([
         'status' => 'confirmed',
@@ -345,8 +344,7 @@ it('cannot approve booking that is already paid', function () {
 // =====================================================
 
 it('dashboard shows correct revenue calculation', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    actingAsAdmin();
 
     $villa = Villa::factory()->create();
 
@@ -390,8 +388,7 @@ it('dashboard shows correct revenue calculation', function () {
 });
 
 it('dashboard shows correct booking counts', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    actingAsAdmin();
 
     $villa = Villa::factory()->create();
 
@@ -484,15 +481,15 @@ it('user can only see their own bookings', function () {
         'guest_email' => $user2->email,
     ]);
 
-    Sanctum::actingAs($user1);
+    $token = $user1->createToken('user-token')->plainTextToken;
+    test()->withToken($token);
 
     $response = $this->getJson('/api/v1/user/bookings');
 
     $response->assertOk();
 
-    $bookings = $response->json();
-    // User should only see their own bookings
-    $bookingIds = collect($bookings)->pluck('id')->toArray();
+    // userBookings returns a paginated response: {data: [...], ...}
+    $bookingIds = collect($response->json('data'))->pluck('id')->toArray();
     expect($bookingIds)->toContain($booking1->id);
     expect($bookingIds)->not->toContain($booking2->id);
 });

@@ -1,4 +1,3 @@
-import AdminLayout from '@/layouts/admin-layout';
 import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
@@ -155,8 +154,7 @@ export default function VouchersPage() {
     });
 
     return (
-        <AdminLayout>
-            <div className="space-y-6">
+        <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
@@ -407,6 +405,6 @@ export default function VouchersPage() {
                     </div>
                 </>
             )}
-        </AdminLayout>
+        </div>
     );
 }

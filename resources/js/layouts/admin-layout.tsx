@@ -1,25 +1,22 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { BarChart2, Calendar, ClipboardList, Globe, Home, LayoutDashboard, MapPin, Settings, Star, Tag, Users } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
+import { useAuthTokenSync } from '@/hooks/use-auth-token-sync';
 import { home } from '@/routes';
 import type { Auth } from '@/types/auth';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const { auth, flash, admin_token } = usePage<{ auth: Auth; flash?: { success?: string; error?: string }; admin_token?: string }>().props;
+    useAuthTokenSync();
+    const { auth, flash } = usePage<{ auth: Auth; flash?: { success?: string; error?: string } }>().props;
     const { url: currentUrl } = usePage();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
 
-    // Sync admin_token from session (shared on every Inertia request) into localStorage
-    useEffect(() => {
-        if (admin_token) {
-            localStorage.setItem('admin_token', admin_token);
-        }
-    }, [admin_token]);
-
     const handleLogout = () => {
         localStorage.removeItem('admin_token');
+        localStorage.removeItem('sanctum_token');
+        localStorage.removeItem('auth_user');
         router.post('/admin/logout');
     };
 

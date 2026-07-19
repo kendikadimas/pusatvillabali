@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -53,8 +54,14 @@ class AuthController extends Controller
         // Multi-device sessions are allowed — no existing tokens revoked
         $token = $user->createToken('admin-token', ['admin-access'])->plainTextToken;
 
-        // Log in via session so Inertia requests work
+        // Log in via session so Inertia requests work (stateful SPA only)
         Auth::login($user);
+
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+            $request->session()->put('admin_token', $token);
+            $request->session()->put('sanctum_token', $token);
+        }
 
         return response()->json([
             'token' => $token,
@@ -105,8 +112,13 @@ class AuthController extends Controller
         // Generate Sanctum plain text token
         $token = $user->createToken('user-token')->plainTextToken;
 
-        // Log in via session so Inertia requests work
+        // Log in via session so Inertia requests work (stateful SPA only)
         Auth::login($user);
+
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+            $request->session()->put('sanctum_token', $token);
+        }
 
         return response()->json([
             'token' => $token,
@@ -152,8 +164,13 @@ class AuthController extends Controller
 
         $token = $user->createToken('user-token')->plainTextToken;
 
-        // Log in via session so Inertia requests work
+        // Log in via session so Inertia requests work (stateful SPA only)
         Auth::login($user);
+
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+            $request->session()->put('sanctum_token', $token);
+        }
 
         return response()->json([
             'token' => $token,
@@ -172,11 +189,26 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        // Revoke Sanctum token
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
 
-        // Logout session
+        // Revoke personal access tokens (session auth uses TransientToken — skip delete)
+        if ($user) {
+            $accessToken = $user->currentAccessToken();
+
+            if ($accessToken instanceof PersonalAccessToken) {
+                $accessToken->delete();
+            } else {
+                $user->tokens()->delete();
+            }
+        }
+
         Auth::logout();
+
+        if ($request->hasSession()) {
+            $request->session()->forget(['sanctum_token', 'admin_token']);
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json([
             'message' => 'Logout berhasil. Token telah dinonaktifkan.',

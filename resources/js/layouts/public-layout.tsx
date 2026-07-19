@@ -2,9 +2,11 @@ import { usePage } from '@inertiajs/react';
 import React from 'react';
 import PublicFooter from '@/components/public/public-footer';
 import PublicHeader from '@/components/public/public-header';
+import { useAuthTokenSync } from '@/hooks/use-auth-token-sync';
 import type { AppSettings } from '@/types';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
+    useAuthTokenSync();
     const { settings } = usePage<{ settings: AppSettings }>().props;
     const whatsapp = settings?.settings_whatsapp ?? settings?.settings_phone ?? '6281234567890';
 

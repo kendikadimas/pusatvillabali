@@ -87,13 +87,21 @@ class OAuthController extends Controller
         // Log in via session so Inertia shared props include auth.user
         Auth::login($user);
 
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
+
         Log::info('[OAuth Debug] User logged in via session', [
             'user_id' => $user->id,
-            'session_id' => $request->session()->getId(),
+            'session_id' => $request->hasSession() ? $request->session()->getId() : null,
             'is_authenticated' => Auth::check(),
         ]);
 
         $token = $user->createToken('user-token')->plainTextToken;
+
+        if ($request->hasSession()) {
+            $request->session()->put('sanctum_token', $token);
+        }
 
         return response()->json([
             'token' => $token,

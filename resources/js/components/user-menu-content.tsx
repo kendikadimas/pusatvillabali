@@ -20,6 +20,9 @@ export function UserMenuContent({ user }: Props) {
     const cleanup = useMobileNavigation();
 
     const handleLogout = () => {
+        localStorage.removeItem('sanctum_token');
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('auth_user');
         cleanup();
         router.flushAll();
     };

@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Models\Setting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -38,13 +37,6 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $user = $request->user();
-
-        // Debug auth state
-        Log::debug('[Inertia Debug] Auth state in HandleInertiaRequests', [
-            'user' => $user ? $user->id : null,
-            'session_id' => $request->session()->getId(),
-            'has_sanctum_token' => $request->bearerToken() ? true : false,
-        ]);
 
         // Load app settings — cached to avoid N+1 on every request
         $settings = cache()->remember('app_settings', 300, function () {

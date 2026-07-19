@@ -247,7 +247,6 @@ export default function VouchersPage() {
                         </div>
                     )}
                 </div>
-            </div>
 
             {/* Modal */}
             {showModal && (

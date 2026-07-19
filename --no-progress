@@ -1,0 +1,37 @@
+[00:00:00.075975500 / 00:00:00.075975500] [9442832 bytes] Test Runner Configured
+[00:00:00.122691600 / 00:00:00.046716100] [11911896 bytes] PHPUnit Started (PHPUnit 12.5.28 using PHP 8.4.15 (cli) on WINNT)
+[00:00:00.127330300 / 00:00:00.004638700] [11911896 bytes] Test Runner Configured
+[00:00:00.129807400 / 00:00:00.002477100] [11958000 bytes] Bootstrap Finished (D:\laragon\www\pusatvillabali\pusatvillaid\pusatvillaid\vendor/autoload.php)
+[00:00:00.158709600 / 00:00:00.028902200] [12308272 bytes] Event Facade Sealed
+[00:00:00.231486500 / 00:00:00.072776900] [16661632 bytes] Test Suite Loaded (161 tests)
+[00:00:00.233357900 / 00:00:00.001871400] [16791480 bytes] Test Runner Started
+[00:00:00.234668500 / 00:00:00.001310600] [16802880 bytes] Test Suite Sorted
+[00:00:00.242981800 / 00:00:00.008313300] [16946816 bytes] Test Suite Filtered (1 test)
+[00:00:00.243863700 / 00:00:00.000881900] [16946816 bytes] Test Runner Execution Started (1 test)
+[00:00:00.245462700 / 00:00:00.001599000] [17001048 bytes] Test Suite Started (D:\laragon\www\pusatvillabali\pusatvillaid\pusatvillaid\phpunit.xml, 1 test)
+[00:00:00.246367600 / 00:00:00.000904900] [17001048 bytes] Test Suite Started (Feature, 1 test)
+[00:00:00.247069400 / 00:00:00.000701800] [17001048 bytes] Test Suite Started (P\Tests\Feature\ComprehensiveTest, 1 test)
+[00:00:00.248803000 / 00:00:00.001733600] [17001048 bytes] Before First Test Method Called (P\Tests\Feature\ComprehensiveTest::setUpBeforeClass)
+[00:00:00.248957500 / 00:00:00.000154500] [17001048 bytes] Before First Test Method Finished:
+                                                           - P\Tests\Feature\ComprehensiveTest::setUpBeforeClass
+[00:00:00.252509600 / 00:00:00.003552100] [17001048 bytes] Test Preparation Started (P\Tests\Feature\ComprehensiveTest::__pest_evaluable_it_complete_booking_workflow__create____upload_proof____admin_approve)
+[00:00:04.623620700 / 00:00:04.371111100] [47220000 bytes] Before Test Method Called (P\Tests\Feature\ComprehensiveTest::setUp)
+[00:00:04.624071300 / 00:00:00.000450600] [47220000 bytes] Before Test Method Finished:
+                                                           - P\Tests\Feature\ComprehensiveTest::setUp
+[00:00:04.624565000 / 00:00:00.000493700] [47240040 bytes] Test Prepared (P\Tests\Feature\ComprehensiveTest::__pest_evaluable_it_complete_booking_workflow__create____upload_proof____admin_approve)
+[00:00:04.847948800 / 00:00:00.223383800] [57311944 bytes] Test Failed (P\Tests\Feature\ComprehensiveTest::__pest_evaluable_it_complete_booking_workflow__create____upload_proof____admin_approve)
+                                                           Expected response status code [200] but received 403.
+                                                           Failed asserting that 403 is identical to 200.
+[00:00:04.873509700 / 00:00:00.025560900] [57425496 bytes] After Test Method Called (P\Tests\Feature\ComprehensiveTest::tearDown)
+[00:00:04.873956900 / 00:00:00.000447200] [57425496 bytes] After Test Method Finished:
+                                                           - P\Tests\Feature\ComprehensiveTest::tearDown
+[00:00:04.879645400 / 00:00:00.005688500] [57507608 bytes] Test Finished (P\Tests\Feature\ComprehensiveTest::__pest_evaluable_it_complete_booking_workflow__create____upload_proof____admin_approve)
+[00:00:04.880109600 / 00:00:00.000464200] [57526448 bytes] After Last Test Method Called (P\Tests\Feature\ComprehensiveTest::tearDownAfterClass)
+[00:00:04.880452300 / 00:00:00.000342700] [57526448 bytes] After Last Test Method Finished:
+                                                           - P\Tests\Feature\ComprehensiveTest::tearDownAfterClass
+[00:00:04.880711600 / 00:00:00.000259300] [57526448 bytes] Test Suite Finished (P\Tests\Feature\ComprehensiveTest, 1 test)
+[00:00:04.881941800 / 00:00:00.001230200] [57552216 bytes] Test Suite Finished (Feature, 1 test)
+[00:00:04.882172600 / 00:00:00.000230800] [57552216 bytes] Test Suite Finished (D:\laragon\www\pusatvillabali\pusatvillaid\pusatvillaid\phpunit.xml, 1 test)
+[00:00:04.885211800 / 00:00:00.003039200] [57552216 bytes] Test Runner Execution Finished
+[00:00:04.885497900 / 00:00:00.000286100] [57552216 bytes] Test Runner Finished
+[00:00:04.889671200 / 00:00:00.004173300] [57552216 bytes] PHPUnit Finished (Shell Exit Code: 1)

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PaymentMethodAdminController;
 use App\Http\Controllers\Admin\ReviewAdminController;
 use App\Http\Controllers\Admin\SettingAdminController;
 use App\Http\Controllers\Admin\VillaAdminController;
+use App\Http\Controllers\Admin\VoucherAdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\OAuthController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use App\Http\Controllers\VillaController;
+use App\Http\Controllers\VoucherController;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\RecoveryCodeController;
@@ -50,6 +52,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::post('/bookings/{code}/confirm-manual-payment', [BookingController::class, 'confirmManualPayment'])->middleware('throttle:5,1');
     Route::get('/payment-methods', [PaymentMethodController::class, 'indexPublic']);
     Route::get('/settings/public', [SettingController::class, 'indexPublic']);
+    Route::post('/vouchers/validate', [VoucherController::class, 'validate'])->middleware('throttle:20,1');
 
     Route::post('/payment/notification', [PaymentController::class, 'notification']);
 
@@ -165,6 +168,13 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::put('/payment-methods/{id}', [PaymentMethodAdminController::class, 'update'])->middleware('permission:payment_methods.manage');
         Route::delete('/payment-methods/{id}', [PaymentMethodAdminController::class, 'destroy'])->middleware('permission:payment_methods.manage');
         Route::post('/payment-methods/upload-logo', [PaymentMethodAdminController::class, 'uploadLogo'])->middleware('permission:payment_methods.manage');
+
+        // ── Vouchers ──
+        Route::get('/vouchers', [VoucherAdminController::class, 'index']);
+        Route::post('/vouchers', [VoucherAdminController::class, 'store']);
+        Route::get('/vouchers/{id}', [VoucherAdminController::class, 'show']);
+        Route::put('/vouchers/{id}', [VoucherAdminController::class, 'update']);
+        Route::delete('/vouchers/{id}', [VoucherAdminController::class, 'destroy']);
 
         // ==========================================
         // Super Admin Only — Admin User Management

@@ -47,7 +47,7 @@ Route::post('/auth/exchange-code', [OAuthController::class, 'exchangeCode'])
 // Authenticated User Routes
 // ==========================================
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [ProfileWebController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [ProfileWebController::class, 'profile'])->name('dashboard');
     Route::get('/profile', [ProfileWebController::class, 'profile'])->name('profile');
 });
 
@@ -72,6 +72,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/calendar', [AdminWebController::class, 'calendar'])->name('calendar');
         Route::get('/settings', [AdminWebController::class, 'settings'])->name('settings');
         Route::get('/users', [AdminWebController::class, 'users'])->name('users');
+        Route::get('/vouchers', [AdminWebController::class, 'vouchers'])->name('vouchers');
 
         // Serve private files via session auth
         Route::get('/bookings/{code}/ktp', [BookingController::class, 'showKtp'])->name('bookings.ktp');

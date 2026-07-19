@@ -35,7 +35,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
         setSaving(true);
 
         try {
-            await axios.put('/api/v1/admin/settings', form);
+            await axios.post('/api/v1/admin/settings', form);
             toast.success('Pengaturan berhasil disimpan');
         } catch (err: any) {
             toast.error(err.response?.data?.message ?? 'Gagal menyimpan pengaturan');

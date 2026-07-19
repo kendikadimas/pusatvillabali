@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Star, Heart, ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
+import { Star, Heart, ChevronLeft, ChevronRight, ImageOff, Users, BedDouble } from 'lucide-react';
 import React, { useState, useRef } from 'react';
 import { formatPrice } from '@/lib/format';
 import { getPhotoUrl } from '@/lib/villaUtils';
@@ -193,6 +193,20 @@ handlePrev(e as unknown as React.MouseEvent);
 
                 {/* Location */}
                 <p className="text-sm text-slate-500 truncate">{villa.location}</p>
+
+                {/* Capacity */}
+                <div className="flex items-center gap-3 pt-0.5">
+                    <span className="flex items-center gap-1 text-xs text-slate-500">
+                        <Users className="w-3.5 h-3.5 shrink-0" />
+                        {villa.max_guests} tamu
+                    </span>
+                    {villa.beds != null && villa.beds > 0 && (
+                        <span className="flex items-center gap-1 text-xs text-slate-500">
+                            <BedDouble className="w-3.5 h-3.5 shrink-0" />
+                            {villa.beds} kasur
+                        </span>
+                    )}
+                </div>
 
                 {/* Review count */}
                 {reviewCount > 0 && (

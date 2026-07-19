@@ -1,9 +1,10 @@
 ﻿import { Head, router, usePage } from '@inertiajs/react';
-import { eachDayOfInterval, parseISO } from 'date-fns';
+import { eachDayOfInterval, format, parseISO } from 'date-fns';
 import { MapPin, BedDouble, Bath, Users, Star, Calendar, ChevronLeft, ChevronRight, Check, X, Grid3X3, Minus, Plus, LayoutGrid, SlidersHorizontal } from 'lucide-react';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { formatPrice } from '@/lib/format';
 import { getPhotoUrl, getPhotoCategory, getPhotoDesc } from '@/lib/villaUtils';
+import VillaCalendarSection from '@/components/villa/VillaCalendarSection';
 import type { Villa, AppSettings } from '@/types';
 
 // ─── Mobile Booking Bar ───────────────────────────────────────────────────────
@@ -81,11 +82,10 @@ interface MobileBookingSheetProps {
     guests: number;
     nights: number;
     totalPrice: number;
-    setCheckIn: (v: string) => void;
-    setCheckOut: (v: string) => void;
+    dateRange: { from: Date | undefined; to?: Date | undefined } | undefined;
+    disabledDays: Date[];
+    onRangeSelect: (range: { from: Date | undefined; to?: Date | undefined } | undefined) => void;
     setGuests: (v: number) => void;
-    checkInRef: React.RefObject<HTMLInputElement | null>;
-    checkOutRef: React.RefObject<HTMLInputElement | null>;
     onClose: () => void;
     onBook: (e: React.FormEvent) => void;
     formatDate: (d: string) => string | null;
@@ -94,8 +94,8 @@ interface MobileBookingSheetProps {
 
 function MobileBookingSheet({
     villa, checkIn, checkOut, guests, nights, totalPrice,
-    setCheckIn, setCheckOut, setGuests,
-    checkInRef, checkOutRef,
+    dateRange, disabledDays, onRangeSelect,
+    setGuests,
     onClose, onBook, settings,
 }: MobileBookingSheetProps) {
     useEffect(() => {
@@ -117,16 +117,14 @@ onClose();
         return () => window.removeEventListener('keydown', handler);
     }, [onClose]);
 
-    const today = new Date().toISOString().split('T')[0];
-
     return (
         <>
             <div className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl">
-                <div className="flex justify-center pt-3 pb-1">
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[92vh] flex flex-col">
+                <div className="flex justify-center pt-3 pb-1 shrink-0">
                     <div className="w-10 h-1 rounded-full bg-slate-200" />
                 </div>
-                <div className="flex items-center justify-between px-5 pb-4 border-b border-slate-100">
+                <div className="flex items-center justify-between px-5 pb-4 border-b border-slate-100 shrink-0">
                     <div>
                         <h3 className="text-base font-black text-slate-900 font-heading">Pilih Tanggal &amp; Tamu</h3>
                         <p className="text-xs text-slate-400 mt-0.5">{villa.name}</p>
@@ -135,29 +133,27 @@ onClose();
                         <X className="w-5 h-5 text-slate-500" />
                     </button>
                 </div>
-                <div className="px-5 pt-4 pb-2 space-y-4">
+                <div className="px-5 pt-4 pb-2 space-y-4 overflow-y-auto flex-1">
+                    {/* Selected dates summary */}
                     <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Check-in</label>
-                            <input ref={checkInRef} type="date" value={checkIn} min={today}
-                                onChange={e => {
- setCheckIn(e.target.value);
-
- if (checkOut && e.target.value >= checkOut) {
-setCheckOut('');
-} 
-}}
-                                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 cursor-pointer"
-                            />
+                        <div className="bg-slate-50 rounded-xl px-3 py-2.5 border border-slate-200">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Check-in</p>
+                            <p className="text-sm font-semibold text-slate-800">{checkIn ? formatDate(checkIn) : <span className="text-slate-400 font-normal">Belum dipilih</span>}</p>
                         </div>
-                        <div>
-                            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Check-out</label>
-                            <input ref={checkOutRef} type="date" value={checkOut} min={checkIn || today}
-                                onChange={e => setCheckOut(e.target.value)}
-                                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 cursor-pointer"
-                            />
+                        <div className="bg-slate-50 rounded-xl px-3 py-2.5 border border-slate-200">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Check-out</p>
+                            <p className="text-sm font-semibold text-slate-800">{checkOut ? formatDate(checkOut) : <span className="text-slate-400 font-normal">Belum dipilih</span>}</p>
                         </div>
                     </div>
+
+                    {/* Inline calendar */}
+                    <VillaCalendarSection
+                        dateRange={dateRange}
+                        disabledDays={disabledDays}
+                        isMobile={true}
+                        onSelect={onRangeSelect}
+                    />
+
                     {nights > 0 && (
                         <div className="flex items-center justify-center py-1.5 bg-blue-50 rounded-xl">
                             <span className="text-sm font-semibold text-blue-700">{nights} malam dipilih</span>
@@ -393,14 +389,39 @@ interface Props {
 }
 
 export default function VillaDetailPage({ villa, settings }: Props) {
-    const [checkIn, setCheckIn] = useState('');
-    const [checkOut, setCheckOut] = useState('');
+    const [dateRange, setDateRange] = useState<{ from: Date | undefined; to?: Date | undefined } | undefined>(undefined);
+    const [disabledDays, setDisabledDays] = useState<Date[]>([]);
     const [guests, setGuests] = useState(2);
     const [currentPhoto, setCurrentPhoto] = useState(0);
     const [tourOpen, setTourOpen] = useState(false);
     const [bookingSheetOpen, setBookingSheetOpen] = useState(false);
-    const checkInRef = useRef<HTMLInputElement>(null);
-    const checkOutRef = useRef<HTMLInputElement>(null);
+    const [isMobile, setIsMobile] = useState(() =>
+        typeof window !== 'undefined' ? window.innerWidth < 768 : false
+    );
+
+    useEffect(() => {
+        const handler = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handler);
+        return () => window.removeEventListener('resize', handler);
+    }, []);
+
+    // Derive checkIn / checkOut strings from dateRange
+    const checkIn = dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : '';
+    const checkOut = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : '';
+
+    // Fetch disabled dates from availability API
+    useEffect(() => {
+        fetch(`/api/v1/villas/${villa.slug}/availability`)
+            .then(r => r.json())
+            .then((data: { disabled_dates: string[] }) => {
+                // Parse as local midnight to avoid UTC offset mismatches with DayPicker
+                setDisabledDays(data.disabled_dates.map(d => {
+                    const [year, month, day] = d.split('-').map(Number);
+                    return new Date(year, month - 1, day);
+                }));
+            })
+            .catch(() => {/* non-critical — calendar still works without it */});
+    }, [villa.slug]);
 
     const photos = villa.photos && villa.photos.length > 0 ? villa.photos : [];
     const ratingVal = villa.reviews_avg_rating && villa.reviews_count && villa.reviews_count > 0
@@ -641,11 +662,33 @@ nextPhoto();
                             </div>
                         </div>
 
+                        {/* Availability Calendar */}
+                        <VillaCalendarSection
+                            dateRange={dateRange}
+                            disabledDays={disabledDays}
+                            isMobile={isMobile}
+                            onSelect={setDateRange}
+                        />
+
                         {/* Map */}
                         {villa.maps_url && (
                             <div>
                                 <h2 className="text-xl font-black text-slate-900 mb-4 font-heading tracking-[-0.01em]">Lokasi</h2>
-                                <a href={villa.maps_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors">
+                                {villa.maps_url.includes('google.com/maps/embed') ? (
+                                    <div className="rounded-2xl overflow-hidden border border-slate-200 aspect-video w-full">
+                                        <iframe
+                                            src={villa.maps_url}
+                                            width="100%"
+                                            height="100%"
+                                            style={{ border: 0 }}
+                                            allowFullScreen
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                            title="Lokasi Villa"
+                                        />
+                                    </div>
+                                ) : null}
+                                <a href={villa.maps_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors mt-3">
                                     <span className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center"><MapPin className="w-4 h-4" /></span>
                                     Lihat di Google Maps
                                 </a>
@@ -690,28 +733,18 @@ nextPhoto();
                                 {/* Date range block */}
                                 <div className="rounded-xl border border-slate-200 overflow-hidden divide-y divide-slate-200">
                                     {/* Check-in row */}
-                                    <div className="relative">
-                                        <label className="absolute left-3.5 top-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest pointer-events-none">Check-in</label>
-                                        <input
-                                            ref={checkInRef}
-                                            type="date"
-                                            value={checkIn}
-                                            onChange={e => setCheckIn(e.target.value)}
-                                            min={new Date().toISOString().split('T')[0]}
-                                            className="w-full pt-7 pb-2.5 px-3.5 text-sm font-semibold text-slate-800 outline-none bg-white [color-scheme:light] [&::-webkit-calendar-picker-indicator]:opacity-50 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:hover:opacity-80"
-                                        />
+                                    <div className="relative px-3.5 pt-2.5 pb-2.5">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Check-in</p>
+                                        <p className="text-sm font-semibold text-slate-800">
+                                            {checkIn ? formatDate(checkIn) : <span className="text-slate-400 font-normal">Pilih di kalender</span>}
+                                        </p>
                                     </div>
                                     {/* Check-out row */}
-                                    <div className="relative">
-                                        <label className="absolute left-3.5 top-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest pointer-events-none">Check-out</label>
-                                        <input
-                                            ref={checkOutRef}
-                                            type="date"
-                                            value={checkOut}
-                                            onChange={e => setCheckOut(e.target.value)}
-                                            min={checkIn || new Date().toISOString().split('T')[0]}
-                                            className="w-full pt-7 pb-2.5 px-3.5 text-sm font-semibold text-slate-800 outline-none bg-white [color-scheme:light] [&::-webkit-calendar-picker-indicator]:opacity-50 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:hover:opacity-80"
-                                        />
+                                    <div className="relative px-3.5 pt-2.5 pb-2.5">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Check-out</p>
+                                        <p className="text-sm font-semibold text-slate-800">
+                                            {checkOut ? formatDate(checkOut) : <span className="text-slate-400 font-normal">Pilih di kalender</span>}
+                                        </p>
                                     </div>
                                     {/* Guest row */}
                                     <div className="flex items-center justify-between px-3.5 py-3">
@@ -800,11 +833,10 @@ nextPhoto();
                     guests={guests}
                     nights={nights}
                     totalPrice={totalPrice}
-                    setCheckIn={setCheckIn}
-                    setCheckOut={setCheckOut}
+                    dateRange={dateRange}
+                    disabledDays={disabledDays}
+                    onRangeSelect={setDateRange}
                     setGuests={setGuests}
-                    checkInRef={checkInRef}
-                    checkOutRef={checkOutRef}
                     onClose={() => setBookingSheetOpen(false)}
                     onBook={handleBook}
                     formatDate={formatDate}

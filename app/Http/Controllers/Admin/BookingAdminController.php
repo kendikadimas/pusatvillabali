@@ -173,6 +173,15 @@ class BookingAdminController extends Controller
             $payment->save();
         }
 
+        // Send confirmation email when booking is confirmed and paid
+        if ($request->status === 'confirmed' && $request->payment_status === 'paid') {
+            try {
+                Mail::to($booking->guest_email)->send(new BookingConfirmationMail($booking->fresh(['villa'])));
+            } catch (\Exception $e) {
+                Log::error("Gagal mengirim email konfirmasi (updateStatus) untuk booking {$booking->booking_code}: ".$e->getMessage());
+            }
+        }
+
         return response()->json([
             'booking' => $booking,
             'message' => 'Status booking berhasil diperbarui.',

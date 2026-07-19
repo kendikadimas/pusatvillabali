@@ -9,18 +9,11 @@ import type { Review, PaginatedData } from '@/types';
 
 interface Props {
     reviews: PaginatedData<Review>;
+    filters: { filter: string };
 }
 
-export default function AdminReviewsPage({ reviews }: Props) {
-    const [filter, setFilter] = useState(() => {
-        if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search);
-
-            return params.get('filter') ?? 'pending';
-        }
-
-        return 'pending';
-    });
+export default function AdminReviewsPage({ reviews, filters }: Props) {
+    const [filter, setFilter] = useState(filters.filter ?? 'pending');
 
     const handleApprove = async (id: number) => {
         try {
@@ -61,8 +54,9 @@ return;
                         <button
                             key={f}
                             onClick={() => {
- setFilter(f); router.get('/admin/reviews', { filter: f === 'all' ? undefined : f }, { preserveScroll: true }); 
-}}
+                                setFilter(f);
+                                router.get('/admin/reviews', { filter: f === 'all' ? '' : f }, { preserveScroll: true });
+                            }}
                             className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors ${filter === f ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                         >
                             {f === 'all' ? 'Semua' : f === 'pending' ? 'Menunggu' : 'Disetujui'}

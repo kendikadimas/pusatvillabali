@@ -2,7 +2,7 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { differenceInDays, parseISO, format, eachDayOfInterval } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { BedDouble, Calendar, CheckCircle, Home, MapPin, Upload, Users } from 'lucide-react';
+import { BedDouble, Calendar, CheckCircle, Home, MapPin, Tag, Upload, Users, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { DatePicker } from '@/components/ui/date-picker';
@@ -100,7 +100,41 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
     const taxAmount = Math.round((taxPercentage / 100) * subtotal);
     const selectedPM = paymentMethods.find(pm => pm.id === selectedPaymentMethod);
     const adminFee = selectedPM?.admin_fee ?? 0;
-    const total = subtotal + taxAmount + adminFee;
+
+    // Voucher state
+    const [voucherCode, setVoucherCode] = useState('');
+    const [voucherApplied, setVoucherApplied] = useState<{ id: number; code: string; description: string | null; discount_amount: number } | null>(null);
+    const [voucherLoading, setVoucherLoading] = useState(false);
+    const [voucherError, setVoucherError] = useState('');
+
+    const handleApplyVoucher = async () => {
+        if (!voucherCode.trim()) return;
+        setVoucherLoading(true);
+        setVoucherError('');
+        try {
+            const res = await axios.post('/api/v1/vouchers/validate', {
+                code: voucherCode.trim(),
+                booking_amount: subtotal,
+            });
+            setVoucherApplied(res.data.voucher);
+            toast.success(`Voucher ${res.data.voucher.code} berhasil diterapkan!`);
+        } catch (e: unknown) {
+            const msg = axios.isAxiosError(e) ? (e.response?.data?.message ?? 'Voucher tidak valid.') : 'Voucher tidak valid.';
+            setVoucherError(msg);
+            setVoucherApplied(null);
+        } finally {
+            setVoucherLoading(false);
+        }
+    };
+
+    const handleRemoveVoucher = () => {
+        setVoucherApplied(null);
+        setVoucherCode('');
+        setVoucherError('');
+    };
+
+    const discountAmount = voucherApplied?.discount_amount ?? 0;
+    const total = Math.max(0, subtotal + taxAmount + adminFee - discountAmount);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -137,6 +171,10 @@ formData.append('payment_method_id', String(selectedPaymentMethod));
             if (ktpFile) {
 formData.append('ktp_image', ktpFile);
 }
+
+            if (voucherApplied) {
+                formData.append('voucher_code', voucherApplied.code);
+            }
 
             const res = await axios.post('/api/v1/bookings', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
@@ -391,6 +429,7 @@ formData.append('ktp_image', ktpFile);
                                     <div className="bg-white border border-slate-200 rounded-2xl p-5">
                                         <h2 className="font-bold text-slate-800 mb-3 text-sm">Ringkasan Harga</h2>
                                         {nights > 0 ? (
+                                            <>
                                             <div className="space-y-2 text-sm">
                                                 {weekdayCount > 0 && (
                                                     <div className="flex justify-between text-slate-600">
@@ -416,11 +455,55 @@ formData.append('ktp_image', ktpFile);
                                                         <span>{formatPrice(adminFee)}</span>
                                                     </div>
                                                 )}
+                                                {discountAmount > 0 && (
+                                                    <div className="flex justify-between text-green-600 font-semibold">
+                                                        <span>Diskon voucher ({voucherApplied?.code})</span>
+                                                        <span>-{formatPrice(discountAmount)}</span>
+                                                    </div>
+                                                )}
                                                 <div className="flex justify-between font-black text-slate-800 border-t border-slate-100 pt-3 text-base">
                                                     <span>Total</span>
                                                     <span>{formatPrice(total)}</span>
                                                 </div>
                                             </div>
+
+                                            {/* Voucher input */}
+                                            <div className="mt-4">
+                                                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Kode Voucher</label>
+                                                {voucherApplied ? (
+                                                    <div className="flex items-center gap-2 px-3.5 py-2.5 bg-green-50 border border-green-200 rounded-xl">
+                                                        <Tag className="w-4 h-4 text-green-600 shrink-0" />
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm font-bold text-green-700">{voucherApplied.code}</p>
+                                                            {voucherApplied.description && <p className="text-xs text-green-600">{voucherApplied.description}</p>}
+                                                        </div>
+                                                        <button type="button" onClick={handleRemoveVoucher} className="p-1 rounded-lg hover:bg-green-100 transition-colors cursor-pointer">
+                                                            <X className="w-4 h-4 text-green-600" />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={voucherCode}
+                                                            onChange={e => { setVoucherCode(e.target.value.toUpperCase()); setVoucherError(''); }}
+                                                            onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleApplyVoucher())}
+                                                            placeholder="Masukkan kode voucher"
+                                                            className="flex-1 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-mono font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleApplyVoucher}
+                                                            disabled={voucherLoading || !voucherCode.trim()}
+                                                            className="px-4 py-2.5 bg-slate-800 text-white rounded-xl text-sm font-semibold hover:bg-slate-900 transition-colors disabled:opacity-40 cursor-pointer"
+                                                        >
+                                                            {voucherLoading ? '...' : 'Pakai'}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                {voucherError && <p className="text-xs text-red-500 mt-1.5">{voucherError}</p>}
+                                            </div>
+                                        </>
                                         ) : (
                                             <p className="text-xs text-slate-400">Pilih tanggal untuk melihat harga</p>
                                         )}

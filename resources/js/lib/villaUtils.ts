@@ -5,13 +5,19 @@ const FALLBACK_PHOTO =
 
 export function normaliseStorageUrl(url: string | null | undefined): string {
     if (!url) {
-return FALLBACK_PHOTO;
-}
+        return FALLBACK_PHOTO;
+    }
 
+    // Already a relative storage path — return as-is
     if (url.startsWith('/storage/') || url.startsWith('storage/')) {
-        const path = url.startsWith('/') ? url : '/' + url;
+        return url.startsWith('/') ? url : '/' + url;
+    }
 
-        return path;
+    // Legacy absolute URL stored in DB (e.g. http://localhost/storage/villas/abc.jpg)
+    // Extract the /storage/... portion so it works on any domain
+    const storageIndex = url.indexOf('/storage/');
+    if (storageIndex !== -1) {
+        return url.slice(storageIndex);
     }
 
     return url;

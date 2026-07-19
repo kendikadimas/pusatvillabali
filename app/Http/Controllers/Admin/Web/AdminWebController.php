@@ -104,19 +104,25 @@ class AdminWebController extends Controller
         return Inertia::render('admin/analytics');
     }
 
-    public function villas(): Response
+    public function villas(Request $request): Response
     {
+        $search = $request->string('search')->trim()->value();
+
         $villas = Villa::with('destination')
             ->withCount('bookings')
             ->withAvg('reviews', 'rating')
+            ->when($search, fn ($q) => $q->where('name', 'like', "%{$search}%")
+                ->orWhere('location', 'like', "%{$search}%"))
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         $destinations = Destination::orderBy('name')->get();
 
         return Inertia::render('admin/villas', [
             'villas' => $villas,
             'destinations' => $destinations,
+            'filters' => ['search' => $search],
         ]);
     }
 
@@ -141,17 +147,26 @@ class AdminWebController extends Controller
         ]);
     }
 
-    public function bookings(): Response
+    public function bookings(Request $request): Response
     {
+        $search = $request->string('search')->trim()->value();
+        $status = $request->string('status')->trim()->value();
+
         $bookings = Booking::with(['villa', 'payment'])
+            ->when($search, fn ($q) => $q->where('guest_name', 'like', "%{$search}%")
+                ->orWhere('booking_code', 'like', "%{$search}%")
+                ->orWhere('guest_email', 'like', "%{$search}%"))
+            ->when($status, fn ($q) => $q->where('status', $status))
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         $villas = Villa::select('id', 'name')->orderBy('name')->get();
 
         return Inertia::render('admin/bookings', [
             'bookings' => $bookings,
             'villas' => $villas,
+            'filters' => ['search' => $search, 'status' => $status],
         ]);
     }
 
@@ -166,14 +181,20 @@ class AdminWebController extends Controller
         ]);
     }
 
-    public function reviews(): Response
+    public function reviews(Request $request): Response
     {
+        $filter = $request->string('filter')->trim()->value();
+
         $reviews = Review::with(['villa', 'booking'])
+            ->when($filter === 'pending', fn ($q) => $q->where('is_approved', false))
+            ->when($filter === 'approved', fn ($q) => $q->where('is_approved', true))
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         return Inertia::render('admin/reviews', [
             'reviews' => $reviews,
+            'filters' => ['filter' => $filter ?: 'pending'],
         ]);
     }
 
@@ -209,5 +230,10 @@ class AdminWebController extends Controller
     public function users(): Response
     {
         return Inertia::render('admin/users');
+    }
+
+    public function vouchers(): Response
+    {
+        return Inertia::render('admin/vouchers');
     }
 }

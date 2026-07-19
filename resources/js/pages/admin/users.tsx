@@ -1,6 +1,6 @@
 import { Head, usePage } from '@inertiajs/react';
 import axios from 'axios';
-import { Plus, Trash2, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Plus, Trash2, RefreshCw, ShieldCheck, Edit } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -61,6 +61,7 @@ export default function AdminUsersPage() {
     const [admins, setAdmins] = useState<AdminUser[]>([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [editingAdmin, setEditingAdmin] = useState<AdminUser | null>(null);
     const [form, setForm] = useState({ ...emptyForm });
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -112,6 +113,51 @@ export default function AdminUsersPage() {
                 setErrors(err.response.data.errors ?? {});
             } else {
                 toast.error(err.response?.data?.message ?? 'Gagal membuat admin');
+            }
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleOpenEdit = (admin: AdminUser) => {
+        setEditingAdmin(admin);
+        setForm({
+            name: admin.name,
+            email: admin.email,
+            password: '',
+            password_confirmation: '',
+            permissions: admin.permissions ?? [],
+        });
+        setErrors({});
+    };
+
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingAdmin) return;
+        setSubmitting(true);
+        setErrors({});
+
+        const payload: Record<string, unknown> = {
+            name: form.name,
+            email: form.email,
+            permissions: form.permissions,
+        };
+        if (form.password) {
+            payload.password = form.password;
+            payload.password_confirmation = form.password_confirmation;
+        }
+
+        try {
+            await axios.put(`/api/v1/admin/admins/${editingAdmin.id}`, payload);
+            toast.success('Admin berhasil diperbarui');
+            setEditingAdmin(null);
+            setForm({ ...emptyForm });
+            fetchAdmins();
+        } catch (err: any) {
+            if (err.response?.status === 422) {
+                setErrors(err.response.data.errors ?? {});
+            } else {
+                toast.error(err.response?.data?.message ?? 'Gagal memperbarui admin');
             }
         } finally {
             setSubmitting(false);
@@ -245,13 +291,22 @@ return;
                                         </td>
                                         <td className="px-4 py-3 text-center text-slate-600 hidden sm:table-cell">{admin.active_sessions}</td>
                                         <td className="px-4 py-3 text-center">
-                                            <button
-                                                onClick={() => handleDelete(admin)}
-                                                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors inline-flex"
-                                                title="Hapus Admin"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                                            <div className="flex items-center justify-center gap-1">
+                                                <button
+                                                    onClick={() => handleOpenEdit(admin)}
+                                                    className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-flex"
+                                                    title="Edit Admin"
+                                                >
+                                                    <Edit className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(admin)}
+                                                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors inline-flex"
+                                                    title="Hapus Admin"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -261,7 +316,117 @@ return;
                 </div>
             </div>
 
-            {/* Modal */}
+            {/* Edit Modal */}
+            {editingAdmin && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-slate-100">
+                            <h2 className="text-lg font-bold text-slate-800">Edit Admin</h2>
+                            <p className="text-sm text-slate-500 mt-0.5">Ubah data dan izin akses {editingAdmin.name}</p>
+                        </div>
+                        <form onSubmit={handleUpdate} className="p-6 space-y-4">
+                            {/* Name */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Nama</label>
+                                <input
+                                    type="text"
+                                    value={form.name}
+                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                    placeholder="Nama lengkap"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                />
+                                {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name[0]}</p>}
+                            </div>
+                            {/* Email */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                                <input
+                                    type="email"
+                                    value={form.email}
+                                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                    placeholder="admin@example.com"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                />
+                                {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email[0]}</p>}
+                            </div>
+                            {/* Password (optional) */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Password Baru <span className="text-slate-400 font-normal">(kosongkan jika tidak diubah)</span></label>
+                                <input
+                                    type="password"
+                                    value={form.password}
+                                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                                    placeholder="Password baru"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password[0]}</p>}
+                            </div>
+                            {form.password && (
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Konfirmasi Password</label>
+                                    <input
+                                        type="password"
+                                        value={form.password_confirmation}
+                                        onChange={(e) => setForm({ ...form, password_confirmation: e.target.value })}
+                                        placeholder="Ulangi password baru"
+                                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            )}
+                            {/* Permissions */}
+                            <div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-sm font-medium text-slate-700">Izin Akses</label>
+                                    <div className="flex gap-2">
+                                        <button type="button" onClick={() => setForm(f => ({ ...f, permissions: [...ALL_PERMISSIONS] }))}
+                                            className="text-xs text-blue-600 hover:underline">Pilih semua</button>
+                                        <button type="button" onClick={() => setForm(f => ({ ...f, permissions: [] }))}
+                                            className="text-xs text-slate-400 hover:underline">Hapus semua</button>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 rounded-xl p-3">
+                                    {ALL_PERMISSIONS.map((perm) => (
+                                        <label key={perm} className="flex items-center gap-2 cursor-pointer select-none">
+                                            <input
+                                                type="checkbox"
+                                                checked={form.permissions.includes(perm)}
+                                                onChange={() => setForm(f => ({
+                                                    ...f,
+                                                    permissions: f.permissions.includes(perm)
+                                                        ? f.permissions.filter(p => p !== perm)
+                                                        : [...f.permissions, perm],
+                                                }))}
+                                                className="rounded border-slate-300 text-blue-600"
+                                            />
+                                            <span className="text-sm text-slate-700">{PERMISSION_LABELS[perm]}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => { setEditingAdmin(null); setForm({ ...emptyForm }); setErrors({}); }}
+                                    className="flex-1 border border-slate-200 text-slate-700 text-sm font-semibold py-2.5 rounded-xl hover:bg-slate-50 transition-colors"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="flex-1 bg-blue-600 text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60"
+                                >
+                                    {submitting ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Create Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">

@@ -10,6 +10,7 @@ use App\Models\PaymentMethod;
 use App\Models\Setting;
 use App\Models\User;
 use App\Models\Villa;
+use App\Models\Voucher;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
@@ -43,6 +44,7 @@ class BookingController extends Controller
             'utm_medium' => 'nullable|string|max:100',
             'utm_campaign' => 'nullable|string|max:100',
             'ktp_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'voucher_code' => 'nullable|string|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -138,8 +140,26 @@ class BookingController extends Controller
                 $paymentMethod = PaymentMethod::find($request->payment_method_id);
                 $adminFee = $paymentMethod ? $paymentMethod->admin_fee : 0;
 
+                // Apply voucher discount (applied to base amount before tax/fee)
+                $voucherId = null;
+                $discountAmount = 0;
+
+                if ($request->filled('voucher_code')) {
+                    $voucher = Voucher::where('code', strtoupper(trim($request->voucher_code)))->first();
+
+                    if (! $voucher || ! $voucher->isValid((float) $baseAmount)) {
+                        throw new \Exception('Kode voucher tidak valid atau sudah tidak dapat digunakan.');
+                    }
+
+                    $discountAmount = $voucher->calculateDiscount((float) $baseAmount);
+                    $voucherId = $voucher->id;
+
+                    // Increment usage counter inside transaction for atomicity
+                    $voucher->increment('used_count');
+                }
+
                 // Final total amount
-                $totalAmount = $baseAmount + $taxAmount + $adminFee;
+                $totalAmount = max(0, $baseAmount + $taxAmount + $adminFee - $discountAmount);
 
                 // 4. Generate random booking code (VB-YYYY-XXXXXX) — atomic with lock and retry
                 $year = now()->year;
@@ -182,6 +202,8 @@ class BookingController extends Controller
                     'base_price' => $baseAmount,
                     'tax_amount' => $taxAmount,
                     'admin_fee' => $adminFee,
+                    'voucher_id' => $voucherId,
+                    'discount_amount' => $discountAmount,
                     'total_amount' => $totalAmount,
                     'status' => 'pending',
                     'payment_status' => 'unpaid',

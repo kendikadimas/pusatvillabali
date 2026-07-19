@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { BarChart2, Calendar, ClipboardList, Globe, Home, LayoutDashboard, MapPin, Settings, Star, Users } from 'lucide-react';
+import { BarChart2, Calendar, ClipboardList, Globe, Home, LayoutDashboard, MapPin, Settings, Star, Tag, Users } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
@@ -29,6 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { href: '/admin/villas', label: 'Villa', icon: <Home className="w-4 h-4" /> },
         { href: '/admin/bookings', label: 'Pemesanan', icon: <ClipboardList className="w-4 h-4" /> },
         { href: '/admin/reviews', label: 'Ulasan', icon: <Star className="w-4 h-4" /> },
+        { href: '/admin/vouchers', label: 'Voucher', icon: <Tag className="w-4 h-4" /> },
         { href: '/admin/destinations', label: 'Destinasi', icon: <MapPin className="w-4 h-4" /> },
         { href: '/admin/calendar', label: 'Kalender', icon: <Calendar className="w-4 h-4" /> },
         { href: '/admin/settings', label: 'Pengaturan', icon: <Settings className="w-4 h-4" /> },

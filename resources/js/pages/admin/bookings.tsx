@@ -9,6 +9,7 @@ import type { Booking, PaginatedData } from '@/types';
 interface Props {
     bookings: PaginatedData<Booking>;
     villas: { id: number; name: string }[];
+    filters: { search: string; status: string };
 }
 
 const statusColors: Record<string, string> = {
@@ -40,9 +41,9 @@ const paymentLabels: Record<string, string> = {
     expired: 'Kadaluarsa',
 };
 
-export default function AdminBookingsPage({ bookings, villas: _villas }: Props) {
-    const [search, setSearch] = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
+export default function AdminBookingsPage({ bookings, villas: _villas, filters }: Props) {
+    const [search, setSearch] = useState(filters.search ?? '');
+    const [statusFilter, setStatusFilter] = useState(filters.status ?? '');
 
     const handleFilter = () => {
         const params: Record<string, string> = {};

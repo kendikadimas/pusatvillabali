@@ -10,10 +10,11 @@ import type { Villa, Destination, PaginatedData } from '@/types';
 interface Props {
     villas: PaginatedData<Villa>;
     destinations: Destination[];
+    filters: { search: string };
 }
 
-export default function AdminVillasPage({ villas, destinations: _destinations }: Props) {
-    const [search, setSearch] = useState('');
+export default function AdminVillasPage({ villas, destinations: _destinations, filters }: Props) {
+    const [search, setSearch] = useState(filters.search ?? '');
     const [deleting, setDeleting] = useState<number | null>(null);
 
     const handleSearch = (e: React.FormEvent) => {

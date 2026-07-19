@@ -913,21 +913,20 @@ return;
                                                 type="text" 
                                                 value={mapsUrl}
                                                 onChange={(e) => {
-                                                    const val = e.target.value;
+                                                    const val = e.target.value.trim();
 
+                                                    // Extract src from iframe embed code
                                                     if (val.includes('<iframe')) {
                                                         const match = val.match(/src=["']([^"']+)["']/);
-
-                                                        if (match && match[1]) {
-                                                            setMapsUrl(match[1]);
-
-                                                            return;
-                                                        }
+                                                        if (match?.[1]) { setMapsUrl(match[1]); return; }
                                                     }
 
+                                                    // Convert short share links (maps.app.goo.gl or goo.gl)
+                                                    // to embed URL — store as-is, frontend renders in iframe
+                                                    // Accept any google maps URL or embed URL directly
                                                     setMapsUrl(val);
                                                 }}
-                                                placeholder="Tempel embed URL src dari Google Maps iframe"
+                                                placeholder="Tempel iframe embed, link Google Maps, atau URL embed"
                                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
                                              />
                                          </div>

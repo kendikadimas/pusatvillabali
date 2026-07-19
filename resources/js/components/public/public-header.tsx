@@ -28,6 +28,7 @@ export default function PublicHeader({
     }>().props;
 
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [searchExpanded, setSearchExpanded] = useState(false);
     const [activeSegment, setActiveSegment] = useState<'where' | 'dates' | 'guests' | null>(null);
     const [searchWhere, setSearchWhere] = useState('');
@@ -347,7 +348,7 @@ params.guests = String(searchGuests);
                 {/* Mobile search bar (below header row) */}
                 <div className="sm:hidden pb-3">
                     <button
-                        onClick={() => router.get('/villas')}
+                        onClick={() => setMobileSearchOpen(true)}
                         className="w-full flex items-center gap-3 border border-slate-200 rounded-full px-4 py-2.5 shadow-sm bg-white"
                     >
                         <div
@@ -357,11 +358,123 @@ params.guests = String(searchGuests);
                             <Search className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
                         </div>
                         <div className="flex flex-col items-start min-w-0">
-                            <span className="text-sm font-semibold text-slate-800 leading-tight">Ke mana saja</span>
-                            <span className="text-xs text-slate-400 leading-tight">Kapan saja · Berapa saja tamu</span>
+                            <span className="text-sm font-semibold text-slate-800 leading-tight">
+                                {searchWhere.trim() ? searchWhere.trim() : 'Ke mana saja'}
+                            </span>
+                            <span className="text-xs text-slate-400 leading-tight">
+                                {dateLabel !== 'Kapan saja' ? dateLabel : 'Kapan saja'} · {guestsLabel}
+                            </span>
                         </div>
                     </button>
                 </div>
+
+                {/* Mobile Search Sheet */}
+                {mobileSearchOpen && (
+                    <>
+                        <div
+                            className="fixed inset-0 bg-black/40 z-[70]"
+                            onClick={() => setMobileSearchOpen(false)}
+                        />
+                        <div className="fixed bottom-0 left-0 right-0 z-[80] bg-white rounded-t-3xl shadow-2xl max-h-[92vh] flex flex-col sm:hidden">
+                            {/* Handle */}
+                            <div className="flex justify-center pt-3 pb-1 shrink-0">
+                                <div className="w-10 h-1 rounded-full bg-slate-200" />
+                            </div>
+                            {/* Header */}
+                            <div className="flex items-center justify-between px-5 pb-4 pt-2 border-b border-slate-100 shrink-0">
+                                <h3 className="text-base font-black text-slate-900">Cari Villa</h3>
+                                <button
+                                    type="button"
+                                    onClick={() => setMobileSearchOpen(false)}
+                                    className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
+                                    aria-label="Tutup"
+                                >
+                                    <X className="w-5 h-5 text-slate-500" />
+                                </button>
+                            </div>
+                            {/* Form */}
+                            <form
+                                onSubmit={(e) => { handleSearch(e); setMobileSearchOpen(false); }}
+                                className="flex-1 overflow-y-auto px-5 pt-4 pb-6 space-y-5"
+                            >
+                                {/* Where */}
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Lokasi / Destinasi</label>
+                                    <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 py-2.5 bg-slate-50">
+                                        <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                                        <input
+                                            type="text"
+                                            placeholder="Canggu, Seminyak, Ubud..."
+                                            value={searchWhere}
+                                            onChange={(e) => setSearchWhere(e.target.value)}
+                                            className="flex-1 text-sm outline-none bg-transparent text-slate-700 placeholder:text-slate-400"
+                                            autoFocus
+                                        />
+                                        {searchWhere && (
+                                            <button type="button" onClick={() => setSearchWhere('')} className="shrink-0">
+                                                <X className="w-4 h-4 text-slate-400" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Dates */}
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Tanggal</label>
+                                    <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden flex justify-center">
+                                        <DayPicker
+                                            mode="range"
+                                            selected={dateRange}
+                                            onSelect={setDateRange}
+                                            disabled={{ before: new Date() }}
+                                            numberOfMonths={1}
+                                            locale={id}
+                                        />
+                                    </div>
+                                    {dateRange?.from && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setDateRange(undefined)}
+                                            className="mt-2 text-xs text-slate-400 hover:text-slate-600 underline"
+                                        >
+                                            Hapus tanggal
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Guests */}
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Jumlah Tamu</label>
+                                    <div className="flex items-center gap-4 border border-slate-200 rounded-xl px-4 py-3 bg-slate-50">
+                                        <span className="flex-1 text-sm font-medium text-slate-700">{searchGuests} tamu</span>
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => setSearchGuests(g => Math.max(1, g - 1))}
+                                                className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 hover:border-slate-500 font-bold text-lg leading-none"
+                                            >−</button>
+                                            <span className="text-sm font-semibold text-slate-800 w-4 text-center">{searchGuests}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setSearchGuests(g => Math.min(20, g + 1))}
+                                                className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 hover:border-slate-500 font-bold text-lg leading-none"
+                                            >+</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Submit */}
+                                <button
+                                    type="submit"
+                                    className="w-full py-3.5 rounded-2xl text-white text-sm font-bold transition-colors active:scale-95"
+                                    style={{ backgroundColor: '#00A86B' }}
+                                >
+                                    Cari Villa
+                                </button>
+                            </form>
+                        </div>
+                    </>
+                )}
             </div>
 
             {/* ── Mobile drawer ── */}

@@ -236,7 +236,7 @@ class VillaAdminController extends Controller
                 // Save to public storage disk (storage/app/public/villas)
                 $path = $file->store('villas', 'public');
                 $uploadedPhotos[] = [
-                    'url' => asset('storage/'.$path),
+                    'url' => '/storage/'.$path,
                     'description' => '',
                     'category' => 'Lainnya',
                 ];
@@ -287,9 +287,12 @@ class VillaAdminController extends Controller
             unset($photos[$foundKey]);
 
             // Delete actual file from storage if it is local
-            $pathPrefix = asset('storage/');
-            if (Str::startsWith($photoUrl, $pathPrefix)) {
-                $relativePath = Str::after($photoUrl, $pathPrefix);
+            if (Str::startsWith($photoUrl, '/storage/')) {
+                $relativePath = Str::after($photoUrl, '/storage/');
+                Storage::disk('public')->delete($relativePath);
+            } elseif (Str::contains($photoUrl, '/storage/')) {
+                // Handle legacy absolute URLs still in the DB
+                $relativePath = Str::after($photoUrl, '/storage/');
                 Storage::disk('public')->delete($relativePath);
             }
         }
@@ -411,15 +414,16 @@ class VillaAdminController extends Controller
         if ($request->hasFile('avatar')) {
             // Delete old avatar if it exists and is local
             $oldAvatar = $villa->host_avatar;
-            $pathPrefix = asset('storage/');
-            if ($oldAvatar && Str::startsWith($oldAvatar, $pathPrefix)) {
-                $relativePath = Str::after($oldAvatar, $pathPrefix);
-                Storage::disk('public')->delete($relativePath);
+            if ($oldAvatar && Str::startsWith($oldAvatar, '/storage/')) {
+                Storage::disk('public')->delete(Str::after($oldAvatar, '/storage/'));
+            } elseif ($oldAvatar && Str::contains($oldAvatar, '/storage/')) {
+                // Handle legacy absolute URLs still in the DB
+                Storage::disk('public')->delete(Str::after($oldAvatar, '/storage/'));
             }
 
             // Store new avatar in public storage disk under avatars
             $path = $request->file('avatar')->store('avatars', 'public');
-            $villa->host_avatar = asset('storage/'.$path);
+            $villa->host_avatar = '/storage/'.$path;
             $villa->save();
         }
 
@@ -445,7 +449,7 @@ class VillaAdminController extends Controller
         if ($request->hasFile('image')) {
             // Save to public storage disk (storage/app/public/villas/extras)
             $path = $request->file('image')->store('villas/extras', 'public');
-            $url = asset('storage/'.$path);
+            $url = '/storage/'.$path;
 
             return response()->json([
                 'url' => $url,

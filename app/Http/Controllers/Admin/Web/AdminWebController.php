@@ -185,7 +185,12 @@ class AdminWebController extends Controller
 
     public function reviews(Request $request): Response
     {
-        $filter = $request->string('filter')->trim()->value();
+        $filter = $request->input('filter', 'pending');
+        $filter = is_string($filter) ? trim($filter) : 'pending';
+
+        if (! in_array($filter, ['all', 'pending', 'approved'], true)) {
+            $filter = 'pending';
+        }
 
         $reviews = Review::with(['villa', 'booking'])
             ->when($filter === 'pending', fn ($q) => $q->where('is_approved', false))
@@ -196,7 +201,7 @@ class AdminWebController extends Controller
 
         return Inertia::render('admin/reviews', [
             'reviews' => $reviews,
-            'filters' => ['filter' => $filter ?: 'pending'],
+            'filters' => ['filter' => $filter],
         ]);
     }
 

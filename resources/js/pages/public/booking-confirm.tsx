@@ -2,7 +2,7 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { differenceInDays, parseISO, format, eachDayOfInterval } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { BedDouble, Calendar, CheckCircle, Home, MapPin, Tag, Upload, Users, X } from 'lucide-react';
+import { BedDouble, Calendar, CheckCircle, Clock, Copy, Home, MapPin, MessageCircle, Tag, Upload, Users, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { DatePicker } from '@/components/ui/date-picker';
@@ -39,6 +39,14 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
     const [proofPreview, setProofPreview] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
     const [proofUploaded, setProofUploaded] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    // Auto-select first payment method when available
+    useEffect(() => {
+        if (selectedPaymentMethod === null && paymentMethods.length > 0) {
+            setSelectedPaymentMethod(paymentMethods[0].id);
+        }
+    }, [paymentMethods, selectedPaymentMethod]);
 
     // Restore booking intent dari sessionStorage (setelah login redirect)
     useEffect(() => {
@@ -209,8 +217,6 @@ formData.append('ktp_image', ktpFile);
         e.preventDefault();
 
         if (!proofFile || !bookingCode) {
-            console.log('[Upload Debug] Missing proofFile or bookingCode', { proofFile, bookingCode });
-
             return;
         }
 
@@ -222,40 +228,35 @@ formData.append('ktp_image', ktpFile);
             form.append('payment_method_id', String(selectedPaymentMethod));
         }
 
-        // Include guest email for guest bookings
         if (guestEmail) {
             form.append('guest_email', guestEmail);
         }
 
-        console.log('[Upload Debug] Sending request', {
-            url: `/api/v1/bookings/${bookingCode}/confirm-manual-payment`,
-            bookingCode,
-            proofFile: proofFile.name,
-            proofFileSize: proofFile.size,
-            selectedPaymentMethod,
-            guestEmail,
-            formDataEntries: Array.from(form.entries()).map(([key, val]) => [key, typeof val === 'string' ? val : val.name]),
-        });
-
         try {
-            const res = await axios.post(`/api/v1/bookings/${bookingCode}/confirm-manual-payment`, form, {
+            await axios.post(`/api/v1/bookings/${bookingCode}/confirm-manual-payment`, form, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-            console.log('[Upload Debug] Success', res.data);
             toast.success('Bukti pembayaran berhasil dikirim!');
             setProofUploaded(true);
         } catch (err: any) {
-            console.error('[Upload Debug] Error', {
-                status: err.response?.status,
-                statusText: err.response?.statusText,
-                data: err.response?.data,
-                headers: err.response?.headers,
-                message: err.message,
-            });
             toast.error(err.response?.data?.message ?? 'Gagal mengirim bukti pembayaran.');
         } finally {
             setUploading(false);
         }
+    };
+
+    const copyBookingCode = () => {
+        if (!bookingCode) {
+            return;
+        }
+
+        navigator.clipboard.writeText(bookingCode).then(() => {
+            setCopied(true);
+            toast.success('Kode pemesanan disalin!');
+            setTimeout(() => setCopied(false), 2000);
+        }).catch(() => {
+            toast.error('Gagal menyalin kode.');
+        });
     };
 
     if (!villa) {
@@ -558,71 +559,263 @@ formData.append('ktp_image', ktpFile);
                     /* ── CREATED STEP ── */
                     <div className="max-w-xl mx-auto">
                         <div className="text-center mb-8">
-                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <CheckCircle className="w-8 h-8 text-green-600" />
+                            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                                <CheckCircle className="w-10 h-10 text-green-600" />
                             </div>
-                            <h1 className="text-2xl font-black text-slate-800 mb-1 font-heading">Pemesanan Dibuat!</h1>
-                            <p className="text-slate-500 text-sm">Terima kasih, <span className="font-semibold text-slate-700">{guestName}</span>.</p>
+                            <h1 className="text-2xl font-black text-slate-800 mb-2 font-heading">Pemesanan Berhasil!</h1>
+                            <p className="text-slate-500 text-sm">
+                                Terima kasih, <span className="font-semibold text-slate-700">{guestName}</span>. Pemesanan Anda telah diterima.
+                            </p>
                         </div>
 
                         {/* Booking code */}
                         <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-6 text-center">
-                            <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">Kode Pemesanan</p>
-                            <p className="text-2xl font-black text-blue-800 font-mono tracking-widest mt-1">#{bookingCode}</p>
+                            <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">Kode Pemesanan Anda</p>
+                            <div className="flex items-center justify-center gap-3 mt-2">
+                                <span className="text-2xl font-black text-blue-800 font-mono tracking-widest">#{bookingCode}</span>
+                                <button
+                                    type="button"
+                                    onClick={copyBookingCode}
+                                    className="p-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors"
+                                    title="Salin kode"
+                                >
+                                    <Copy className="w-4 h-4" />
+                                </button>
+                            </div>
+                            {copied && <p className="text-xs text-green-600 mt-2 font-medium">Kode disalin!</p>}
+                            <p className="text-xs text-blue-500 mt-2">Simpan kode ini untuk cek status pemesanan</p>
                         </div>
 
-                        {/* Payment instructions */}
-                        {selectedPM && !proofUploaded && (
-                            <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-6">
-                                <h2 className="font-bold text-slate-800 mb-3 text-sm">Instruksi Pembayaran</h2>
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-500">Metode</span>
-                                        <span className="font-bold text-slate-800">{selectedPM.name}</span>
-                                    </div>
-                                    {selectedPM.account_number && (
-                                        <div className="flex justify-between">
-                                            <span className="text-slate-500">No. Rekening</span>
-                                            <span className="font-bold text-slate-800 font-mono">{selectedPM.account_number}</span>
-                                        </div>
-                                    )}
-                                    {selectedPM.account_name && (
-                                        <div className="flex justify-between">
-                                            <span className="text-slate-500">Atas Nama</span>
-                                            <span className="font-bold text-slate-800">{selectedPM.account_name}</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between pt-2 border-t border-slate-100">
-                                        <span className="text-slate-500">Total</span>
-                                        <span className="font-black text-slate-800">{formatPrice(total)}</span>
+                        {/* Amount due */}
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-6 text-center">
+                            <p className="text-sm text-slate-500 mb-1">Total yang harus dibayar</p>
+                            <p className="text-3xl font-black text-blue-700">{formatPrice(total)}</p>
+                            {checkIn && checkOut && nights > 0 && (
+                                <p className="text-xs text-slate-500 mt-1">
+                                    {nights} malam · {format(parseISO(checkIn), 'dd MMM', { locale: localeID })} – {format(parseISO(checkOut), 'dd MMM yyyy', { locale: localeID })}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Villa + booking summary */}
+                        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden mb-6">
+                            <div className="h-40 overflow-hidden bg-slate-100">
+                                <img src={getPhotoUrl(villa.photos?.[0])} alt={villa.name} className="w-full h-full object-cover" />
+                            </div>
+                            <div className="p-5 space-y-3">
+                                <div className="flex items-start gap-2">
+                                    <Home className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                                    <div>
+                                        <p className="text-xs text-slate-500">Villa</p>
+                                        <p className="font-semibold text-slate-800">{villa.name}</p>
                                     </div>
                                 </div>
-                                {selectedPM.instructions && (
-                                    <div className="mt-4 p-3 bg-slate-50 rounded-xl text-xs text-slate-600 whitespace-pre-line">
-                                        {selectedPM.instructions}
+                                {villa.location && (
+                                    <div className="flex items-start gap-2">
+                                        <MapPin className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="text-xs text-slate-500">Lokasi</p>
+                                            <p className="text-sm text-slate-700">{villa.location}</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {checkIn && checkOut && (
+                                    <div className="border-t border-slate-100 pt-3 grid grid-cols-2 gap-3">
+                                        <div className="flex items-start gap-2">
+                                            <Calendar className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                                            <div>
+                                                <p className="text-xs text-slate-500">Check-in</p>
+                                                <p className="text-sm font-semibold text-slate-700">
+                                                    {format(parseISO(checkIn), 'EEEE, dd MMM yyyy', { locale: localeID })}
+                                                </p>
+                                                {villa.check_in_time && (
+                                                    <p className="text-xs text-slate-400 flex items-center gap-1">
+                                                        <Clock className="w-3 h-3" /> {villa.check_in_time}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <Calendar className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                                            <div>
+                                                <p className="text-xs text-slate-500">Check-out</p>
+                                                <p className="text-sm font-semibold text-slate-700">
+                                                    {format(parseISO(checkOut), 'EEEE, dd MMM yyyy', { locale: localeID })}
+                                                </p>
+                                                {villa.check_out_time && (
+                                                    <p className="text-xs text-slate-400 flex items-center gap-1">
+                                                        <Clock className="w-3 h-3" /> {villa.check_out_time}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-2">
+                                    <Users className="w-4 h-4 text-slate-400 shrink-0" />
+                                    <div>
+                                        <span className="text-xs text-slate-500">Tamu: </span>
+                                        <span className="text-sm text-slate-700">{guests} orang</span>
+                                        {nights > 0 && <span className="text-xs text-slate-400 ml-2">· {nights} malam</span>}
+                                    </div>
+                                </div>
+                                {(taxAmount > 0 || adminFee > 0 || discountAmount > 0) && (
+                                    <div className="border-t border-slate-100 pt-3 space-y-1.5 text-sm">
+                                        <div className="flex justify-between text-slate-600">
+                                            <span>Subtotal</span>
+                                            <span>{formatPrice(subtotal)}</span>
+                                        </div>
+                                        {taxAmount > 0 && (
+                                            <div className="flex justify-between text-slate-600">
+                                                <span>Pajak ({taxPercentage}%)</span>
+                                                <span>{formatPrice(taxAmount)}</span>
+                                            </div>
+                                        )}
+                                        {adminFee > 0 && (
+                                            <div className="flex justify-between text-slate-600">
+                                                <span>Biaya admin</span>
+                                                <span>{formatPrice(adminFee)}</span>
+                                            </div>
+                                        )}
+                                        {discountAmount > 0 && (
+                                            <div className="flex justify-between text-green-600 font-semibold">
+                                                <span>Diskon ({voucherApplied?.code})</span>
+                                                <span>-{formatPrice(discountAmount)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="border-t border-slate-100 px-5 py-4 bg-slate-50 flex items-center justify-between">
+                                <span className="text-sm text-slate-500">Total Pembayaran</span>
+                                <span className="text-lg font-black text-slate-800">{formatPrice(total)}</span>
+                            </div>
+                        </div>
+
+                        {/* Payment notice when unpaid */}
+                        {!proofUploaded && (
+                            <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-6">
+                                <p className="font-semibold text-yellow-800 text-sm">Pembayaran Belum Diterima</p>
+                                <p className="text-xs text-yellow-600 mt-0.5">Segera transfer sesuai instruksi di bawah, lalu unggah bukti pembayaran.</p>
+                            </div>
+                        )}
+
+                        {/* Payment instructions + upload */}
+                        {!proofUploaded && (
+                            <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-6">
+                                <h2 className="font-bold text-slate-800 mb-3 text-sm">Instruksi Pembayaran</h2>
+
+                                {paymentMethods.length > 1 && (
+                                    <div className="space-y-2 mb-4">
+                                        {paymentMethods.map((pm) => (
+                                            <label
+                                                key={pm.id}
+                                                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selectedPaymentMethod === pm.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-blue-300'}`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="created_payment_method"
+                                                    value={pm.id}
+                                                    checked={selectedPaymentMethod === pm.id}
+                                                    onChange={() => setSelectedPaymentMethod(pm.id)}
+                                                    className="text-blue-600 shrink-0"
+                                                />
+                                                <div>
+                                                    <p className="text-sm font-semibold text-slate-800">{pm.name}</p>
+                                                    {pm.account_number && (
+                                                        <p className="text-xs text-slate-500">{pm.account_number} · {pm.account_name}</p>
+                                                    )}
+                                                </div>
+                                            </label>
+                                        ))}
                                     </div>
                                 )}
 
-                                {/* Upload proof */}
+                                {selectedPM ? (
+                                    <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between">
+                                            <span className="text-slate-500">Transfer ke</span>
+                                            <span className="font-bold text-slate-800">{selectedPM.name}</span>
+                                        </div>
+                                        {selectedPM.account_number && (
+                                            <div className="flex justify-between items-center gap-2">
+                                                <span className="text-slate-500">No. Rekening</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold text-slate-800 font-mono">{selectedPM.account_number}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            navigator.clipboard.writeText(selectedPM.account_number ?? '').then(() => {
+                                                                toast.success('Nomor rekening disalin!');
+                                                            });
+                                                        }}
+                                                        className="p-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+                                                        title="Salin nomor rekening"
+                                                    >
+                                                        <Copy className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {selectedPM.account_name && (
+                                            <div className="flex justify-between">
+                                                <span className="text-slate-500">Atas Nama</span>
+                                                <span className="font-bold text-slate-800">{selectedPM.account_name}</span>
+                                            </div>
+                                        )}
+                                        <div className="flex justify-between pt-2 border-t border-slate-100">
+                                            <span className="text-slate-500">Jumlah Transfer</span>
+                                            <span className="font-black text-slate-800">{formatPrice(total)}</span>
+                                        </div>
+                                        {selectedPM.instructions && (
+                                            <div className="mt-3 p-3 bg-slate-50 rounded-xl text-xs text-slate-600 whitespace-pre-line">
+                                                {selectedPM.instructions}
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        <p className="text-sm text-slate-500">Belum ada metode pembayaran terpilih.</p>
+                                        <Link
+                                            href={`/booking/payment?code=${bookingCode}`}
+                                            className="inline-flex items-center justify-center w-full bg-yellow-500 text-white font-bold px-4 py-3 rounded-xl text-sm hover:bg-yellow-600 transition-colors"
+                                        >
+                                            Lanjut ke Halaman Pembayaran
+                                        </Link>
+                                    </div>
+                                )}
+
                                 <form onSubmit={handleUploadProof} className="mt-5 pt-4 border-t border-slate-200">
                                     <h3 className="font-bold text-slate-800 mb-3 text-sm">Upload Bukti Pembayaran</h3>
                                     <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 rounded-xl p-6 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors">
                                         <Upload className="w-6 h-6 text-slate-400" />
                                         <span className="text-xs text-slate-500 text-center">
-                                            {proofFile ? proofFile.name : 'Klik untuk pilih file (JPG, PNG, PDF)'}
+                                            {proofFile ? proofFile.name : 'Klik untuk pilih file (JPG, PNG, WebP)'}
                                         </span>
-                                        <input type="file" accept="image/jpeg,image/png,image/jpg,image/webp" className="hidden" onChange={(e) => {
-                                            const file = e.target.files?.[0] ?? null;
-                                            setProofFile(file);
+                                        {proofPreview && (
+                                            <img src={proofPreview} alt="Preview bukti" className="mt-2 max-h-40 rounded-lg object-contain" />
+                                        )}
+                                        <input
+                                            type="file"
+                                            accept="image/jpeg,image/png,image/jpg,image/webp"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0] ?? null;
+                                                setProofFile(file);
 
-                                            if (file) {
-                                                setProofPreview(URL.createObjectURL(file));
-                                            } else {
-                                                setProofPreview(null);
-                                            }
-                                        }} />
+                                                if (file) {
+                                                    setProofPreview(URL.createObjectURL(file));
+                                                } else {
+                                                    setProofPreview(null);
+                                                }
+                                            }}
+                                        />
                                     </label>
-                                    <button type="submit" disabled={!proofFile || uploading} className="mt-4 w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 text-sm">
+                                    <button
+                                        type="submit"
+                                        disabled={!proofFile || uploading}
+                                        className="mt-4 w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 text-sm"
+                                    >
                                         {uploading ? 'Mengirim...' : 'Kirim Bukti Pembayaran'}
                                     </button>
                                 </form>
@@ -632,7 +825,7 @@ formData.append('ktp_image', ktpFile);
                         {proofUploaded && (
                             <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-6">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                                    <CheckCircle className="w-6 h-6 text-green-600 shrink-0" />
                                     <div>
                                         <p className="font-bold text-green-700 text-sm">Bukti pembayaran diterima!</p>
                                         <p className="text-xs text-green-600">Tim kami akan memverifikasi dalam 1×24 jam.</p>
@@ -646,15 +839,35 @@ formData.append('ktp_image', ktpFile);
                             </div>
                         )}
 
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <Link href={`/booking/status?code=${bookingCode}`} className="flex-1 bg-slate-800 text-white font-semibold px-5 py-3 rounded-xl hover:bg-slate-900 transition-colors text-sm text-center">
-                                Cek Status Pemesanan
-                            </Link>
+                        <div className="flex flex-col gap-3">
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <Link
+                                    href={`/booking/status?code=${bookingCode}`}
+                                    className="flex-1 bg-slate-800 text-white font-semibold px-5 py-3 rounded-xl hover:bg-slate-900 transition-colors text-sm text-center"
+                                >
+                                    Cek Status Pemesanan
+                                </Link>
+                                <Link
+                                    href={`/booking/payment?code=${bookingCode}`}
+                                    className="flex-1 border border-blue-200 text-blue-600 font-semibold px-5 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm text-center"
+                                >
+                                    Halaman Pembayaran
+                                </Link>
+                            </div>
                             {settings?.settings_whatsapp && (
-                                <a href={`https://wa.me/${settings.settings_whatsapp}?text=Halo, saya sudah bayar untuk booking %23${bookingCode}`} target="_blank" rel="noopener noreferrer" className="flex-1 border border-green-500 text-green-600 font-semibold px-5 py-3 rounded-xl hover:bg-green-50 transition-colors text-sm text-center">
+                                <a
+                                    href={`https://wa.me/${settings.settings_whatsapp}?text=Halo, saya sudah booking %23${bookingCode} dan ingin konfirmasi pembayaran.`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-center gap-2 border border-green-500 text-green-600 font-semibold px-5 py-3 rounded-xl hover:bg-green-50 transition-colors text-sm"
+                                >
+                                    <MessageCircle className="w-4 h-4" />
                                     Konfirmasi via WhatsApp
                                 </a>
                             )}
+                            <Link href="/" className="text-center text-sm text-slate-500 hover:text-slate-700 py-2">
+                                Kembali ke Beranda
+                            </Link>
                         </div>
                     </div>
                 )}

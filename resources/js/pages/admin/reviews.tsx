@@ -3,7 +3,7 @@ import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import { Star, Check, X } from 'lucide-react';
-import React, { useState } from 'react';
+import React from 'react';
 import { toast } from 'sonner';
 import type { Review, PaginatedData } from '@/types';
 
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function AdminReviewsPage({ reviews, filters }: Props) {
-    const [filter, setFilter] = useState(filters.filter ?? 'pending');
+    const filter = filters.filter ?? 'pending';
 
     const handleApprove = async (id: number) => {
         try {
@@ -27,8 +27,8 @@ export default function AdminReviewsPage({ reviews, filters }: Props) {
 
     const handleReject = async (id: number) => {
         if (!confirm('Hapus ulasan ini?')) {
-return;
-}
+            return;
+        }
 
         try {
             await axios.delete(`/api/v1/admin/reviews/${id}`);
@@ -54,8 +54,7 @@ return;
                         <button
                             key={f}
                             onClick={() => {
-                                setFilter(f);
-                                router.get('/admin/reviews', { filter: f === 'all' ? '' : f }, { preserveScroll: true });
+                                router.get('/admin/reviews', { filter: f }, { preserveScroll: true });
                             }}
                             className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors ${filter === f ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                         >
@@ -116,13 +115,7 @@ return;
                                 <button
                                     key={page}
                                     onClick={() => {
-                                        const params: Record<string, string> = { page: String(page) };
-
-                                        if (filter && filter !== 'all') {
-params.filter = filter;
-}
-
-                                        router.get('/admin/reviews', params, { preserveScroll: true });
+                                        router.get('/admin/reviews', { page: String(page), filter }, { preserveScroll: true });
                                     }}
                                     className={`w-7 h-7 rounded text-xs font-medium ${
                                         page === reviews.current_page ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-200'

@@ -51,7 +51,7 @@ class VillaAdminController extends Controller
             'is_active' => 'boolean',
             'host_name' => 'nullable|string|max:255',
             'host_years' => 'nullable|integer|min:0',
-            'host_avatar' => 'nullable|string|url|max:1000',
+            'host_avatar' => 'nullable|string|max:1000',
             'host_phone' => 'nullable|string|max:50',
             'highlights' => 'nullable|array',
             'bedrooms_info' => 'nullable|array',
@@ -144,7 +144,7 @@ class VillaAdminController extends Controller
             'photos' => 'nullable|array', // Allow updating photos list reordering
             'host_name' => 'nullable|string|max:255',
             'host_years' => 'nullable|integer|min:0',
-            'host_avatar' => 'nullable|string|url|max:1000',
+            'host_avatar' => 'nullable|string|max:1000',
             'host_phone' => 'nullable|string|max:50',
             'highlights' => 'nullable|array',
             'bedrooms_info' => 'nullable|array',

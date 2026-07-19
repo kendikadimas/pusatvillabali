@@ -69,7 +69,6 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const [showNewDestination, setShowNewDestination] = useState(false);
     const [newDestName, setNewDestName] = useState('');
     const [newDestCity, setNewDestCity] = useState('');
-    const [newDestImage, setNewDestImage] = useState('');
     const [savingDestination, setSavingDestination] = useState(false);
 
     // Amenities
@@ -81,12 +80,6 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
 
     const [beds, setBeds] = useState(villa?.beds ? String(villa.beds) : '');
     const [cleaningFee, setCleaningFee] = useState(villa?.cleaning_fee ? String(Number(villa.cleaning_fee)) : '');
-
-    // Highlights
-    const [highlightsList, setHighlightsList] = useState<Array<{ icon: string; title: string; description: string }>>(villa?.highlights || []);
-    const [hlIcon, setHlIcon] = useState('Wind');
-    const [hlTitle, setHlTitle] = useState('');
-    const [hlDesc, setHlDesc] = useState('');
 
     // Bedrooms Layout
     const [bedroomsList, setBedroomsList] = useState<Array<{ image: string; title: string; subtext: string }>>(villa?.bedrooms_layout || []);
@@ -100,16 +93,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const [hostYears, setHostYears] = useState(villa?.host_years || 1);
     const [hostAvatar, setHostAvatar] = useState(villa?.host_avatar ? normaliseStorageUrl(villa.host_avatar) : '');
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
-    const [hostJoinedLabel, setHostJoinedLabel] = useState(villa?.host_joined_label || '');
-    const [hostIsVerified, setHostIsVerified] = useState(villa?.host_is_verified !== false);
-    const [hostAboutList, setHostAboutList] = useState<string[]>(villa?.host_about || []);
-    const [hostAboutInput, setHostAboutInput] = useState('');
-    const [hostPhone, setHostPhone] = useState('');
-
-    // Safety and Neighborhood
-    const [safetyList, setSafetyList] = useState<string[]>(villa?.safety_and_property || []);
-    const [safetyInput, setSafetyInput] = useState('');
-    const [neighborhoodDesc, setNeighborhoodDesc] = useState(villa?.neighborhood_desc || '');
+    const [hostPhone, setHostPhone] = useState(villa?.host_phone || '');
 
     // Photo states
     const [photos, setPhotos] = useState<Array<string | { url: string; description: string; category?: string }>>(villa?.photos || []);
@@ -166,7 +150,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
                 name: newDestName.trim(),
                 city: newDestCity.trim(),
                 query: newDestName.trim(),
-                image: newDestImage || 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80',
+                image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80',
             });
 
             toast.success('Destinasi baru berhasil ditambahkan.');
@@ -343,13 +327,8 @@ errors.check_out_time = 'Jam check-out wajib diisi.';
                 host_years: Number(hostYears),
                 host_avatar: hostAvatar || null,
                 host_phone: hostPhone || null,
-                host_joined_label: hostJoinedLabel || null,
-                host_is_verified: hostIsVerified,
-                host_about: hostAboutList,
+                host_is_verified: true,
                 co_hosts: [],
-                safety_property: safetyList,
-                neighborhood_desc: neighborhoodDesc || null,
-                highlights: highlightsList,
                 bedrooms_info: bedroomsList,
                 accessibility_features: [],
             };
@@ -460,21 +439,6 @@ return;
         }
     };
 
-    const handlePhotoDescriptionChange = (index: number, newDesc: string) => {
-        setPhotos(prev => {
-            const updated = [...prev];
-            const item = updated[index];
-
-            if (typeof item === 'string') {
-                updated[index] = { url: item, description: newDesc, category: 'Lainnya' };
-            } else {
-                updated[index] = { ...item, description: newDesc };
-            }
-
-            return updated;
-        });
-    };
-
     const handlePhotoCategoryChange = (index: number, newCategory: string) => {
         setPhotos(prev => {
             const updated = [...prev];
@@ -529,13 +493,8 @@ return;
                 host_years: Number(hostYears),
                 host_avatar: hostAvatar || null,
                 host_phone: hostPhone || null,
-                host_joined_label: hostJoinedLabel || null,
-                host_is_verified: hostIsVerified,
-                host_about: hostAboutList,
+                host_is_verified: true,
                 co_hosts: [],
-                safety_property: safetyList,
-                neighborhood_desc: neighborhoodDesc || null,
-                highlights: highlightsList,
                 bedrooms_info: bedroomsList,
                 accessibility_features: [],
             };
@@ -1207,7 +1166,7 @@ return;
                                 <div className="space-y-5 pt-4 border-t border-slate-100">
                                     <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Tuan Rumah</h3>
                                     
-                                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                         <div>
                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nama Tuan Rumah</label>
                                              <input 
@@ -1237,28 +1196,8 @@ return;
                                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
                                              />
                                          </div>
-                                         <div>
-                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Label Bergabung</label>
-                                             <input 
-                                                 type="text" 
-                                                 value={hostJoinedLabel} 
-                                                 placeholder="Mulai menerima tamu 2024" 
-                                                 onChange={(e) => setHostJoinedLabel(e.target.value)} 
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
-                                            />
-                                        </div>
-                                        <div className="flex items-center space-x-2 pt-6">
-                                            <input 
-                                                type="checkbox" 
-                                                id="hostIsVerified" 
-                                                checked={hostIsVerified} 
-                                                onChange={(e) => setHostIsVerified(e.target.checked)} 
-                                                className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-605 cursor-pointer" 
-                                            />
-                                            <label htmlFor="hostIsVerified" className="text-[10px] font-bold text-slate-600 uppercase tracking-wider cursor-pointer">Host Terverifikasi</label>
-                                        </div>
 
-                                        <div className="sm:col-span-5 space-y-2">
+                                        <div className="sm:col-span-3 space-y-2">
                                             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Avatar Tuan Rumah</label>
                                             <div className="flex items-center space-x-4">
                                                 <div className="relative w-16 h-16 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
@@ -1301,128 +1240,9 @@ return;
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div className="pt-3">
-                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Tentang Tuan Rumah (Bullet Points)</label>
-                                        {hostAboutList.length > 0 && (
-                                            <ul className="space-y-1.5 mb-3">
-                                                {hostAboutList.map((item, idx) => (
-                                                    <li key={idx} className="flex items-center justify-between bg-slate-55 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-850">
-                                                        <span>{item}</span>
-                                                        <button type="button" onClick={() => setHostAboutList(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 cursor-pointer p-1">
-                                                            <X className="w-3.5 h-3.5" />
-                                                        </button>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                        <div className="flex space-x-2">
-                                            <input 
-                                                type="text" 
-                                                placeholder="Contoh: Senang berbagi rekomendasi lokal" 
-                                                value={hostAboutInput} 
-                                                onChange={(e) => setHostAboutInput(e.target.value)} 
-                                                 className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" 
-                                                 onKeyDown={(e) => {
-                                                     if (e.key === 'Enter') {
-                                                         e.preventDefault();
-
-                                                         if (!hostAboutInput.trim()) {
-return;
-}
-
-                                                         setHostAboutList(prev => [...prev, hostAboutInput.trim()]);
-                                                        setHostAboutInput('');
-                                                    }
-                                                }}
-                                            />
-                                            <button 
-                                                type="button" 
-                                                onClick={() => {
- if (!hostAboutInput.trim()) {
-return;
-}
-
- setHostAboutList(prev => [...prev, hostAboutInput.trim()]); setHostAboutInput(''); 
-}} 
-                                                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-4 py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer"
-                                            >
-                                                <Plus className="w-3.5 h-3.5" />
-                                                <span>Tambah</span>
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
 
-                                {/* 6. Highlights */}
-                                <div className="space-y-5 pt-4 border-t border-slate-100">
-                                    <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Sorotan (Highlights)</h3>
-                                    
-                                    {highlightsList.length > 0 && (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                                            {highlightsList.map((hl, idx) => (
-                                                <div key={idx} className="flex items-start justify-between border border-slate-200 rounded-xl p-3 bg-slate-50">
-                                                    <div className="flex items-start space-x-3 text-xs">
-                                                        <span className="p-1.5 bg-white rounded-lg border border-slate-200 text-blue-505 font-bold shrink-0">{hl.icon}</span>
-                                                        <div>
-                                                            <h5 className="font-bold text-slate-800">{hl.title}</h5>
-                                                            <p className="text-[11px] text-slate-500 mt-0.5">{hl.description}</p>
-                                                        </div>
-                                                    </div>
-                                                    <button type="button" onClick={() => setHighlightsList(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 p-1 cursor-pointer shrink-0">
-                                                        <X className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                    
-                                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                                        <div>
-                                            <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Ikon</label>
-                                             <select value={hlIcon} onChange={(e) => setHlIcon(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold cursor-pointer">
-                                                <option value="Wind">AC/Kipas</option>
-                                                <option value="Key">Check-in</option>
-                                                <option value="Car">Parkir</option>
-                                                <option value="Shield">Keamanan</option>
-                                                <option value="Waves">Kolam</option>
-                                                <option value="Trophy">Terfavorit</option>
-                                                <option value="Coffee">Sarapan</option>
-                                                <option value="Sparkles">Estetik</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Judul</label>
-                                             <input type="text" placeholder="Misal: Check-in mandiri" value={hlTitle} onChange={(e) => setHlTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
-                                         </div>
-                                         <div>
-                                             <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Deskripsi</label>
-                                             <input type="text" placeholder="Masuk dengan smartlock." value={hlDesc} onChange={(e) => setHlDesc(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
-                                        </div>
-                                        <div className="sm:col-span-3 flex justify-end">
-                                            <button 
-                                                type="button" 
-                                                onClick={() => { 
-                                                    if (!hlTitle.trim() || !hlDesc.trim()) {
- toast.error('Judul dan Deskripsi wajib diisi.');
-
- return; 
-}
- 
-                                                    setHighlightsList(prev => [...prev, { icon: hlIcon, title: hlTitle, description: hlDesc }]); 
-                                                    setHlTitle(''); 
-                                                    setHlDesc(''); 
-                                                }} 
-                                                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-3.5 py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer"
-                                            >
-                                                <Plus className="w-3.5 h-3.5" />
-                                                <span>Tambah</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* 7. Bedroom Details */}
+                                {/* 6. Bedroom Details */}
                                 <div className="space-y-5 pt-4 border-t border-slate-100">
                                     <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Detail Kamar</h3>
                                     
@@ -1523,66 +1343,6 @@ return;
                                                 <span>Tambah Kamar</span>
                                             </button>
                                         </div>
-                                    </div>
-                                </div>
-
-                                {/* 8. Safety & Neighborhood */}
-                                <div className="space-y-5 pt-4 border-t border-slate-100">
-                                    <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 uppercase tracking-wider">Keselamatan & Lingkungan</h3>
-                                    
-                                    <div>
-                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Keselamatan Properti (Bullet Points)</label>
-                                        {safetyList.length > 0 && (
-                                            <ul className="space-y-1.5 mb-3">
-                                                {safetyList.map((item, idx) => (
-                                                    <li key={idx} className="flex items-center justify-between bg-slate-55 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-850">
-                                                        <span>{item}</span>
-                                                        <button type="button" onClick={() => setSafetyList(prev => prev.filter((_, i) => i !== idx))} className="text-red-500 hover:text-red-700 cursor-pointer p-1">
-                                                            <X className="w-3.5 h-3.5" />
-                                                        </button>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                        <div className="flex space-x-2">
-                                            <input 
-                                                type="text" 
-                                                placeholder="Contoh: Detektor asap terpasang" 
-                                                value={safetyInput} 
-                                                onChange={(e) => setSafetyInput(e.target.value)} 
-                                                 className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" 
-                                                 onKeyDown={(e) => {
-                                                     if (e.key === 'Enter') {
-                                                         e.preventDefault();
-
-                                                         if (!safetyInput.trim()) {
-return;
-}
-
-                                                         setSafetyList(prev => [...prev, safetyInput.trim()]);
-                                                        setSafetyInput('');
-                                                    }
-                                                }}
-                                            />
-                                            <button 
-                                                type="button" 
-                                                onClick={() => {
- if (!safetyInput.trim()) {
-return;
-}
-
- setSafetyList(prev => [...prev, safetyInput.trim()]); setSafetyInput(''); 
-}} 
-                                                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] px-4 py-2 rounded-xl flex items-center justify-center space-x-1 cursor-pointer"
-                                            >
-                                                <Plus className="w-3.5 h-3.5" />
-                                                <span>Tambah</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Deskripsi Lingkungan Sekitar</label>
-                                         <textarea rows={2} placeholder="Sebutkan hal menarik di lingkungan sekitar..." value={neighborhoodDesc} onChange={(e) => setNeighborhoodDesc(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" />
                                     </div>
                                 </div>
 
@@ -1704,7 +1464,6 @@ return;
                                                             {catPhotos.map(({ photo, index }) => {
                                                                 const photoUrl = getPhotoUrl(photo);
                                                                 const isMainPhoto = index === 0 && cat === PHOTO_CATEGORIES[0];
-                                                                const caption = typeof photo === 'string' ? '' : (photo.description || '');
                                                                 const category = typeof photo === 'string' ? 'Lainnya' : (photo.category || 'Lainnya');
 
                                                                 return (
@@ -1725,16 +1484,6 @@ return;
                                                                             </button>
                                                                         </div>
                                                                         <div className="p-3 bg-slate-50 border-t border-slate-100 space-y-2 text-xs flex-1">
-                                                                            <div>
-                                                                                <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Caption</label>
-                                                                                <input 
-                                                                                    type="text" 
-                                                                                    value={caption} 
-                                                                                    onChange={(e) => handlePhotoDescriptionChange(index, e.target.value)} 
-                                                                                    placeholder="Caption foto..." 
-                                                                                    className="w-full bg-white border border-slate-200 focus:border-blue-500 rounded-lg px-2.5 py-1 text-xs focus:outline-none font-semibold"
-                                                                                />
-                                                                            </div>
                                                                             <div>
                                                                                 <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Kategori</label>
                                                                                 <select 

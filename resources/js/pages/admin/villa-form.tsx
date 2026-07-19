@@ -241,7 +241,11 @@ return;
 
         setUploadingAvatar(true);
         const formData = new FormData();
-        formData.append('avatar', file);
+
+        // When creating: use upload-image endpoint (expects 'image' field)
+        // When editing: use host-avatar endpoint (expects 'avatar' field)
+        const fieldName = isEdit ? 'avatar' : 'image';
+        formData.append(fieldName, file);
 
         try {
             const response = await axios.post(

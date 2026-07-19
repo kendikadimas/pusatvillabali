@@ -6,17 +6,17 @@ import { home } from '@/routes';
 import type { Auth } from '@/types/auth';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const { auth, flash } = usePage<{ auth: Auth; flash?: { admin_token?: string } }>().props;
+    const { auth, flash, admin_token } = usePage<{ auth: Auth; flash?: { success?: string; error?: string }; admin_token?: string }>().props;
     const { url: currentUrl } = usePage();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
 
-    // Sync admin_token from flash (set after login) into localStorage
+    // Sync admin_token from session (shared on every Inertia request) into localStorage
     useEffect(() => {
-        if (flash?.admin_token) {
-            localStorage.setItem('admin_token', flash.admin_token);
+        if (admin_token) {
+            localStorage.setItem('admin_token', admin_token);
         }
-    }, [flash?.admin_token]);
+    }, [admin_token]);
 
     const handleLogout = () => {
         localStorage.removeItem('admin_token');
@@ -140,15 +140,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <div className="flex items-center gap-3">
                         <div className="text-right">
                             <div className="text-sm font-medium text-gray-700">{auth?.user?.name ?? 'Admin'}</div>
-                            <div className="text-xs text-slate-400 font-mono">
-                                role: <span className="text-blue-600">{auth?.user?.role ?? '—'}</span>
-                                {' · '}
-                                permissions: <span className="text-blue-600">
-                                    {Array.isArray(auth?.user?.permissions) && auth.user.permissions.length > 0
-                                        ? auth.user.permissions.join(', ')
-                                        : auth?.user?.permissions === null ? 'null' : 'none'}
-                                </span>
-                            </div>
+                            <div className="text-xs text-slate-400 capitalize">{auth?.user?.role ?? 'admin'}</div>
                         </div>
                         <button
                             onClick={handleLogout}

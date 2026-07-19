@@ -46,7 +46,7 @@ class SettingAdminController extends Controller
             'settings_checkout' => 'sometimes|string|max:5',
             'settings_meta_title' => 'nullable|string|max:255',
             'settings_meta_description' => 'nullable|string|max:500',
-            'tax_percentage' => 'required|integer|min:0|max:100',
+            'tax_percentage' => 'sometimes|integer|min:0|max:100',
         ];
 
         $validator = Validator::make($request->all(), $rules);

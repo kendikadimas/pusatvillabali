@@ -235,3 +235,23 @@
 html {
     scroll-behavior: smooth;
 }
+
+/* react-day-picker villa calendar overrides */
+.villa-calendar .rdp-root {
+    --rdp-accent-color: #22804d;
+    --rdp-accent-background-color: #dcf4e3;
+    width: 100%;
+}
+
+.villa-calendar .rdp-months {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.villa-calendar .rdp-month {
+    flex: 1;
+    min-width: 240px;
+}

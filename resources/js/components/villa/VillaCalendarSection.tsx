@@ -2,7 +2,7 @@ import { addMonths } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
-import { DayPicker, UI, DayFlag, SelectionState } from 'react-day-picker';
+import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/style.css';
 
 interface VillaCalendarSectionProps {
@@ -36,7 +36,7 @@ export default function VillaCalendarSection({ dateRange, disabledDays, isMobile
                 </button>
             </div>
 
-            <div className="bg-slate-50 border border-slate-200 rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center">
+            <div className="villa-calendar bg-slate-50 border border-slate-200 rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center overflow-x-auto">
                 <DayPicker
                     mode="range"
                     selected={dateRange}
@@ -46,21 +46,6 @@ export default function VillaCalendarSection({ dateRange, disabledDays, isMobile
                     month={currentMonth}
                     onMonthChange={setCurrentMonth}
                     locale={localeID}
-                    classNames={{
-                        [UI.Root]: 'rdp-villa-root',
-                        [UI.Months]: 'rdp-villa-months',
-                        [UI.Month]: 'rdp-villa-month',
-                        [UI.Day]: 'rdp-villa-day',
-                        [UI.DayButton]: 'rdp-villa-day-btn',
-                        [SelectionState.selected]: 'rdp-villa-day-selected',
-                        [SelectionState.range_start]: 'rdp-villa-day-range-start',
-                        [SelectionState.range_end]: 'rdp-villa-day-range-end',
-                        [SelectionState.range_middle]: 'rdp-villa-day-range-middle',
-                        [DayFlag.today]: 'rdp-villa-day-today',
-                        [DayFlag.outside]: 'rdp-villa-day-outside',
-                        [UI.MonthCaption]: 'rdp-villa-caption',
-                        [UI.Weekdays]: 'rdp-villa-weekdays',
-                    }}
                 />
             </div>
         </div>

@@ -177,7 +177,12 @@ formData.append('ktp_image', ktpFile);
             }
 
             const res = await axios.post('/api/v1/bookings', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: {
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                // Let browser set multipart boundary; do not force Content-Type
+                maxRedirects: 0,
             });
             const code = res.data.booking_code ?? res.data.data?.booking_code;
             setBookingCode(code);

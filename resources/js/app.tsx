@@ -15,6 +15,8 @@ axios.defaults.headers.common['Accept'] = 'application/json';
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
 axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
+// Avoid silent POST→GET conversion when a host/protocol redirect occurs
+axios.defaults.maxRedirects = 0;
 
 // Attach Sanctum Bearer token from localStorage on every request
 axios.interceptors.request.use((config) => {
@@ -24,9 +26,17 @@ axios.interceptors.request.use((config) => {
         ? localStorage.getItem('admin_token') || localStorage.getItem('sanctum_token')
         : localStorage.getItem('sanctum_token') || localStorage.getItem('admin_token');
 
+    config.headers = config.headers ?? {};
+    config.headers['Accept'] = 'application/json';
+    config.headers['X-Requested-With'] = 'XMLHttpRequest';
+
     if (token) {
-        config.headers = config.headers ?? {};
         config.headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Normalize relative API paths (no trailing slash) to prevent 301→GET
+    if (typeof config.url === 'string' && config.url.startsWith('/api/')) {
+        config.url = config.url.replace(/\/+$/, '') || config.url;
     }
 
     return config;
@@ -37,8 +47,10 @@ axios.interceptors.response.use(
     (response) => response,
     async (error) => {
         const config = error.config as (typeof error.config & { _authRetry?: boolean }) | undefined;
+        const status = error.response?.status;
 
-        if (error.response?.status === 401 && config && !config._authRetry) {
+        // 401 with Bearer → strip token and retry once (session fallback)
+        if (status === 401 && config && !config._authRetry) {
             const authHeader = config.headers?.Authorization ?? config.headers?.authorization;
 
             if (authHeader) {

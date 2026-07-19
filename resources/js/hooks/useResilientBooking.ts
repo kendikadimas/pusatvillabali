@@ -109,7 +109,9 @@ export function useResilientBooking(codeFromUrl?: string, emailFromUrl?: string)
                     params.email = anchor.email;
                 }
 
-                const res = await axios.get('/api/v1/bookings/by-code', { params });
+                const res = await axios.get(`/api/v1/bookings/${encodeURIComponent(anchor.code)}`, {
+                    params: anchor.email ? { email: anchor.email } : undefined,
+                });
                 const data = res.data?.data ?? res.data;
 
                 if (!mountedRef.current || gen !== generationRef.current) {

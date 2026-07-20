@@ -192,6 +192,8 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
 
     const handleBrImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+        // Reset so the same file can be picked again
+        e.target.value = '';
 
         if (!file) {
 return;
@@ -217,6 +219,8 @@ return;
 
     const handleHostAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+        // Reset so the same file can be picked again
+        e.target.value = '';
 
         if (!file) {
 return;

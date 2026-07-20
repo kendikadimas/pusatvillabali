@@ -59,25 +59,29 @@ export default function AdminAnalyticsPage() {
     const [exporting, setExporting] = useState(false);
     const fetchedRef = React.useRef(false);
 
-    const fetchData = useCallback(async () => {
+    const fetchData = useCallback(async (fromDate?: string, toDate?: string) => {
         setLoading(true);
 
         try {
-            const res = await axios.get('/api/v1/admin/analytics', { params: { from, to } });
+            const res = await axios.get('/api/v1/admin/analytics', {
+                params: { from: fromDate ?? from, to: toDate ?? to },
+            });
             setData(res.data);
         } catch (err: any) {
             toast.error(err.response?.data?.message ?? 'Gagal memuat data analitik');
         } finally {
             setLoading(false);
         }
-    }, [from, to]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (!fetchedRef.current) {
             fetchedRef.current = true;
-            fetchData();
+            fetchData(from, to);
         }
-    }, [fetchData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleExport = async () => {
         setExporting(true);
@@ -167,7 +171,7 @@ export default function AdminAnalyticsPage() {
                         />
                     </div>
                     <button
-                        onClick={fetchData}
+                        onClick={() => fetchData(from, to)}
                         disabled={loading}
                         className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60"
                     >
@@ -184,8 +188,12 @@ export default function AdminAnalyticsPage() {
                             <button
                                 key={days}
                                 onClick={() => {
- setFrom(daysAgo(days)); setTo(todayStr()); 
-}}
+                                    const newFrom = daysAgo(days);
+                                    const newTo = todayStr();
+                                    setFrom(newFrom);
+                                    setTo(newTo);
+                                    fetchData(newFrom, newTo);
+                                }}
                                 className="text-xs text-slate-500 hover:text-blue-600 border border-slate-200 hover:border-blue-300 px-3 py-1.5 rounded-lg transition-colors"
                             >
                                 {label}

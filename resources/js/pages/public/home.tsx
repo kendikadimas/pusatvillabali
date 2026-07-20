@@ -218,17 +218,17 @@ export default function Home({ villas, villasByDestination, destinations, settin
                 </div>
             </div>
 
-            {/* ── Destination cards grid ── */}
+            {/* ── Destination cards carousel ── */}
             {destList.length > 0 && (
                 <section className="py-8 bg-white border-b border-[#ebebeb]">
                     <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
                         <h2 className="text-lg sm:text-xl font-semibold text-[#222222] mb-4">Jelajahi Destinasi</h2>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+                        <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                             {destList.map((dest) => (
                                 <a
                                     key={dest.id}
                                     href={`/villas?destination_id=${dest.id}`}
-                                    className="group relative aspect-[4/3] rounded-xl overflow-hidden block"
+                                    className="group relative flex-shrink-0 w-40 sm:w-52 aspect-[3/4] rounded-2xl overflow-hidden block snap-start"
                                 >
                                     <img
                                         src={dest.image}
@@ -236,7 +236,7 @@ export default function Home({ villas, villasByDestination, destinations, settin
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                         onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&q=80'; }}
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                                     <div className="absolute bottom-0 left-0 right-0 p-3">
                                         <p className="text-white text-sm font-semibold leading-tight drop-shadow">{dest.name}</p>
                                         <p className="text-white/80 text-xs mt-0.5 drop-shadow">{dest.city}</p>

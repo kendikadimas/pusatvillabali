@@ -20,75 +20,122 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         router.post('/admin/logout');
     };
 
-    const navItems = [
-        { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
-        { href: '/admin/analytics', label: 'Analitik', icon: <BarChart2 className="w-4 h-4" /> },
-        { href: '/admin/villas', label: 'Villa', icon: <Home className="w-4 h-4" /> },
-        { href: '/admin/bookings', label: 'Pemesanan', icon: <ClipboardList className="w-4 h-4" /> },
-        { href: '/admin/reviews', label: 'Ulasan', icon: <Star className="w-4 h-4" /> },
-        { href: '/admin/vouchers', label: 'Voucher', icon: <Tag className="w-4 h-4" /> },
-        { href: '/admin/destinations', label: 'Destinasi', icon: <MapPin className="w-4 h-4" /> },
-        { href: '/admin/calendar', label: 'Kalender', icon: <Calendar className="w-4 h-4" /> },
-        { href: '/admin/settings', label: 'Pengaturan', icon: <Settings className="w-4 h-4" /> },
-        { href: '/admin/users', label: 'Pengguna', icon: <Users className="w-4 h-4" /> },
+    const navGroups = [
+        {
+            label: 'Utama',
+            items: [
+                { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
+                { href: '/admin/analytics', label: 'Analitik', icon: <BarChart2 className="w-4 h-4" /> },
+            ],
+        },
+        {
+            label: 'Properti',
+            items: [
+                { href: '/admin/villas', label: 'Villa', icon: <Home className="w-4 h-4" /> },
+                { href: '/admin/destinations', label: 'Destinasi', icon: <MapPin className="w-4 h-4" /> },
+                { href: '/admin/calendar', label: 'Kalender', icon: <Calendar className="w-4 h-4" /> },
+            ],
+        },
+        {
+            label: 'Transaksi',
+            items: [
+                { href: '/admin/bookings', label: 'Pemesanan', icon: <ClipboardList className="w-4 h-4" /> },
+                { href: '/admin/vouchers', label: 'Voucher', icon: <Tag className="w-4 h-4" /> },
+            ],
+        },
+        {
+            label: 'Konten',
+            items: [
+                { href: '/admin/reviews', label: 'Ulasan', icon: <Star className="w-4 h-4" /> },
+            ],
+        },
+        {
+            label: 'Sistem',
+            items: [
+                { href: '/admin/users', label: 'Pengguna', icon: <Users className="w-4 h-4" /> },
+                { href: '/admin/settings', label: 'Pengaturan', icon: <Settings className="w-4 h-4" /> },
+            ],
+        },
     ];
 
     const sidebarContent = (
-        <>
+        <div className="flex flex-col h-full">
             {/* Logo */}
-            <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-700">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <AppLogoIcon className="size-8" />
+            <div className={`flex items-center gap-3 px-4 py-4 border-b border-white/10 flex-shrink-0 ${sidebarOpen ? '' : 'justify-center'}`}>
+                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
+                    <AppLogoIcon className="size-5 text-white" />
                 </div>
                 {sidebarOpen && (
-                    <span className="font-semibold text-white truncate">Admin Panel</span>
+                    <div className="min-w-0">
+                        <p className="font-bold text-white text-sm leading-tight truncate">PusatVilla</p>
+                        <p className="text-[10px] text-slate-400 leading-tight uppercase tracking-wider">Admin Panel</p>
+                    </div>
                 )}
-                {/* Mobile close button */}
+                {/* Mobile close */}
                 <button
                     onClick={() => setMobileOpen(false)}
                     className="ml-auto p-1 rounded-md text-slate-400 hover:text-white lg:hidden"
                     aria-label="Tutup sidebar"
                 >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            {/* Nav */}
-            <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
-                {navItems.map((item) => {
-                    const isActive = currentUrl.startsWith(item.href);
-
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            onClick={() => setMobileOpen(false)}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm ${
-                                isActive
-                                    ? 'bg-slate-700 text-white'
-                                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                            }`}
-                        >
-                            <span className="flex-shrink-0">{item.icon}</span>
-                            {sidebarOpen && <span className="truncate">{item.label}</span>}
-                        </Link>
-                    );
-                })}
+            {/* Nav groups */}
+            <nav className="flex-1 py-3 overflow-y-auto">
+                {navGroups.map((group) => (
+                    <div key={group.label} className="mb-1">
+                        {sidebarOpen && (
+                            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest px-4 py-2">
+                                {group.label}
+                            </p>
+                        )}
+                        {!sidebarOpen && <div className="mx-3 my-1 border-t border-white/10" />}
+                        <div className="space-y-0.5 px-2">
+                            {group.items.map((item) => {
+                                const isActive = currentUrl.startsWith(item.href);
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        onClick={() => setMobileOpen(false)}
+                                        title={!sidebarOpen ? item.label : undefined}
+                                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-sm group relative ${
+                                            isActive
+                                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
+                                                : 'text-slate-400 hover:bg-white/10 hover:text-white'
+                                        } ${!sidebarOpen ? 'justify-center' : ''}`}
+                                    >
+                                        {/* Active indicator bar */}
+                                        {isActive && sidebarOpen && (
+                                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-blue-300 rounded-full" />
+                                        )}
+                                        <span className="flex-shrink-0">{item.icon}</span>
+                                        {sidebarOpen && <span className="truncate font-medium">{item.label}</span>}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
             </nav>
 
-            {/* Bottom */}
-            <div className="border-t border-slate-700 p-3">
-                <Link
-                    href={home()}
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors text-sm"
-                >
-                    <Globe className="w-4 h-4 flex-shrink-0" />
-                    {sidebarOpen && <span>Lihat Website</span>}
-                </Link>
+            {/* Bottom — view website + user info */}
+            <div className="border-t border-white/10 flex-shrink-0">
+                <div className={`px-3 py-3 ${sidebarOpen ? '' : 'flex justify-center'}`}>
+                    <Link
+                        href={home()}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all text-sm ${!sidebarOpen ? 'justify-center' : ''}`}
+                        title={!sidebarOpen ? 'Lihat Website' : undefined}
+                    >
+                        <Globe className="w-4 h-4 flex-shrink-0" />
+                        {sidebarOpen && <span className="font-medium">Lihat Website</span>}
+                    </Link>
+                </div>
             </div>
-        </>
+        </div>
     );
 
     return (

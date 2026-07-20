@@ -1,15 +1,26 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { Search, ExternalLink, Eye } from 'lucide-react';
+import { Search, ExternalLink, Eye, CalendarCheck, CalendarX, Clock, CreditCard } from 'lucide-react';
 import React, { useState } from 'react';
 import { formatPrice } from '@/lib/format';
 import type { Booking, PaginatedData } from '@/types';
+
+interface BookingStats {
+    total: number;
+    today: number;
+    pending: number;
+    pending_payment: number;
+    confirmed: number;
+    checkin_today: Array<{ id: number; booking_code: string; guest_name: string; villa_id: number; check_in: string; check_out: string; villa?: { id: number; name: string } }>;
+    checkout_today: Array<{ id: number; booking_code: string; guest_name: string; villa_id: number; check_in: string; check_out: string; villa?: { id: number; name: string } }>;
+}
 
 interface Props {
     bookings: PaginatedData<Booking>;
     villas: { id: number; name: string }[];
     filters: { search: string; status: string };
+    stats: BookingStats;
 }
 
 const statusColors: Record<string, string> = {
@@ -41,7 +52,7 @@ const paymentLabels: Record<string, string> = {
     expired: 'Kadaluarsa',
 };
 
-export default function AdminBookingsPage({ bookings, villas: _villas, filters }: Props) {
+export default function AdminBookingsPage({ bookings, villas: _villas, filters, stats }: Props) {
     const [search, setSearch] = useState(filters.search ?? '');
     const [statusFilter, setStatusFilter] = useState(filters.status ?? '');
 
@@ -49,15 +60,17 @@ export default function AdminBookingsPage({ bookings, villas: _villas, filters }
         const params: Record<string, string> = {};
 
         if (search) {
-params.search = search;
-}
+            params.search = search;
+        }
 
         if (statusFilter) {
-params.status = statusFilter;
-}
+            params.status = statusFilter;
+        }
 
         router.get('/admin/bookings', params, { preserveScroll: true });
     };
+
+    const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
 
     return (
         <>
@@ -68,6 +81,87 @@ params.status = statusFilter;
                     <h1 className="text-2xl font-black text-slate-800">Pemesanan</h1>
                     <p className="text-sm text-slate-500">{bookings.total} total pemesanan</p>
                 </div>
+
+                {/* Stats cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="bg-white border border-slate-200 rounded-xl p-4">
+                        <p className="text-xs text-slate-500 mb-1">Masuk Hari Ini</p>
+                        <p className="text-2xl font-black text-blue-600">{stats.today}</p>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-xl p-4">
+                        <p className="text-xs text-slate-500 mb-1">Menunggu Konfirmasi</p>
+                        <p className="text-2xl font-black text-yellow-600">{stats.pending}</p>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-xl p-4">
+                        <p className="text-xs text-slate-500 mb-1">Menunggu Pembayaran</p>
+                        <p className="text-2xl font-black text-orange-600">{stats.pending_payment}</p>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-xl p-4">
+                        <p className="text-xs text-slate-500 mb-1">Dikonfirmasi</p>
+                        <p className="text-2xl font-black text-green-600">{stats.confirmed}</p>
+                    </div>
+                </div>
+
+                {/* Check-in & Check-out today */}
+                {(stats.checkin_today.length > 0 || stats.checkout_today.length > 0) && (
+                    <div className="grid md:grid-cols-2 gap-3">
+                        {/* Check-in today */}
+                        <div className="bg-white border border-slate-200 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <CalendarCheck className="w-4 h-4 text-green-600" />
+                                <h3 className="font-bold text-slate-800 text-sm">Check-in Hari Ini</h3>
+                                <span className="ml-auto text-xs text-slate-400">{today}</span>
+                            </div>
+                            {stats.checkin_today.length === 0 ? (
+                                <p className="text-xs text-slate-400">Tidak ada check-in hari ini</p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {stats.checkin_today.map((b) => (
+                                        <Link
+                                            key={b.id}
+                                            href={`/admin/bookings/${b.id}`}
+                                            className="flex items-center justify-between p-2.5 rounded-lg bg-green-50 hover:bg-green-100 transition-colors group"
+                                        >
+                                            <div>
+                                                <p className="text-sm font-semibold text-slate-800">{b.guest_name}</p>
+                                                <p className="text-xs text-slate-500">{b.villa?.name ?? '-'} · #{b.booking_code}</p>
+                                            </div>
+                                            <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-green-600 shrink-0" />
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Check-out today */}
+                        <div className="bg-white border border-slate-200 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <CalendarX className="w-4 h-4 text-red-500" />
+                                <h3 className="font-bold text-slate-800 text-sm">Check-out Hari Ini</h3>
+                                <span className="ml-auto text-xs text-slate-400">{today}</span>
+                            </div>
+                            {stats.checkout_today.length === 0 ? (
+                                <p className="text-xs text-slate-400">Tidak ada check-out hari ini</p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {stats.checkout_today.map((b) => (
+                                        <Link
+                                            key={b.id}
+                                            href={`/admin/bookings/${b.id}`}
+                                            className="flex items-center justify-between p-2.5 rounded-lg bg-red-50 hover:bg-red-100 transition-colors group"
+                                        >
+                                            <div>
+                                                <p className="text-sm font-semibold text-slate-800">{b.guest_name}</p>
+                                                <p className="text-xs text-slate-500">{b.villa?.name ?? '-'} · #{b.booking_code}</p>
+                                            </div>
+                                            <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-red-500 shrink-0" />
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
 
                 {/* Filters */}
                 <div className="flex flex-wrap gap-3">

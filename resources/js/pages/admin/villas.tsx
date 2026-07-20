@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
-import { Plus, Edit, Trash2, Search, Star, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Star, Eye, EyeOff, Home, TrendingUp } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
@@ -10,16 +10,29 @@ import type { Villa, Destination, PaginatedData } from '@/types';
 interface Props {
     villas: PaginatedData<Villa>;
     destinations: Destination[];
-    filters: { search: string };
+    stats: { total: number; active: number; inactive: number; avg_price: number };
+    filters: { search: string; destination_id?: string | null; status?: string; sort?: string };
 }
 
-export default function AdminVillasPage({ villas, destinations: _destinations, filters }: Props) {
+export default function AdminVillasPage({ villas, destinations, stats, filters }: Props) {
     const [search, setSearch] = useState(filters.search ?? '');
+    const [destinationId, setDestinationId] = useState<string>(filters.destination_id ? String(filters.destination_id) : '');
+    const [status, setStatus] = useState(filters.status ?? '');
+    const [sort, setSort] = useState(filters.sort ?? 'newest');
     const [deleting, setDeleting] = useState<number | null>(null);
+
+    const applyFilters = (overrides: { search?: string; dest?: string; status?: string; sort?: string }) => {
+        router.get('/admin/villas', {
+            search: overrides.search ?? search,
+            destination_id: (overrides.dest ?? destinationId) || undefined,
+            status: (overrides.status ?? status) || undefined,
+            sort: overrides.sort ?? sort,
+        }, { preserveScroll: true });
+    };
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get('/admin/villas', { search }, { preserveScroll: true });
+        applyFilters({});
     };
 
     const handleDelete = async (id: number, name: string) => {
@@ -68,21 +81,77 @@ return;
                     </Link>
                 </div>
 
-                {/* Search */}
-                <form onSubmit={handleSearch} className="flex gap-2">
-                    <div className="flex items-center gap-2 flex-1 max-w-sm bg-white border border-slate-200 rounded-lg px-3 py-2">
-                        <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                        <input
-                            type="text"
-                            placeholder="Cari villa..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="flex-1 text-sm outline-none text-slate-700 placeholder:text-slate-400"
-                        />
+                {/* Stats cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="bg-white border border-slate-200 rounded-xl p-4">
+                        <p className="text-xs text-slate-500 mb-1">Total Villa</p>
+                        <p className="text-2xl font-black text-slate-800">{stats.total}</p>
                     </div>
-                    <button type="submit" className="text-sm bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-900 transition-colors">
-                        Cari
-                    </button>
+                    <div className="bg-white border border-slate-200 rounded-xl p-4">
+                        <p className="text-xs text-slate-500 mb-1">Aktif</p>
+                        <p className="text-2xl font-black text-green-600">{stats.active}</p>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-xl p-4">
+                        <p className="text-xs text-slate-500 mb-1">Tidak Aktif</p>
+                        <p className="text-2xl font-black text-slate-400">{stats.inactive}</p>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-xl p-4">
+                        <p className="text-xs text-slate-500 mb-1">Rata-rata Harga</p>
+                        <p className="text-lg font-black text-slate-800">{formatPrice(stats.avg_price)}</p>
+                    </div>
+                </div>
+
+                {/* Search + Filters */}
+                <form onSubmit={handleSearch} className="bg-white border border-slate-200 rounded-xl p-4">
+                    <div className="flex flex-col lg:flex-row gap-3">
+                        <div className="flex gap-2 flex-1">
+                            <div className="flex items-center gap-2 flex-1 border border-slate-200 rounded-lg px-3 py-2">
+                                <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                                <input
+                                    type="text"
+                                    placeholder="Cari nama atau lokasi villa..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    className="flex-1 text-sm outline-none text-slate-700 placeholder:text-slate-400"
+                                />
+                            </div>
+                            <button type="submit" className="text-sm bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-900 transition-colors shrink-0">
+                                Cari
+                            </button>
+                        </div>
+                        <select
+                            value={destinationId}
+                            onChange={(e) => { setDestinationId(e.target.value); applyFilters({ dest: e.target.value }); }}
+                            className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">Semua Lokasi</option>
+                            {destinations.map((d) => (
+                                <option key={d.id} value={d.id}>{d.name}</option>
+                            ))}
+                        </select>
+                        <select
+                            value={status}
+                            onChange={(e) => { setStatus(e.target.value); applyFilters({ status: e.target.value }); }}
+                            className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">Semua Status</option>
+                            <option value="active">Aktif</option>
+                            <option value="inactive">Tidak Aktif</option>
+                        </select>
+                        <select
+                            value={sort}
+                            onChange={(e) => { setSort(e.target.value); applyFilters({ sort: e.target.value }); }}
+                            className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="newest">Terbaru</option>
+                            <option value="oldest">Terlama</option>
+                            <option value="name_asc">Nama A-Z</option>
+                            <option value="name_desc">Nama Z-A</option>
+                            <option value="price_asc">Harga Terendah</option>
+                            <option value="price_desc">Harga Tertinggi</option>
+                            <option value="rating">Rating Tertinggi</option>
+                        </select>
+                    </div>
                 </form>
 
                 {/* Table */}
@@ -208,7 +277,7 @@ return;
                                 {Array.from({ length: villas.last_page }, (_, i) => i + 1).map((page) => (
                                     <button
                                         key={page}
-                                        onClick={() => router.get('/admin/villas', { search, page: String(page) })}
+                                        onClick={() => router.get('/admin/villas', { search, destination_id: destinationId || undefined, status: status || undefined, sort, page: String(page) })}
                                         className={`w-7 h-7 rounded text-xs font-medium ${
                                             page === villas.current_page ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-200'
                                         }`}

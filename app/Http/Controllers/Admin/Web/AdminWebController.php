@@ -109,22 +109,48 @@ class AdminWebController extends Controller
     public function villas(Request $request): Response
     {
         $search = $request->string('search')->trim()->value();
+        $destinationId = $request->input('destination_id');
+        $status = $request->input('status'); // 'active' | 'inactive' | ''
+        $sort = $request->input('sort', 'newest'); // newest|oldest|name_asc|name_desc|price_asc|price_desc|rating
 
         $villas = Villa::with('destination')
             ->withCount('bookings')
-            ->withAvg('reviews', 'rating')
-            ->when($search, fn ($q) => $q->where('name', 'like', "%{$search}%")
-                ->orWhere('location', 'like', "%{$search}%"))
-            ->latest()
+            ->withAvg(['reviews' => fn ($q) => $q->where('is_approved', true)], 'rating')
+            ->when($search, fn ($q) => $q->where(fn ($q2) => $q2
+                ->where('name', 'like', "%{$search}%")
+                ->orWhere('location', 'like', "%{$search}%")))
+            ->when($destinationId, fn ($q) => $q->where('destination_id', $destinationId))
+            ->when($status === 'active', fn ($q) => $q->where('is_active', true))
+            ->when($status === 'inactive', fn ($q) => $q->where('is_active', false))
+            ->when($sort === 'oldest', fn ($q) => $q->oldest())
+            ->when($sort === 'name_asc', fn ($q) => $q->orderBy('name'))
+            ->when($sort === 'name_desc', fn ($q) => $q->orderByDesc('name'))
+            ->when($sort === 'price_asc', fn ($q) => $q->orderBy('price_per_night'))
+            ->when($sort === 'price_desc', fn ($q) => $q->orderByDesc('price_per_night'))
+            ->when($sort === 'rating', fn ($q) => $q->orderByDesc('reviews_avg_rating'))
+            ->when(! in_array($sort, ['oldest', 'name_asc', 'name_desc', 'price_asc', 'price_desc', 'rating']), fn ($q) => $q->latest())
             ->paginate(20)
             ->withQueryString();
 
         $destinations = Destination::orderBy('name')->get();
 
+        $villaStats = [
+            'total' => Villa::count(),
+            'active' => Villa::where('is_active', true)->count(),
+            'inactive' => Villa::where('is_active', false)->count(),
+            'avg_price' => (int) Villa::where('is_active', true)->avg('price_per_night'),
+        ];
+
         return Inertia::render('admin/villas', [
             'villas' => $villas,
             'destinations' => $destinations,
-            'filters' => ['search' => $search],
+            'stats' => $villaStats,
+            'filters' => [
+                'search' => $search,
+                'destination_id' => $destinationId,
+                'status' => $status,
+                'sort' => $sort,
+            ],
         ]);
     }
 
@@ -153,11 +179,13 @@ class AdminWebController extends Controller
     {
         $search = $request->string('search')->trim()->value();
         $status = $request->string('status')->trim()->value();
+        $today = now()->toDateString();
 
         $bookings = Booking::with(['villa', 'payment'])
-            ->when($search, fn ($q) => $q->where('guest_name', 'like', "%{$search}%")
+            ->when($search, fn ($q) => $q->where(fn ($q2) => $q2
+                ->where('guest_name', 'like', "%{$search}%")
                 ->orWhere('booking_code', 'like', "%{$search}%")
-                ->orWhere('guest_email', 'like', "%{$search}%"))
+                ->orWhere('guest_email', 'like', "%{$search}%")))
             ->when($status, fn ($q) => $q->where('status', $status))
             ->latest()
             ->paginate(20)
@@ -165,10 +193,28 @@ class AdminWebController extends Controller
 
         $villas = Villa::select('id', 'name')->orderBy('name')->get();
 
+        // Stats
+        $stats = [
+            'total' => Booking::count(),
+            'today' => Booking::whereDate('created_at', $today)->count(),
+            'pending' => Booking::where('status', 'pending')->count(),
+            'pending_payment' => Booking::where('payment_status', 'pending')->count(),
+            'confirmed' => Booking::where('status', 'confirmed')->count(),
+            'checkin_today' => Booking::with('villa:id,name')
+                ->whereDate('check_in', $today)
+                ->where('status', 'confirmed')
+                ->get(['id', 'booking_code', 'guest_name', 'villa_id', 'check_in', 'check_out']),
+            'checkout_today' => Booking::with('villa:id,name')
+                ->whereDate('check_out', $today)
+                ->where('status', 'confirmed')
+                ->get(['id', 'booking_code', 'guest_name', 'villa_id', 'check_in', 'check_out']),
+        ];
+
         return Inertia::render('admin/bookings', [
             'bookings' => $bookings,
             'villas' => $villas,
             'filters' => ['search' => $search, 'status' => $status],
+            'stats' => $stats,
         ]);
     }
 

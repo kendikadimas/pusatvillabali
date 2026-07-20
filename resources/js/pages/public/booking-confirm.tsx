@@ -32,21 +32,13 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const [step, setStep] = useState<'form' | 'created'>('form');
+    const [step, setStep] = useState<'form' | 'payment' | 'success'>('form');
     const [bookingCode, setBookingCode] = useState('');
     const [ktpFile, setKtpFile] = useState<File | null>(null);
     const [proofFile, setProofFile] = useState<File | null>(null);
     const [proofPreview, setProofPreview] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
-    const [proofUploaded, setProofUploaded] = useState(false);
     const [copied, setCopied] = useState(false);
-
-    // Auto-select first payment method when available
-    useEffect(() => {
-        if (selectedPaymentMethod === null && paymentMethods.length > 0) {
-            setSelectedPaymentMethod(paymentMethods[0].id);
-        }
-    }, [paymentMethods, selectedPaymentMethod]);
 
     // Restore booking intent dari sessionStorage (setelah login redirect)
     useEffect(() => {
@@ -148,11 +140,19 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
         e.preventDefault();
 
         if (!villa) {
-return;
-}
+            return;
+        }
 
         setProcessing(true);
         setErrors({});
+
+        if (!selectedPaymentMethod) {
+            toast.error('Pilih metode pembayaran terlebih dahulu.');
+            setErrors((prev) => ({ ...prev, payment_method_id: 'Metode pembayaran wajib dipilih.' }));
+            setProcessing(false);
+
+            return;
+        }
 
         if (!ktpFile) {
             toast.error('Foto KTP wajib diunggah.');
@@ -171,14 +171,8 @@ return;
             formData.append('guest_email', guestEmail);
             formData.append('guest_phone', guestPhone);
             formData.append('notes', notes);
-
-            if (selectedPaymentMethod) {
-formData.append('payment_method_id', String(selectedPaymentMethod));
-}
-
-            if (ktpFile) {
-formData.append('ktp_image', ktpFile);
-}
+            formData.append('payment_method_id', String(selectedPaymentMethod));
+            formData.append('ktp_image', ktpFile);
 
             if (voucherApplied) {
                 formData.append('voucher_code', voucherApplied.code);
@@ -189,14 +183,13 @@ formData.append('ktp_image', ktpFile);
                     Accept: 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                 },
-                // Let browser set multipart boundary; do not force Content-Type
                 maxRedirects: 0,
             });
             const code = res.data.booking_code ?? res.data.data?.booking_code;
             setBookingCode(code);
-            setStep('created');
+            setStep('payment');
+            toast.success('Pemesanan dibuat. Silakan selesaikan pembayaran.');
 
-            // Bersihkan store setelah booking berhasil dibuat
             try {
                 localStorage.removeItem('pusatvillaid-booking-store');
             } catch {
@@ -216,17 +209,22 @@ formData.append('ktp_image', ktpFile);
     const handleUploadProof = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!selectedPaymentMethod) {
+            toast.error('Pilih metode pembayaran terlebih dahulu.');
+
+            return;
+        }
+
         if (!proofFile || !bookingCode) {
+            toast.error('Unggah bukti pembayaran terlebih dahulu.');
+
             return;
         }
 
         setUploading(true);
         const form = new FormData();
         form.append('payment_proof', proofFile);
-
-        if (selectedPaymentMethod) {
-            form.append('payment_method_id', String(selectedPaymentMethod));
-        }
+        form.append('payment_method_id', String(selectedPaymentMethod));
 
         if (guestEmail) {
             form.append('guest_email', guestEmail);
@@ -237,7 +235,7 @@ formData.append('ktp_image', ktpFile);
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             toast.success('Bukti pembayaran berhasil dikirim!');
-            setProofUploaded(true);
+            setStep('success');
         } catch (err: any) {
             toast.error(err.response?.data?.message ?? 'Gagal mengirim bukti pembayaran.');
         } finally {
@@ -276,11 +274,14 @@ formData.append('ktp_image', ktpFile);
 
     return (
         <>
-            <Head title={step === 'form' ? `Pesan ${villa.name}` : 'Pemesanan Dibuat'} />
+            <Head title={step === 'form' ? `Pesan ${villa.name}` : step === 'payment' ? 'Pembayaran' : 'Pemesanan Berhasil'} />
 
             <div className="max-w-3xl mx-auto px-4 sm:px-8 py-10">
-                <Link href={step === 'form' ? `/villas/${villa.slug}` : '/'} className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 mb-6">
-                    ← {step === 'form' ? 'Kembali ke detail villa' : 'Kembali ke beranda'}
+                <Link
+                    href={step === 'form' ? `/villas/${villa.slug}` : step === 'payment' ? `/villas/${villa.slug}` : '/'}
+                    className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 mb-6"
+                >
+                    ← {step === 'form' || step === 'payment' ? 'Kembali ke detail villa' : 'Kembali ke beranda'}
                 </Link>
 
                 {/* Mobile price summary bar */}
@@ -390,15 +391,16 @@ formData.append('ktp_image', ktpFile);
                                         </div>
                                     </div>
 
-                                    {/* Payment method */}
-                                    {paymentMethods.length > 0 && (
-                                        <div className="bg-white border border-slate-200 rounded-2xl p-5">
-                                            <h2 className="font-bold text-slate-800 mb-4 text-sm">Metode Pembayaran</h2>
+                                    {/* Payment method — required */}
+                                    <div className="bg-white border border-slate-200 rounded-2xl p-5">
+                                        <h2 className="font-bold text-slate-800 mb-1 text-sm">Metode Pembayaran *</h2>
+                                        <p className="text-xs text-slate-500 mb-4">Wajib dipilih sebelum melanjutkan pemesanan.</p>
+                                        {paymentMethods.length > 0 ? (
                                             <div className="space-y-2">
                                                 {paymentMethods.map((pm) => (
                                                     <div key={pm.id}>
                                                         <label className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors ${selectedPaymentMethod === pm.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-blue-300'}`}>
-                                                            <input type="radio" name="payment_method" value={pm.id} checked={selectedPaymentMethod === pm.id} onChange={() => setSelectedPaymentMethod(pm.id)} className="text-blue-600 shrink-0" />
+                                                            <input type="radio" name="payment_method" value={pm.id} checked={selectedPaymentMethod === pm.id} onChange={() => setSelectedPaymentMethod(pm.id)} className="text-blue-600 shrink-0" required />
                                                             <div>
                                                                 <p className="text-sm font-semibold text-slate-800">{pm.name}</p>
                                                                 {pm.account_number && <p className="text-xs text-slate-500">{pm.account_number} · {pm.account_name}</p>}
@@ -428,8 +430,11 @@ formData.append('ktp_image', ktpFile);
                                                     </div>
                                                 ))}
                                             </div>
-                                        </div>
-                                    )}
+                                        ) : (
+                                            <p className="text-sm text-red-500">Belum ada metode pembayaran aktif. Hubungi admin.</p>
+                                        )}
+                                        {errors.payment_method_id && <p className="text-xs text-red-500 mt-2">{errors.payment_method_id}</p>}
+                                    </div>
 
                                     {/* Price summary */}
                                     <div className="bg-white border border-slate-200 rounded-2xl p-5">
@@ -515,8 +520,12 @@ formData.append('ktp_image', ktpFile);
                                         )}
                                     </div>
 
-                                    <button type="submit" disabled={processing || nights === 0} className="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm">
-                                        {processing ? 'Memproses...' : 'Konfirmasi & Pesan'}
+                                    <button
+                                        type="submit"
+                                        disabled={processing || nights === 0 || !selectedPaymentMethod || paymentMethods.length === 0}
+                                        className="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm"
+                                    >
+                                        {processing ? 'Memproses...' : 'Lanjut ke Pembayaran'}
                                     </button>
                                 </form>
                             </div>
@@ -555,14 +564,132 @@ formData.append('ktp_image', ktpFile);
                             </div>
                         </div>
                     </>
+                ) : step === 'payment' ? (
+                    /* ── PAYMENT STEP ── */
+                    <div className="max-w-xl mx-auto">
+                        {/* Booking code banner */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-5 flex items-center justify-between gap-3">
+                            <div>
+                                <p className="text-xs text-blue-600 font-semibold mb-0.5">Kode Pemesanan</p>
+                                <p className="text-lg font-black text-blue-800 font-mono tracking-widest">{bookingCode}</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={copyBookingCode}
+                                className="flex items-center gap-1.5 px-3 py-2 bg-white border border-blue-200 rounded-xl text-xs font-semibold text-blue-700 hover:bg-blue-50 transition-colors cursor-pointer"
+                            >
+                                {copied ? <CheckCircle className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                {copied ? 'Disalin' : 'Salin'}
+                            </button>
+                        </div>
+
+                        {/* Payment notice */}
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-5">
+                            <p className="font-semibold text-yellow-800 text-sm">Pembayaran Belum Diterima</p>
+                            <p className="text-xs text-yellow-600 mt-0.5">Segera transfer sesuai instruksi di bawah, lalu unggah bukti pembayaran.</p>
+                        </div>
+
+                        {/* Payment instructions */}
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-5">
+                            <h2 className="font-bold text-slate-800 mb-4 text-sm">Instruksi Pembayaran</h2>
+
+                            {selectedPM ? (
+                                <div>
+                                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl mb-3">
+                                        {selectedPM.logo && (
+                                            <img src={`/storage/${selectedPM.logo}`} alt={selectedPM.name} className="w-10 h-10 object-contain rounded-lg bg-white border border-slate-200 p-1 shrink-0" />
+                                        )}
+                                        <div>
+                                            <p className="font-bold text-slate-800 text-sm">{selectedPM.name}</p>
+                                            {selectedPM.account_number && (
+                                                <p className="text-xs text-slate-500 font-mono">{selectedPM.account_number}</p>
+                                            )}
+                                            {selectedPM.account_name && (
+                                                <p className="text-xs text-slate-500">{selectedPM.account_name}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between text-sm py-2 border-b border-slate-100">
+                                        <span className="text-slate-500">Jumlah Transfer</span>
+                                        <span className="font-black text-slate-800">{formatPrice(total)}</span>
+                                    </div>
+                                    {(selectedPM.admin_fee ?? 0) > 0 && (
+                                        <p className="text-xs text-slate-400 mt-1">Sudah termasuk biaya admin {formatPrice(selectedPM.admin_fee ?? 0)}</p>
+                                    )}
+                                    {selectedPM.instructions && (
+                                        <div className="mt-3 p-3 bg-slate-50 rounded-xl text-xs text-slate-600 whitespace-pre-line">
+                                            {selectedPM.instructions}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-slate-500">Metode pembayaran tidak ditemukan.</p>
+                            )}
+                        </div>
+
+                        {/* Proof upload form */}
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-5">
+                            <h2 className="font-bold text-slate-800 mb-3 text-sm">Upload Bukti Pembayaran</h2>
+                            <form onSubmit={handleUploadProof} className="space-y-4">
+                                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 rounded-xl p-6 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors">
+                                    <Upload className="w-6 h-6 text-slate-400" />
+                                    <span className="text-xs text-slate-500 text-center">
+                                        {proofFile ? proofFile.name : 'Klik untuk pilih file (JPG, PNG, WebP)'}
+                                    </span>
+                                    {proofPreview && (
+                                        <img src={proofPreview} alt="Preview bukti" className="mt-2 max-h-40 rounded-lg object-contain" />
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0] ?? null;
+                                            setProofFile(file);
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = (ev) => setProofPreview(ev.target?.result as string);
+                                                reader.readAsDataURL(file);
+                                            } else {
+                                                setProofPreview(null);
+                                            }
+                                        }}
+                                    />
+                                </label>
+                                <button
+                                    type="submit"
+                                    disabled={uploading || !proofFile}
+                                    className="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm"
+                                >
+                                    {uploading ? 'Mengirim...' : 'Kirim Bukti Pembayaran'}
+                                </button>
+                            </form>
+                        </div>
+
+                        {/* WhatsApp confirm */}
+                        {settings.settings_whatsapp && (
+                            <a
+                                href={`https://wa.me/${settings.settings_whatsapp}?text=Halo, saya sudah booking %23${bookingCode} dan ingin konfirmasi pembayaran.`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-2 w-full border border-green-500 text-green-600 font-semibold px-5 py-3 rounded-xl hover:bg-green-50 transition-colors text-sm mb-3"
+                            >
+                                <MessageCircle className="w-4 h-4" />
+                                Konfirmasi via WhatsApp
+                            </a>
+                        )}
+                        <Link href="/" className="block text-center text-sm text-slate-500 hover:text-slate-700 py-2">
+                            Kembali ke Beranda
+                        </Link>
+                    </div>
                 ) : (
-                    /* ── CREATED STEP ── */
+                    /* ── SUCCESS STEP ── */
                     <div className="max-w-xl mx-auto">
                         <div className="text-center mb-8">
                             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
                                 <CheckCircle className="w-10 h-10 text-green-600" />
                             </div>
-                            <h1 className="text-2xl font-black text-slate-800 mb-2 font-heading">Pemesanan Berhasil!</h1>
+                            <h1 className="text-2xl font-black text-slate-800 mb-2 font-heading">Bukti Terkirim!</h1>
                             <p className="text-slate-500 text-sm">
                                 Terima kasih, <span className="font-semibold text-slate-700">{guestName}</span>. Pemesanan Anda telah diterima.
                             </p>
@@ -692,174 +819,36 @@ formData.append('ktp_image', ktpFile);
                             </div>
                         </div>
 
-                        {/* Payment notice when unpaid */}
-                        {!proofUploaded && (
-                            <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-6">
-                                <p className="font-semibold text-yellow-800 text-sm">Pembayaran Belum Diterima</p>
-                                <p className="text-xs text-yellow-600 mt-0.5">Segera transfer sesuai instruksi di bawah, lalu unggah bukti pembayaran.</p>
-                            </div>
-                        )}
-
-                        {/* Payment instructions + upload */}
-                        {!proofUploaded && (
-                            <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-6">
-                                <h2 className="font-bold text-slate-800 mb-3 text-sm">Instruksi Pembayaran</h2>
-
-                                {paymentMethods.length > 1 && (
-                                    <div className="space-y-2 mb-4">
-                                        {paymentMethods.map((pm) => (
-                                            <label
-                                                key={pm.id}
-                                                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${selectedPaymentMethod === pm.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-blue-300'}`}
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    name="created_payment_method"
-                                                    value={pm.id}
-                                                    checked={selectedPaymentMethod === pm.id}
-                                                    onChange={() => setSelectedPaymentMethod(pm.id)}
-                                                    className="text-blue-600 shrink-0"
-                                                />
-                                                <div>
-                                                    <p className="text-sm font-semibold text-slate-800">{pm.name}</p>
-                                                    {pm.account_number && (
-                                                        <p className="text-xs text-slate-500">{pm.account_number} · {pm.account_name}</p>
-                                                    )}
-                                                </div>
-                                            </label>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {selectedPM ? (
-                                    <div className="space-y-2 text-sm">
-                                        <div className="flex justify-between">
-                                            <span className="text-slate-500">Transfer ke</span>
-                                            <span className="font-bold text-slate-800">{selectedPM.name}</span>
-                                        </div>
-                                        {selectedPM.account_number && (
-                                            <div className="flex justify-between items-center gap-2">
-                                                <span className="text-slate-500">No. Rekening</span>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-bold text-slate-800 font-mono">{selectedPM.account_number}</span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            navigator.clipboard.writeText(selectedPM.account_number ?? '').then(() => {
-                                                                toast.success('Nomor rekening disalin!');
-                                                            });
-                                                        }}
-                                                        className="p-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
-                                                        title="Salin nomor rekening"
-                                                    >
-                                                        <Copy className="w-3.5 h-3.5" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                        {selectedPM.account_name && (
-                                            <div className="flex justify-between">
-                                                <span className="text-slate-500">Atas Nama</span>
-                                                <span className="font-bold text-slate-800">{selectedPM.account_name}</span>
-                                            </div>
-                                        )}
-                                        <div className="flex justify-between pt-2 border-t border-slate-100">
-                                            <span className="text-slate-500">Jumlah Transfer</span>
-                                            <span className="font-black text-slate-800">{formatPrice(total)}</span>
-                                        </div>
-                                        {selectedPM.instructions && (
-                                            <div className="mt-3 p-3 bg-slate-50 rounded-xl text-xs text-slate-600 whitespace-pre-line">
-                                                {selectedPM.instructions}
-                                            </div>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-slate-500">Belum ada metode pembayaran terpilih.</p>
-                                        <Link
-                                            href={`/booking/payment?code=${bookingCode}`}
-                                            className="inline-flex items-center justify-center w-full bg-yellow-500 text-white font-bold px-4 py-3 rounded-xl text-sm hover:bg-yellow-600 transition-colors"
-                                        >
-                                            Lanjut ke Halaman Pembayaran
-                                        </Link>
-                                    </div>
-                                )}
-
-                                <form onSubmit={handleUploadProof} className="mt-5 pt-4 border-t border-slate-200">
-                                    <h3 className="font-bold text-slate-800 mb-3 text-sm">Upload Bukti Pembayaran</h3>
-                                    <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 rounded-xl p-6 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors">
-                                        <Upload className="w-6 h-6 text-slate-400" />
-                                        <span className="text-xs text-slate-500 text-center">
-                                            {proofFile ? proofFile.name : 'Klik untuk pilih file (JPG, PNG, WebP)'}
-                                        </span>
-                                        {proofPreview && (
-                                            <img src={proofPreview} alt="Preview bukti" className="mt-2 max-h-40 rounded-lg object-contain" />
-                                        )}
-                                        <input
-                                            type="file"
-                                            accept="image/jpeg,image/png,image/jpg,image/webp"
-                                            className="hidden"
-                                            onChange={(e) => {
-                                                const file = e.target.files?.[0] ?? null;
-                                                setProofFile(file);
-
-                                                if (file) {
-                                                    setProofPreview(URL.createObjectURL(file));
-                                                } else {
-                                                    setProofPreview(null);
-                                                }
-                                            }}
-                                        />
-                                    </label>
-                                    <button
-                                        type="submit"
-                                        disabled={!proofFile || uploading}
-                                        className="mt-4 w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 text-sm"
-                                    >
-                                        {uploading ? 'Mengirim...' : 'Kirim Bukti Pembayaran'}
-                                    </button>
-                                </form>
-                            </div>
-                        )}
-
-                        {proofUploaded && (
-                            <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-6">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <CheckCircle className="w-6 h-6 text-green-600 shrink-0" />
-                                    <div>
-                                        <p className="font-bold text-green-700 text-sm">Bukti pembayaran diterima!</p>
-                                        <p className="text-xs text-green-600">Tim kami akan memverifikasi dalam 1×24 jam.</p>
-                                    </div>
+                        {/* Proof received confirmation */}
+                        <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-6">
+                            <div className="flex items-center gap-3 mb-2">
+                                <CheckCircle className="w-5 h-5 text-green-600 shrink-0" />
+                                <div>
+                                    <p className="font-bold text-green-700 text-sm">Bukti pembayaran diterima!</p>
+                                    <p className="text-xs text-green-600">Tim kami akan memverifikasi dalam 1×24 jam.</p>
                                 </div>
-                                {proofPreview && (
-                                    <div className="mt-3 rounded-xl overflow-hidden border border-green-200">
-                                        <img src={proofPreview} alt="Bukti pembayaran" className="w-full max-h-64 object-contain bg-white" />
-                                    </div>
-                                )}
                             </div>
-                        )}
+                            {proofPreview && (
+                                <div className="mt-3 rounded-xl overflow-hidden border border-green-200">
+                                    <img src={proofPreview} alt="Bukti pembayaran" className="w-full max-h-64 object-contain bg-white" />
+                                </div>
+                            )}
+                        </div>
 
+                        {/* Actions */}
                         <div className="flex flex-col gap-3">
-                            <div className="flex flex-col sm:flex-row gap-3">
-                                <Link
-                                    href={`/booking/status?code=${bookingCode}`}
-                                    className="flex-1 bg-slate-800 text-white font-semibold px-5 py-3 rounded-xl hover:bg-slate-900 transition-colors text-sm text-center"
-                                >
-                                    Cek Status Pemesanan
-                                </Link>
-                                <Link
-                                    href={`/booking/payment?code=${bookingCode}`}
-                                    className="flex-1 border border-blue-200 text-blue-600 font-semibold px-5 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm text-center"
-                                >
-                                    Halaman Pembayaran
-                                </Link>
-                            </div>
+                            <Link
+                                href={`/booking/status?code=${bookingCode}`}
+                                className="w-full bg-slate-800 text-white font-semibold px-5 py-3 rounded-xl hover:bg-slate-900 transition-colors text-sm text-center"
+                            >
+                                Cek Status Pemesanan
+                            </Link>
                             {settings?.settings_whatsapp && (
                                 <a
                                     href={`https://wa.me/${settings.settings_whatsapp}?text=Halo, saya sudah booking %23${bookingCode} dan ingin konfirmasi pembayaran.`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-2 border border-green-500 text-green-600 font-semibold px-5 py-3 rounded-xl hover:bg-green-50 transition-colors text-sm"
+                                    className="flex items-center justify-center gap-2 w-full border border-green-500 text-green-600 font-semibold px-5 py-3 rounded-xl hover:bg-green-50 transition-colors text-sm"
                                 >
                                     <MessageCircle className="w-4 h-4" />
                                     Konfirmasi via WhatsApp

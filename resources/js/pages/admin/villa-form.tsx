@@ -82,7 +82,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const [cleaningFee, setCleaningFee] = useState(villa?.cleaning_fee ? String(Number(villa.cleaning_fee)) : '');
 
     // Bedrooms Layout
-    const [bedroomsList, setBedroomsList] = useState<Array<{ image: string; title: string; subtext: string }>>(villa?.bedrooms_layout || []);
+    const [bedroomsList, setBedroomsList] = useState<Array<{ image: string; title: string; subtext: string }>>((villa as any)?.bedrooms_layout || []);
     const [brImage, setBrImage] = useState('');
     const [brTitle, setBrTitle] = useState('');
     const [brSubtext, setBrSubtext] = useState('');
@@ -165,7 +165,6 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
 
             setNewDestName('');
             setNewDestCity('');
-            setNewDestImage('');
             setShowNewDestination(false);
         } catch (err: any) {
             console.error('Failed to create destination:', err);

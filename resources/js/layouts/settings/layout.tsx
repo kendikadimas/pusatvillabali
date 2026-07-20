@@ -34,7 +34,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
                                 return (
                                     <Link
-                                        key={item.href}
+                                        key={item.title}
                                         href={item.href}
                                         className={cn(
                                             'flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex-1 lg:flex-none',

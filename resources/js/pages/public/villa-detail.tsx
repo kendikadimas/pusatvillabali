@@ -96,7 +96,7 @@ function MobileBookingSheet({
     villa, checkIn, checkOut, guests, nights, totalPrice,
     dateRange, disabledDays, onRangeSelect,
     setGuests,
-    onClose, onBook, settings,
+    onClose, onBook, formatDate, settings,
 }: MobileBookingSheetProps) {
     useEffect(() => {
         document.body.style.overflow = 'hidden';

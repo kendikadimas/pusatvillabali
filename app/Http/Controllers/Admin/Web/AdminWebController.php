@@ -192,16 +192,19 @@ class AdminWebController extends Controller
             $filter = 'pending';
         }
 
-        $reviews = Review::with(['villa', 'booking'])
+        $reviews = Review::with(['villa:id,name,slug', 'booking:id,booking_code'])
             ->when($filter === 'pending', fn ($q) => $q->where('is_approved', false))
             ->when($filter === 'approved', fn ($q) => $q->where('is_approved', true))
             ->latest()
             ->paginate(20)
             ->withQueryString();
 
+        $villas = Villa::where('is_active', true)->select('id', 'name')->orderBy('name')->get();
+
         return Inertia::render('admin/reviews', [
             'reviews' => $reviews,
             'filters' => ['filter' => $filter],
+            'villas' => $villas,
         ]);
     }
 

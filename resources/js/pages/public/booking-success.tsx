@@ -3,7 +3,7 @@ import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import {
     CheckCircle, Calendar, Users, Home, Copy, Download,
-    MessageCircle, Printer, MapPin, Clock,
+    MessageCircle, Printer, MapPin, Clock, Search,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { formatPrice } from '@/lib/format';

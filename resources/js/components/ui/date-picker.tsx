@@ -71,7 +71,7 @@ export function DatePicker({
           selected={selectedDate}
           onSelect={handleSelect}
           disabled={minDate ? { before: minDate } : undefined}
-          initialFocus
+          autoFocus
         />
       </DialogContent>
     </Dialog>

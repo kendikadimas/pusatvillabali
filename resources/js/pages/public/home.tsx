@@ -155,7 +155,7 @@ export default function Home({ villas, villasByDestination, destinations, settin
                                 className="shrink-0 flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg transition-colors hover:bg-[#f7f7f7] group/chip min-w-[72px]"
                             >
                                 <div className="w-10 h-10 rounded-full bg-[#f7f7f7] flex items-center justify-center border-2 border-transparent group-hover/chip:border-[#222222] transition-colors overflow-hidden">
-                                    <MapPin className="w-5 h-5 text-[#6a6a6a]" />
+                                    <span className="text-[10px] font-bold text-[#6a6a6a]">Semua</span>
                                 </div>
                                 <span className="text-[11px] font-medium text-[#6a6a6a] whitespace-nowrap">Semua</span>
                             </button>
@@ -228,7 +228,7 @@ export default function Home({ villas, villasByDestination, destinations, settin
                                 <a
                                     key={dest.id}
                                     href={`/villas?destination_id=${dest.id}`}
-                                    className="group relative flex-shrink-0 w-40 sm:w-52 aspect-[3/4] rounded-2xl overflow-hidden block snap-start"
+                                    className="group relative flex-shrink-0 w-44 aspect-[3/4] sm:w-72 sm:aspect-[4/3] rounded-2xl overflow-hidden block snap-start"
                                 >
                                     <img
                                         src={dest.image}

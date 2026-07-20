@@ -6,6 +6,7 @@ import type { Villa, AppSettings, PaginatedData } from '@/types';
 
 interface Filters {
     location?: string;
+    destination_id?: string;
     checkIn?: string;
     checkOut?: string;
     guests?: string;
@@ -21,9 +22,10 @@ interface Props {
     villas: PaginatedData<Villa>;
     filters: Filters;
     settings: AppSettings;
+    destination_name?: string | null;
 }
 
-export default function VillasPage({ villas, filters, settings: _settings }: Props) {
+export default function VillasPage({ villas, filters, settings: _settings, destination_name }: Props) {
     const [showFilters, setShowFilters] = useState(false);
     const [wishlist, setWishlist] = useState<number[]>(() => {
         try {
@@ -97,7 +99,7 @@ params.max_price = maxPrice;
 
     return (
         <>
-            <Head title={filters.location ? `Villa di ${filters.location}` : 'Daftar Villa di Bali'} />
+            <Head title={destination_name ? `Villa di ${destination_name}` : 'Daftar Villa di Bali'} />
 
             {/* Top bar */}
             <div className="sticky top-16 z-40 bg-white border-b border-slate-200 shadow-sm">
@@ -192,13 +194,11 @@ params.max_price = maxPrice;
                 {/* Page header */}
                 <div className="mb-8">
                     <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 tracking-[-0.02em] font-heading">
-                        {filters.location
-                            ? `Villa di ${filters.location}`
-                            : 'Daftar Villa di Bali'}
+                        {destination_name ? `Semua Villa di ${destination_name}` : 'Daftar Villa di Bali'}
                     </h1>
                     <p className="text-sm text-zinc-500 mt-1.5">
                         {villas.total > 0
-                            ? `Menampilkan ${villas.data.length} dari ${villas.total} villa${filters.location ? ` di ${filters.location}` : ' terbaik di Bali'}`
+                            ? `Menampilkan ${villas.data.length} dari ${villas.total} villa${destination_name ? ` di ${destination_name}` : ' terbaik di Bali'}`
                             : 'Tidak ada villa ditemukan'}
                     </p>
                 </div>

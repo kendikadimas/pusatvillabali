@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Destination;
 use App\Models\Setting;
 use App\Models\Villa;
 use Illuminate\Http\Request;
@@ -17,6 +18,10 @@ class VillaWebController extends Controller
             ->with('destination')
             ->withAvg('reviews', 'rating')
             ->withCount('reviews');
+
+        if ($request->filled('destination_id')) {
+            $query->where('destination_id', (int) $request->destination_id);
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -52,10 +57,20 @@ class VillaWebController extends Controller
 
         $settings = Setting::pluck('value', 'key')->toArray();
 
+        // Resolve destination name for headline when filtering by destination_id or location
+        $destinationName = null;
+        if ($request->filled('destination_id')) {
+            $dest = Destination::find($request->destination_id);
+            $destinationName = $dest?->name;
+        } elseif ($request->filled('location')) {
+            $destinationName = $request->location;
+        }
+
         return Inertia::render('public/villas', [
             'villas' => $villas,
-            'filters' => $request->only(['search', 'location', 'checkIn', 'checkOut', 'guests', 'bedrooms', 'min_price', 'max_price', 'sortBy', 'sortOrder']),
+            'filters' => $request->only(['search', 'location', 'destination_id', 'checkIn', 'checkOut', 'guests', 'bedrooms', 'min_price', 'max_price', 'sortBy', 'sortOrder']),
             'settings' => $settings,
+            'destination_name' => $destinationName,
         ]);
     }
 

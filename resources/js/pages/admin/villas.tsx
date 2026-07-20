@@ -83,21 +83,21 @@ return;
 
                 {/* Stats cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                        <p className="text-xs text-blue-500 mb-1">Total Villa</p>
-                        <p className="text-2xl font-black text-blue-700">{stats.total}</p>
+                    <div className="bg-blue-600 rounded-xl p-4">
+                        <p className="text-xs text-white/70 mb-1">Total Villa</p>
+                        <p className="text-2xl font-black text-white">{stats.total}</p>
                     </div>
-                    <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-                        <p className="text-xs text-green-600 mb-1">Aktif</p>
-                        <p className="text-2xl font-black text-green-600">{stats.active}</p>
+                    <div className="bg-green-600 rounded-xl p-4">
+                        <p className="text-xs text-white/70 mb-1">Aktif</p>
+                        <p className="text-2xl font-black text-white">{stats.active}</p>
                     </div>
-                    <div className="bg-slate-100 border border-slate-200 rounded-xl p-4">
-                        <p className="text-xs text-slate-500 mb-1">Tidak Aktif</p>
-                        <p className="text-2xl font-black text-slate-500">{stats.inactive}</p>
+                    <div className="bg-slate-500 rounded-xl p-4">
+                        <p className="text-xs text-white/70 mb-1">Tidak Aktif</p>
+                        <p className="text-2xl font-black text-white">{stats.inactive}</p>
                     </div>
-                    <div className="bg-purple-50 border border-purple-100 rounded-xl p-4">
-                        <p className="text-xs text-purple-500 mb-1">Rata-rata Harga</p>
-                        <p className="text-lg font-black text-purple-700">{formatPrice(stats.avg_price)}</p>
+                    <div className="bg-purple-600 rounded-xl p-4">
+                        <p className="text-xs text-white/70 mb-1">Rata-rata Harga</p>
+                        <p className="text-lg font-black text-white">{formatPrice(stats.avg_price)}</p>
                     </div>
                 </div>
 

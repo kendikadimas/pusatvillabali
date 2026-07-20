@@ -84,21 +84,21 @@ export default function AdminBookingsPage({ bookings, villas: _villas, filters, 
 
                 {/* Stats cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                        <p className="text-xs text-blue-500 mb-1">Masuk Hari Ini</p>
-                        <p className="text-2xl font-black text-blue-600">{stats.today}</p>
+                    <div className="bg-blue-600 rounded-xl p-4">
+                        <p className="text-xs text-white/70 mb-1">Masuk Hari Ini</p>
+                        <p className="text-2xl font-black text-white">{stats.today}</p>
                     </div>
-                    <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-4">
-                        <p className="text-xs text-yellow-600 mb-1">Menunggu Konfirmasi</p>
-                        <p className="text-2xl font-black text-yellow-600">{stats.pending}</p>
+                    <div className="bg-yellow-500 rounded-xl p-4">
+                        <p className="text-xs text-white/70 mb-1">Menunggu Konfirmasi</p>
+                        <p className="text-2xl font-black text-white">{stats.pending}</p>
                     </div>
-                    <div className="bg-orange-50 border border-orange-100 rounded-xl p-4">
-                        <p className="text-xs text-orange-500 mb-1">Menunggu Pembayaran</p>
-                        <p className="text-2xl font-black text-orange-600">{stats.pending_payment}</p>
+                    <div className="bg-orange-500 rounded-xl p-4">
+                        <p className="text-xs text-white/70 mb-1">Menunggu Pembayaran</p>
+                        <p className="text-2xl font-black text-white">{stats.pending_payment}</p>
                     </div>
-                    <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-                        <p className="text-xs text-green-600 mb-1">Dikonfirmasi</p>
-                        <p className="text-2xl font-black text-green-600">{stats.confirmed}</p>
+                    <div className="bg-green-600 rounded-xl p-4">
+                        <p className="text-xs text-white/70 mb-1">Dikonfirmasi</p>
+                        <p className="text-2xl font-black text-white">{stats.confirmed}</p>
                     </div>
                 </div>
 

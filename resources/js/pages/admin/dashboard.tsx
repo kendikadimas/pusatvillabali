@@ -13,7 +13,7 @@ interface Props {
     todayCheckouts: Booking[];
 }
 
-function StatCard({ label, value, icon, color = 'blue' }: { label: string; value: string | number; icon: React.ReactNode; color?: string }) {
+function StatCard({ label, value, icon, color = 'blue', href }: { label: string; value: string | number; icon: React.ReactNode; color?: string; href?: string }) {
     const colors: Record<string, { card: string; icon: string }> = {
         blue:   { card: 'bg-blue-600',   icon: 'bg-blue-500' },
         green:  { card: 'bg-green-600',  icon: 'bg-green-500' },
@@ -24,15 +24,21 @@ function StatCard({ label, value, icon, color = 'blue' }: { label: string; value
     };
     const c = colors[color] ?? colors.blue;
 
-    return (
-        <div className={`rounded-2xl p-5 ${c.card}`}>
+    const inner = (
+        <div className={`rounded-2xl p-5 ${c.card} ${href ? 'cursor-pointer hover:brightness-110 transition-all' : ''}`}>
             <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-medium text-white/70 uppercase tracking-wide">{label}</span>
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white ${c.icon}`}>{icon}</div>
             </div>
-            <p className="text-2xl font-black text-white break-all leading-tight">{value}</p>
+            <div className="flex items-end justify-between">
+                <p className="text-2xl font-black text-white break-all leading-tight">{value}</p>
+                {href && <ArrowUpRight className="w-4 h-4 text-white/60 shrink-0 mb-0.5" />}
+            </div>
         </div>
     );
+
+    if (href) return <Link href={href}>{inner}</Link>;
+    return inner;
 }
 
 const statusColors: Record<string, string> = {
@@ -59,12 +65,12 @@ export default function AdminDashboardPage({ stats, recentBookings, todayCheckin
 
                 {/* Stats grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                    <StatCard label="Check-in Hari Ini" value={stats.checkins_today} icon={<UserCheck className="w-4 h-4" />} color="green" />
-                    <StatCard label="Booking Bulan Ini" value={stats.bookings_this_month} icon={<BookOpen className="w-4 h-4" />} color="blue" />
-                    <StatCard label="Pendapatan Bulan Ini" value={formatPrice(stats.revenue_this_month)} icon={<TrendingUp className="w-4 h-4" />} color="purple" />
-                    <StatCard label="Pembayaran Pending" value={stats.pending_payments} icon={<Clock className="w-4 h-4" />} color="amber" />
-                    <StatCard label="Ulasan Pending" value={stats.pending_reviews} icon={<Star className="w-4 h-4" />} color="indigo" />
-                    <StatCard label="Tingkat Hunian" value={`${Math.round(stats.occupancy_rate)}%`} icon={<Percent className="w-4 h-4" />} color="red" />
+                    <StatCard label="Check-in Hari Ini" value={stats.checkins_today} icon={<UserCheck className="w-4 h-4" />} color="green" href="/admin/bookings?status=confirmed" />
+                    <StatCard label="Booking Bulan Ini" value={stats.bookings_this_month} icon={<BookOpen className="w-4 h-4" />} color="blue" href="/admin/bookings" />
+                    <StatCard label="Pendapatan Bulan Ini" value={formatPrice(stats.revenue_this_month)} icon={<TrendingUp className="w-4 h-4" />} color="purple" href="/admin/analytics" />
+                    <StatCard label="Pembayaran Pending" value={stats.pending_payments} icon={<Clock className="w-4 h-4" />} color="amber" href="/admin/bookings?status=pending_payment" />
+                    <StatCard label="Ulasan Pending" value={stats.pending_reviews} icon={<Star className="w-4 h-4" />} color="indigo" href="/admin/reviews?filter=pending" />
+                    <StatCard label="Tingkat Hunian" value={`${Math.round(stats.occupancy_rate)}%`} icon={<Percent className="w-4 h-4" />} color="red" href="/admin/analytics" />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

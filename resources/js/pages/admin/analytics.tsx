@@ -1,6 +1,6 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
-import { Download, RefreshCw } from 'lucide-react';
+import { Download, RefreshCw, ArrowUpRight } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
@@ -206,17 +206,24 @@ export default function AdminAnalyticsPage() {
                 {data && (
                     <>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            {[
-                                { label: 'Total Pendapatan', value: formatPrice(totalRevenue), sub: `${data.period.from} – ${data.period.to}`, bg: 'bg-green-600' },
-                                { label: 'Total Pemesanan', value: totalBookings.toLocaleString('id-ID'), sub: 'Semua status', bg: 'bg-blue-600' },
-                                { label: 'Rata-rata per Booking', value: formatPrice(avgPerBooking), sub: totalBookings > 0 ? `dari ${totalBookings} booking` : 'Belum ada data', bg: 'bg-purple-600' },
-                            ].map((stat) => (
-                                <div key={stat.label} className={`rounded-2xl p-5 ${stat.bg}`}>
-                                    <p className="text-xs font-medium text-white/70 mb-1">{stat.label}</p>
-                                    <p className="text-2xl font-black text-white">{stat.value}</p>
-                                    <p className="text-xs text-white/60 mt-1">{stat.sub}</p>
+                            <div className={`rounded-2xl p-5 bg-green-600`}>
+                                <p className="text-xs font-medium text-white/70 mb-1">Total Pendapatan</p>
+                                <p className="text-2xl font-black text-white">{formatPrice(totalRevenue)}</p>
+                                <p className="text-xs text-white/60 mt-1">{data.period.from} – {data.period.to}</p>
+                            </div>
+                            <Link href="/admin/bookings" className="rounded-2xl p-5 bg-blue-600 hover:brightness-110 transition-all group">
+                                <p className="text-xs font-medium text-white/70 mb-1">Total Pemesanan</p>
+                                <div className="flex items-end justify-between">
+                                    <p className="text-2xl font-black text-white">{totalBookings.toLocaleString('id-ID')}</p>
+                                    <ArrowUpRight className="w-4 h-4 text-white/60 mb-0.5" />
                                 </div>
-                            ))}
+                                <p className="text-xs text-white/60 mt-1">Semua status</p>
+                            </Link>
+                            <div className={`rounded-2xl p-5 bg-purple-600`}>
+                                <p className="text-xs font-medium text-white/70 mb-1">Rata-rata per Booking</p>
+                                <p className="text-2xl font-black text-white">{formatPrice(avgPerBooking)}</p>
+                                <p className="text-xs text-white/60 mt-1">{totalBookings > 0 ? `dari ${totalBookings} booking` : 'Belum ada data'}</p>
+                            </div>
                         </div>
 
                         {/* Conversion funnel */}

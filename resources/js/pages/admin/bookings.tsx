@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { Search, ExternalLink, Eye, CalendarCheck, CalendarX, Clock, CreditCard } from 'lucide-react';
+import { Search, ExternalLink, Eye, CalendarCheck, CalendarX, Clock, CreditCard, ArrowUpRight } from 'lucide-react';
 import React, { useState } from 'react';
 import { formatPrice } from '@/lib/format';
 import type { Booking, PaginatedData } from '@/types';
@@ -84,22 +84,22 @@ export default function AdminBookingsPage({ bookings, villas: _villas, filters, 
 
                 {/* Stats cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="bg-blue-600 rounded-xl p-4">
+                    <button type="button" onClick={() => router.get('/admin/bookings', { status: '' }, { preserveScroll: false })} className="text-left bg-blue-600 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
                         <p className="text-xs text-white/70 mb-1">Masuk Hari Ini</p>
-                        <p className="text-2xl font-black text-white">{stats.today}</p>
-                    </div>
-                    <div className="bg-yellow-500 rounded-xl p-4">
+                        <div className="flex items-end justify-between"><p className="text-2xl font-black text-white">{stats.today}</p><ArrowUpRight className="w-4 h-4 text-white/50 mb-0.5 opacity-0 group-hover:opacity-100 transition-opacity" /></div>
+                    </button>
+                    <button type="button" onClick={() => router.get('/admin/bookings', { status: 'pending' }, { preserveScroll: false })} className="text-left bg-yellow-500 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
                         <p className="text-xs text-white/70 mb-1">Menunggu Konfirmasi</p>
-                        <p className="text-2xl font-black text-white">{stats.pending}</p>
-                    </div>
-                    <div className="bg-orange-500 rounded-xl p-4">
+                        <div className="flex items-end justify-between"><p className="text-2xl font-black text-white">{stats.pending}</p><ArrowUpRight className="w-4 h-4 text-white/50 mb-0.5 opacity-0 group-hover:opacity-100 transition-opacity" /></div>
+                    </button>
+                    <button type="button" onClick={() => router.get('/admin/bookings', { status: 'pending_payment' }, { preserveScroll: false })} className="text-left bg-orange-500 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
                         <p className="text-xs text-white/70 mb-1">Menunggu Pembayaran</p>
-                        <p className="text-2xl font-black text-white">{stats.pending_payment}</p>
-                    </div>
-                    <div className="bg-green-600 rounded-xl p-4">
+                        <div className="flex items-end justify-between"><p className="text-2xl font-black text-white">{stats.pending_payment}</p><ArrowUpRight className="w-4 h-4 text-white/50 mb-0.5 opacity-0 group-hover:opacity-100 transition-opacity" /></div>
+                    </button>
+                    <button type="button" onClick={() => router.get('/admin/bookings', { status: 'confirmed' }, { preserveScroll: false })} className="text-left bg-green-600 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
                         <p className="text-xs text-white/70 mb-1">Dikonfirmasi</p>
-                        <p className="text-2xl font-black text-white">{stats.confirmed}</p>
-                    </div>
+                        <div className="flex items-end justify-between"><p className="text-2xl font-black text-white">{stats.confirmed}</p><ArrowUpRight className="w-4 h-4 text-white/50 mb-0.5 opacity-0 group-hover:opacity-100 transition-opacity" /></div>
+                    </button>
                 </div>
 
                 {/* Check-in & Check-out today */}

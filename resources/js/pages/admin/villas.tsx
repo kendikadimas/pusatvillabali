@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
-import { Plus, Edit, Trash2, Search, Star, Eye, EyeOff, Home, TrendingUp } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Star, Eye, EyeOff, Home, TrendingUp, ArrowUpRight } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
@@ -83,18 +83,18 @@ return;
 
                 {/* Stats cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="bg-blue-600 rounded-xl p-4">
+                    <button type="button" onClick={() => router.get('/admin/villas', { status: '' }, { preserveScroll: false })} className="text-left bg-blue-600 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
                         <p className="text-xs text-white/70 mb-1">Total Villa</p>
-                        <p className="text-2xl font-black text-white">{stats.total}</p>
-                    </div>
-                    <div className="bg-green-600 rounded-xl p-4">
+                        <div className="flex items-end justify-between"><p className="text-2xl font-black text-white">{stats.total}</p><ArrowUpRight className="w-4 h-4 text-white/50 mb-0.5 opacity-0 group-hover:opacity-100 transition-opacity" /></div>
+                    </button>
+                    <button type="button" onClick={() => router.get('/admin/villas', { status: 'active' }, { preserveScroll: false })} className="text-left bg-green-600 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
                         <p className="text-xs text-white/70 mb-1">Aktif</p>
-                        <p className="text-2xl font-black text-white">{stats.active}</p>
-                    </div>
-                    <div className="bg-slate-500 rounded-xl p-4">
+                        <div className="flex items-end justify-between"><p className="text-2xl font-black text-white">{stats.active}</p><ArrowUpRight className="w-4 h-4 text-white/50 mb-0.5 opacity-0 group-hover:opacity-100 transition-opacity" /></div>
+                    </button>
+                    <button type="button" onClick={() => router.get('/admin/villas', { status: 'inactive' }, { preserveScroll: false })} className="text-left bg-slate-500 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
                         <p className="text-xs text-white/70 mb-1">Tidak Aktif</p>
-                        <p className="text-2xl font-black text-white">{stats.inactive}</p>
-                    </div>
+                        <div className="flex items-end justify-between"><p className="text-2xl font-black text-white">{stats.inactive}</p><ArrowUpRight className="w-4 h-4 text-white/50 mb-0.5 opacity-0 group-hover:opacity-100 transition-opacity" /></div>
+                    </button>
                     <div className="bg-purple-600 rounded-xl p-4">
                         <p className="text-xs text-white/70 mb-1">Rata-rata Harga</p>
                         <p className="text-lg font-black text-white">{formatPrice(stats.avg_price)}</p>

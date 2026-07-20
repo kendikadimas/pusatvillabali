@@ -69,7 +69,8 @@ class BookingAdminController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $bookings = $query->paginate(20);
+        $perPage = min((int) $request->input('per_page', 20), 200);
+        $bookings = $query->paginate($perPage);
 
         return response()->json([
             'data' => $bookings->items(),

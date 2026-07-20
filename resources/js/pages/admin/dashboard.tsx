@@ -30,7 +30,7 @@ function StatCard({ label, value, icon, color = 'blue' }: { label: string; value
                 <span className="text-xs font-medium text-white/70 uppercase tracking-wide">{label}</span>
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white ${c.icon}`}>{icon}</div>
             </div>
-            <p className="text-2xl font-black text-white truncate">{value}</p>
+            <p className="text-2xl font-black text-white break-all leading-tight">{value}</p>
         </div>
     );
 }

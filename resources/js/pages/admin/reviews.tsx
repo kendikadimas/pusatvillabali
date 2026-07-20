@@ -21,6 +21,7 @@ interface ReviewForm {
     rating: number;
     comment: string;
     is_approved: boolean;
+    created_at: string;
 }
 
 const emptyForm: ReviewForm = {
@@ -31,6 +32,7 @@ const emptyForm: ReviewForm = {
     rating: 5,
     comment: '',
     is_approved: true,
+    created_at: new Date().toISOString().slice(0, 10),
 };
 
 function StarPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
@@ -99,6 +101,7 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
             rating: review.rating,
             comment: review.comment,
             is_approved: review.is_approved,
+            created_at: review.created_at ? review.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10),
         });
         setErrors({});
         setModalOpen(true);
@@ -124,6 +127,7 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
                 rating: form.rating,
                 comment: form.comment,
                 is_approved: form.is_approved,
+                created_at: form.created_at || null,
             };
             if (editingReview) {
                 await axios.put(`/api/v1/admin/reviews/${editingReview.id}`, payload);
@@ -405,6 +409,18 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
                                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${form.is_approved ? 'translate-x-6' : 'translate-x-1'}`} />
                                 </button>
                                 <span className="text-sm text-slate-700">Tampilkan langsung (disetujui)</span>
+                            </div>
+
+                            {/* Review date */}
+                            <div>
+                                <label className="block text-xs font-medium text-slate-600 mb-1">Tanggal Ulasan</label>
+                                <input
+                                    type="date"
+                                    value={form.created_at}
+                                    onChange={(e) => setForm((f) => ({ ...f, created_at: e.target.value }))}
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                {errors.created_at && <p className="text-xs text-red-500 mt-1">{errors.created_at}</p>}
                             </div>
 
                             <div className="flex gap-3 pt-2">

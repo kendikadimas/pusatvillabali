@@ -84,20 +84,20 @@ export default function AdminBookingsPage({ bookings, villas: _villas, filters, 
 
                 {/* Stats cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="bg-white border border-slate-200 rounded-xl p-4">
-                        <p className="text-xs text-slate-500 mb-1">Masuk Hari Ini</p>
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                        <p className="text-xs text-blue-500 mb-1">Masuk Hari Ini</p>
                         <p className="text-2xl font-black text-blue-600">{stats.today}</p>
                     </div>
-                    <div className="bg-white border border-slate-200 rounded-xl p-4">
-                        <p className="text-xs text-slate-500 mb-1">Menunggu Konfirmasi</p>
+                    <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-4">
+                        <p className="text-xs text-yellow-600 mb-1">Menunggu Konfirmasi</p>
                         <p className="text-2xl font-black text-yellow-600">{stats.pending}</p>
                     </div>
-                    <div className="bg-white border border-slate-200 rounded-xl p-4">
-                        <p className="text-xs text-slate-500 mb-1">Menunggu Pembayaran</p>
+                    <div className="bg-orange-50 border border-orange-100 rounded-xl p-4">
+                        <p className="text-xs text-orange-500 mb-1">Menunggu Pembayaran</p>
                         <p className="text-2xl font-black text-orange-600">{stats.pending_payment}</p>
                     </div>
-                    <div className="bg-white border border-slate-200 rounded-xl p-4">
-                        <p className="text-xs text-slate-500 mb-1">Dikonfirmasi</p>
+                    <div className="bg-green-50 border border-green-100 rounded-xl p-4">
+                        <p className="text-xs text-green-600 mb-1">Dikonfirmasi</p>
                         <p className="text-2xl font-black text-green-600">{stats.confirmed}</p>
                     </div>
                 </div>

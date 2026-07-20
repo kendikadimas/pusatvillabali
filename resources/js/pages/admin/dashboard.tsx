@@ -14,22 +14,23 @@ interface Props {
 }
 
 function StatCard({ label, value, icon, color = 'blue' }: { label: string; value: string | number; icon: React.ReactNode; color?: string }) {
-    const colors: Record<string, string> = {
-        blue: 'bg-blue-50 text-blue-600',
-        green: 'bg-green-50 text-green-600',
-        amber: 'bg-amber-50 text-amber-600',
-        purple: 'bg-purple-50 text-purple-600',
-        red: 'bg-red-50 text-red-600',
-        indigo: 'bg-indigo-50 text-indigo-600',
+    const colors: Record<string, { card: string; icon: string; value: string; label: string }> = {
+        blue:   { card: 'bg-blue-50 border-blue-100',     icon: 'bg-blue-100 text-blue-600',    value: 'text-blue-700',   label: 'text-blue-500' },
+        green:  { card: 'bg-green-50 border-green-100',   icon: 'bg-green-100 text-green-600',  value: 'text-green-700',  label: 'text-green-600' },
+        amber:  { card: 'bg-amber-50 border-amber-100',   icon: 'bg-amber-100 text-amber-600',  value: 'text-amber-700',  label: 'text-amber-600' },
+        purple: { card: 'bg-purple-50 border-purple-100', icon: 'bg-purple-100 text-purple-600',value: 'text-purple-700', label: 'text-purple-500' },
+        red:    { card: 'bg-red-50 border-red-100',       icon: 'bg-red-100 text-red-600',      value: 'text-red-700',    label: 'text-red-500' },
+        indigo: { card: 'bg-indigo-50 border-indigo-100', icon: 'bg-indigo-100 text-indigo-600',value: 'text-indigo-700', label: 'text-indigo-500' },
     };
+    const c = colors[color] ?? colors.blue;
 
     return (
-        <div className="bg-white border border-slate-200 rounded-2xl p-5">
+        <div className={`border rounded-2xl p-5 ${c.card}`}>
             <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</span>
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${colors[color]}`}>{icon}</div>
+                <span className={`text-xs font-medium uppercase tracking-wide ${c.label}`}>{label}</span>
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${c.icon}`}>{icon}</div>
             </div>
-            <p className="text-2xl font-black text-slate-800 truncate">{value}</p>
+            <p className={`text-2xl font-black truncate ${c.value}`}>{value}</p>
         </div>
     );
 }

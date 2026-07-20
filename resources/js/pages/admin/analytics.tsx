@@ -211,22 +211,34 @@ export default function AdminAnalyticsPage() {
                                     label: 'Total Pendapatan',
                                     value: formatPrice(totalRevenue),
                                     sub: `${data.period.from} – ${data.period.to}`,
+                                    card: 'bg-green-50 border-green-100',
+                                    label_c: 'text-green-600',
+                                    value_c: 'text-green-700',
+                                    sub_c: 'text-green-500',
                                 },
                                 {
                                     label: 'Total Pemesanan',
                                     value: totalBookings.toLocaleString('id-ID'),
                                     sub: 'Semua status',
+                                    card: 'bg-blue-50 border-blue-100',
+                                    label_c: 'text-blue-500',
+                                    value_c: 'text-blue-700',
+                                    sub_c: 'text-blue-400',
                                 },
                                 {
                                     label: 'Rata-rata per Booking',
                                     value: formatPrice(avgPerBooking),
                                     sub: totalBookings > 0 ? `dari ${totalBookings} booking` : 'Belum ada data',
+                                    card: 'bg-purple-50 border-purple-100',
+                                    label_c: 'text-purple-500',
+                                    value_c: 'text-purple-700',
+                                    sub_c: 'text-purple-400',
                                 },
                             ].map((stat) => (
-                                <div key={stat.label} className="bg-white border border-slate-200 rounded-2xl p-5">
-                                    <p className="text-xs font-medium text-slate-500 mb-1">{stat.label}</p>
-                                    <p className="text-2xl font-black text-slate-800">{stat.value}</p>
-                                    <p className="text-xs text-slate-400 mt-1">{stat.sub}</p>
+                                <div key={stat.label} className={`border rounded-2xl p-5 ${stat.card}`}>
+                                    <p className={`text-xs font-medium mb-1 ${stat.label_c}`}>{stat.label}</p>
+                                    <p className={`text-2xl font-black ${stat.value_c}`}>{stat.value}</p>
+                                    <p className={`text-xs mt-1 ${stat.sub_c}`}>{stat.sub}</p>
                                 </div>
                             ))}
                         </div>

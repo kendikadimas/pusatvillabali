@@ -93,11 +93,16 @@ export default function PublicHeader({
     const bedroomsLabel = searchBedrooms > 0 ? `${searchBedrooms} Kamar` : 'Kamar tidur';
     const guestsLabel = searchGuests > 0 ? `${searchGuests} Tamu` : 'Tambahkan tamu';
 
-    const { destinations: pageDestinations } = usePage<{ destinations?: Array<{ id: number; name: string; city: string; image: string }> }>().props;
-    const destSuggestions = pageDestinations ?? [];
+    const [destinations, setDestinations] = useState<Array<{ id: number; name: string; city: string; image: string }>>([]);
+    useEffect(() => {
+        fetch('/api/v1/destinations')
+            .then(r => r.json())
+            .then(data => setDestinations(Array.isArray(data) ? data : (data.data ?? [])))
+            .catch(() => {});
+    }, []);
     const filteredSuggestions = searchWhere.trim()
-        ? destSuggestions.filter(d => d.name.toLowerCase().includes(searchWhere.toLowerCase()) || d.city.toLowerCase().includes(searchWhere.toLowerCase()))
-        : destSuggestions.slice(0, 6);
+        ? destinations.filter(d => d.name.toLowerCase().includes(searchWhere.toLowerCase()) || d.city.toLowerCase().includes(searchWhere.toLowerCase()))
+        : destinations.slice(0, 6);
 
     return (
         <header className={`${positionClass} z-50 bg-white border-b border-slate-100`}>
@@ -180,7 +185,7 @@ export default function PublicHeader({
                             /* Expanded pill */
                             <form
                                 onSubmit={handleSearch}
-                                className="flex items-stretch bg-white border border-slate-200 rounded-full shadow-xl overflow-hidden"
+                                className="flex items-stretch bg-white border border-slate-200 rounded-full shadow-xl"
                                 style={{ minHeight: '56px' }}
                             >
                                 {/* Ke mana saja */}

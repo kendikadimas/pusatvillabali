@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
-import { AlertTriangle, ChevronLeft, ChevronRight, Lock, Unlock, Users, X } from 'lucide-react';
+import { AlertTriangle, ChevronLeft, ChevronRight, Lock, Search, Unlock, Users, X } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -66,6 +66,7 @@ function expandStayDates(checkIn: string, checkOut: string): string[] {
 
 export default function AdminCalendarPage({ villas }: Props) {
     const [selectedId, setSelectedId] = useState<string>('');
+    const [villaSearch, setVillaSearch] = useState('');
     const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
     const [bookings, setBookings] = useState<BookingSummary[]>([]);
     const [loading, setLoading] = useState(false);
@@ -75,6 +76,18 @@ export default function AdminCalendarPage({ villas }: Props) {
     const [pendingDate, setPendingDate] = useState<string | null>(null);
     const [reason, setReason] = useState('');
     const [saving, setSaving] = useState(false);
+
+    // Side panel filters
+    const [bookedSearch, setBookedSearch] = useState('');
+    const [blockedSearch, setBlockedSearch] = useState('');
+    const [sideFilter, setSideFilter] = useState<'all' | 'booked' | 'blocked'>('all');
+
+    const filteredVillas = useMemo(
+        () => villaSearch.trim()
+            ? villas.filter(v => v.name.toLowerCase().includes(villaSearch.toLowerCase()))
+            : villas,
+        [villas, villaSearch],
+    );
 
     const todayStr = today();
 
@@ -213,16 +226,62 @@ export default function AdminCalendarPage({ villas }: Props) {
 
                 <div className="bg-white border border-slate-200 rounded-2xl p-5">
                     <label className="block text-sm font-medium text-slate-700 mb-2">Pilih Villa</label>
-                    <select
-                        value={selectedId}
-                        onChange={(e) => setSelectedId(e.target.value)}
-                        className="border border-slate-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                    >
-                        <option value="">-- Pilih Villa --</option>
-                        {villas.map((v) => (
-                            <option key={v.id} value={v.id}>{v.name}</option>
-                        ))}
-                    </select>
+                    <div className="relative">
+                        <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 py-2.5 bg-white focus-within:ring-2 focus-within:ring-blue-500">
+                            <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                            <input
+                                type="text"
+                                placeholder="Cari nama villa..."
+                                value={villaSearch}
+                                onChange={e => setVillaSearch(e.target.value)}
+                                className="flex-1 text-sm outline-none text-slate-700 placeholder:text-slate-400"
+                            />
+                            {villaSearch && (
+                                <button type="button" onClick={() => setVillaSearch('')} className="shrink-0 text-slate-400 hover:text-slate-600">
+                                    <X className="w-4 h-4" />
+                                </button>
+                            )}
+                        </div>
+                        {villaSearch && filteredVillas.length > 0 && (
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-56 overflow-y-auto">
+                                {filteredVillas.map(v => (
+                                    <button
+                                        key={v.id}
+                                        type="button"
+                                        onClick={() => { setSelectedId(String(v.id)); setVillaSearch(''); }}
+                                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors ${String(v.id) === selectedId ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-700'}`}
+                                    >
+                                        {v.name}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    {/* Selected villa badge */}
+                    {selectedVilla && (
+                        <div className="mt-2 flex items-center gap-2">
+                            <span className="text-xs text-slate-500">Dipilih:</span>
+                            <span className="text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">{selectedVilla.name}</span>
+                            <button type="button" onClick={() => setSelectedId('')} className="text-xs text-slate-400 hover:text-red-500 transition-colors">Ganti</button>
+                        </div>
+                    )}
+                    {!selectedVilla && !villaSearch && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                            {villas.slice(0, 5).map(v => (
+                                <button
+                                    key={v.id}
+                                    type="button"
+                                    onClick={() => setSelectedId(String(v.id))}
+                                    className="text-xs px-3 py-1 rounded-full border border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
+                                >
+                                    {v.name}
+                                </button>
+                            ))}
+                            {villas.length > 5 && (
+                                <span className="text-xs text-slate-400 py-1">+{villas.length - 5} lainnya</span>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {selectedId && (
@@ -329,68 +388,116 @@ export default function AdminCalendarPage({ villas }: Props) {
 
                         {/* Side panels */}
                         <div className="space-y-5">
-                            {/* Booked dates */}
+                            {/* Combined filter tabs + search */}
                             <div className="bg-white border border-slate-200 rounded-2xl p-5">
-                                <h3 className="font-bold text-slate-800 mb-1 flex items-center gap-2">
-                                    <Users className="w-4 h-4 text-amber-600" />
-                                    Ada Booking
-                                </h3>
-                                <p className="text-xs text-slate-400 mb-4">{selectedVilla?.name} — mendatang</p>
+                                <div className="flex gap-1 mb-3">
+                                    {(['all', 'booked', 'blocked'] as const).map(f => (
+                                        <button
+                                            key={f}
+                                            type="button"
+                                            onClick={() => setSideFilter(f)}
+                                            className={`flex-1 text-xs font-semibold py-1.5 rounded-lg transition-colors ${sideFilter === f ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}
+                                        >
+                                            {f === 'all' ? 'Semua' : f === 'booked' ? 'Booking' : 'Diblokir'}
+                                        </button>
+                                    ))}
+                                </div>
 
-                                {loading ? (
-                                    <p className="text-sm text-slate-400">Memuat...</p>
-                                ) : upcomingBooked.length === 0 ? (
-                                    <p className="text-sm text-slate-400">Tidak ada booking aktif</p>
-                                ) : (
-                                    <ul className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                                        {upcomingBooked.map(({ date, bookings: bks }) => (
-                                            <li key={date} className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2.5">
-                                                <p className="text-sm font-semibold text-amber-900">{date}</p>
-                                                {bks.map((b) => (
-                                                    <p key={b.id} className="text-xs text-amber-700 mt-0.5">
-                                                        {b.guest_name} · {b.booking_code}
-                                                        <span className="text-amber-500"> ({toDateOnly(b.check_in)} → {toDateOnly(b.check_out)})</span>
-                                                    </p>
-                                                ))}
-                                            </li>
-                                        ))}
-                                    </ul>
+                                {/* Booked dates */}
+                                {(sideFilter === 'all' || sideFilter === 'booked') && (
+                                    <div className="mb-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Users className="w-3.5 h-3.5 text-amber-600" />
+                                            <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">Ada Booking</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 border border-slate-200 rounded-lg px-2.5 py-1.5 mb-2 bg-slate-50">
+                                            <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                            <input
+                                                type="text"
+                                                placeholder="Cari tamu atau tanggal..."
+                                                value={bookedSearch}
+                                                onChange={e => setBookedSearch(e.target.value)}
+                                                className="flex-1 text-xs outline-none bg-transparent text-slate-700 placeholder:text-slate-400"
+                                            />
+                                            {bookedSearch && <button type="button" onClick={() => setBookedSearch('')}><X className="w-3 h-3 text-slate-400" /></button>}
+                                        </div>
+                                        {loading ? (
+                                            <p className="text-xs text-slate-400">Memuat...</p>
+                                        ) : upcomingBooked.filter(({ date, bookings: bks }) =>
+                                            !bookedSearch || date.includes(bookedSearch) || bks.some(b => b.guest_name.toLowerCase().includes(bookedSearch.toLowerCase()) || b.booking_code.toLowerCase().includes(bookedSearch.toLowerCase()))
+                                        ).length === 0 ? (
+                                            <p className="text-xs text-slate-400">Tidak ada booking aktif</p>
+                                        ) : (
+                                            <ul className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                                                {upcomingBooked
+                                                    .filter(({ date, bookings: bks }) =>
+                                                        !bookedSearch || date.includes(bookedSearch) || bks.some(b => b.guest_name.toLowerCase().includes(bookedSearch.toLowerCase()) || b.booking_code.toLowerCase().includes(bookedSearch.toLowerCase()))
+                                                    )
+                                                    .map(({ date, bookings: bks }) => (
+                                                        <li key={date} className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+                                                            <p className="text-xs font-semibold text-amber-900">{date}</p>
+                                                            {bks.map((b) => (
+                                                                <p key={b.id} className="text-xs text-amber-700 mt-0.5">
+                                                                    {b.guest_name} · {b.booking_code}
+                                                                    <span className="text-amber-500"> ({toDateOnly(b.check_in)} → {toDateOnly(b.check_out)})</span>
+                                                                </p>
+                                                            ))}
+                                                        </li>
+                                                    ))}
+                                            </ul>
+                                        )}
+                                    </div>
                                 )}
-                            </div>
 
-                            {/* Blocked dates */}
-                            <div className="bg-white border border-slate-200 rounded-2xl p-5">
-                                <h3 className="font-bold text-slate-800 mb-1 flex items-center gap-2">
-                                    <Lock className="w-4 h-4 text-red-500" />
-                                    Tanggal Diblokir
-                                </h3>
-                                <p className="text-xs text-slate-400 mb-4">{selectedVilla?.name} — mendatang</p>
-
-                                {loading ? (
-                                    <p className="text-sm text-slate-400">Memuat...</p>
-                                ) : upcomingBlocked.length === 0 ? (
-                                    <p className="text-sm text-slate-400">Tidak ada tanggal yang diblokir</p>
-                                ) : (
-                                    <ul className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                                        {upcomingBlocked.map((b) => (
-                                            <li key={b.id} className="flex items-start justify-between gap-2 bg-red-50 border border-red-100 rounded-xl px-3 py-2.5">
-                                                <div>
-                                                    <p className="text-sm font-semibold text-red-800">{toDateOnly(b.date)}</p>
-                                                    {b.reason && <p className="text-xs text-red-600 mt-0.5">{b.reason}</p>}
-                                                    {bookedMap.has(toDateOnly(b.date)) && (
-                                                        <p className="text-xs text-orange-600 mt-0.5 font-medium">Ada booking aktif</p>
-                                                    )}
-                                                </div>
-                                                <button
-                                                    onClick={() => handleUnblock(b)}
-                                                    className="p-1 rounded-lg hover:bg-red-200 text-red-400 hover:text-red-700 transition-colors flex-shrink-0 cursor-pointer"
-                                                    title="Batalkan blokir"
-                                                >
-                                                    <Unlock className="w-3.5 h-3.5" />
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
+                                {/* Blocked dates */}
+                                {(sideFilter === 'all' || sideFilter === 'blocked') && (
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Lock className="w-3.5 h-3.5 text-red-500" />
+                                            <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">Diblokir</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 border border-slate-200 rounded-lg px-2.5 py-1.5 mb-2 bg-slate-50">
+                                            <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                            <input
+                                                type="text"
+                                                placeholder="Cari tanggal atau alasan..."
+                                                value={blockedSearch}
+                                                onChange={e => setBlockedSearch(e.target.value)}
+                                                className="flex-1 text-xs outline-none bg-transparent text-slate-700 placeholder:text-slate-400"
+                                            />
+                                            {blockedSearch && <button type="button" onClick={() => setBlockedSearch('')}><X className="w-3 h-3 text-slate-400" /></button>}
+                                        </div>
+                                        {loading ? (
+                                            <p className="text-xs text-slate-400">Memuat...</p>
+                                        ) : upcomingBlocked.filter(b =>
+                                            !blockedSearch || toDateOnly(b.date).includes(blockedSearch) || (b.reason ?? '').toLowerCase().includes(blockedSearch.toLowerCase())
+                                        ).length === 0 ? (
+                                            <p className="text-xs text-slate-400">Tidak ada tanggal diblokir</p>
+                                        ) : (
+                                            <ul className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                                                {upcomingBlocked
+                                                    .filter(b => !blockedSearch || toDateOnly(b.date).includes(blockedSearch) || (b.reason ?? '').toLowerCase().includes(blockedSearch.toLowerCase()))
+                                                    .map((b) => (
+                                                        <li key={b.id} className="flex items-start justify-between gap-2 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
+                                                            <div>
+                                                                <p className="text-xs font-semibold text-red-800">{toDateOnly(b.date)}</p>
+                                                                {b.reason && <p className="text-xs text-red-600 mt-0.5">{b.reason}</p>}
+                                                                {bookedMap.has(toDateOnly(b.date)) && (
+                                                                    <p className="text-xs text-orange-600 mt-0.5 font-medium">Ada booking aktif</p>
+                                                                )}
+                                                            </div>
+                                                            <button
+                                                                onClick={() => handleUnblock(b)}
+                                                                className="p-1 rounded-lg hover:bg-red-200 text-red-400 hover:text-red-700 transition-colors flex-shrink-0 cursor-pointer"
+                                                                title="Batalkan blokir"
+                                                            >
+                                                                <Unlock className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </li>
+                                                    ))}
+                                            </ul>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </div>

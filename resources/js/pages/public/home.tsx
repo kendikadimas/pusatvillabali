@@ -1,6 +1,6 @@
-﻿import { Head, Link, router } from '@inertiajs/react';
+﻿import { Head, Link } from '@inertiajs/react';
 import { MapPin, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import VillaCard from '@/components/public/villa-card';
 import type { Villa, Destination, AppSettings } from '@/types';
 
@@ -97,27 +97,10 @@ return null;
 export default function Home({ villas, villasByDestination, destinations, settings }: Props) {
     const destList = destinations && destinations.length > 0 ? destinations : DEFAULT_DESTINATIONS;
     const destScrollRef = useRef<HTMLDivElement>(null);
-    const [activeDest, setActiveDest] = useState<Destination | null>(null);
-
-    const BEDROOM_OPTIONS = [
-        { label: '1 Bedroom', value: '1' },
-        { label: '2 Bedroom', value: '2' },
-        { label: '3 Bedroom', value: '3' },
-        { label: '4 Bedroom', value: '4' },
-        { label: '5+ Bedroom', value: '5' },
-    ];
 
     const scrollDest = (dir: 'left' | 'right') => {
         if (!destScrollRef.current) return;
         destScrollRef.current.scrollBy({ left: dir === 'right' ? 240 : -240, behavior: 'smooth' });
-    };
-
-    const handleDestClick = (dest: Destination) => {
-        setActiveDest((prev) => (prev?.id === dest.id ? null : dest));
-    };
-
-    const handleBedroomClick = (dest: Destination, bedrooms: string) => {
-        router.get('/villas', { search: dest.query, bedrooms });
     };
 
     // Use villasByDestination from controller if available, otherwise fallback to client-side grouping
@@ -128,95 +111,6 @@ export default function Home({ villas, villasByDestination, destinations, settin
     return (
         <>
             <Head title={`${appName} – Sewa Villa Premium di Bali`} />
-
-            {/* ── Destination chips + bedroom pills ── */}
-            <div className="border-b border-[#ebebeb] bg-white sticky top-[64px] sm:top-[80px] z-40">
-                <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
-                    <div className="relative group/dest py-1">
-                        {/* Left scroll btn */}
-                        <button
-                            onClick={() => scrollDest('left')}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white border border-[#dddddd] rounded-full shadow-sm flex items-center justify-center sm:opacity-0 sm:group-hover/dest:opacity-100 transition-opacity"
-                            aria-label="Scroll destinasi kiri"
-                        >
-                            <ChevronLeft className="w-4 h-4 text-[#222222]" strokeWidth={2.5} />
-                        </button>
-
-                        {/* Left gradient fade */}
-                        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none z-[5]" />
-
-                        <div
-                            ref={destScrollRef}
-                            className="flex gap-2 overflow-x-auto scrollbar-hide py-3 px-1"
-                        >
-                            {/* "Semua" chip */}
-                            <button
-                                onClick={() => { setActiveDest(null); router.get('/villas'); }}
-                                className="shrink-0 flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg transition-colors hover:bg-[#f7f7f7] group/chip min-w-[72px]"
-                            >
-                                <div className="w-10 h-10 rounded-full bg-[#f7f7f7] flex items-center justify-center border-2 border-transparent group-hover/chip:border-[#222222] transition-colors overflow-hidden">
-                                    <span className="text-[10px] font-bold text-[#6a6a6a]">Semua</span>
-                                </div>
-                                <span className="text-[11px] font-medium text-[#6a6a6a] whitespace-nowrap">Semua</span>
-                            </button>
-
-                            {destList.map((dest) => {
-                                const isActive = activeDest?.id === dest.id;
-                                return (
-                                    <button
-                                        key={dest.id}
-                                        onClick={() => handleDestClick(dest)}
-                                        className={`shrink-0 flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg transition-colors min-w-[72px] ${isActive ? 'bg-[#f7f7f7]' : 'hover:bg-[#f7f7f7]'}`}
-                                    >
-                                        <div className={`w-10 h-10 rounded-full overflow-hidden border-2 transition-colors ${isActive ? 'border-[#222222]' : 'border-transparent hover:border-[#222222]'}`}>
-                                            <img
-                                                src={dest.image}
-                                                alt={dest.name}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                        <span className={`text-[11px] font-medium whitespace-nowrap ${isActive ? 'text-[#222222]' : 'text-[#6a6a6a]'}`}>{dest.name}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {/* Right gradient fade */}
-                        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-[5]" />
-
-                        {/* Right scroll btn */}
-                        <button
-                            onClick={() => scrollDest('right')}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white border border-[#dddddd] rounded-full shadow-sm flex items-center justify-center sm:opacity-0 sm:group-hover/dest:opacity-100 transition-opacity"
-                            aria-label="Scroll destinasi kanan"
-                        >
-                            <ChevronRight className="w-4 h-4 text-[#222222]" strokeWidth={2.5} />
-                        </button>
-                    </div>
-
-                    {/* Bedroom pills — muncul ketika destinasi dipilih */}
-                    {activeDest && (
-                        <div className="flex items-center gap-2 pb-3 px-1 flex-wrap">
-                            <span className="text-xs text-[#6a6a6a] font-medium shrink-0">{activeDest.name}:</span>
-                            {BEDROOM_OPTIONS.map((opt) => (
-                                <button
-                                    key={opt.value}
-                                    onClick={() => handleBedroomClick(activeDest, opt.value)}
-                                    className="shrink-0 px-3 py-1.5 rounded-full border border-[#dddddd] text-xs font-medium text-[#222222] hover:border-[#222222] hover:bg-[#f7f7f7] transition-colors"
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
-                            <button
-                                onClick={() => router.get('/villas', { search: activeDest.query })}
-                                className="shrink-0 px-3 py-1.5 rounded-full bg-[#222222] text-white text-xs font-medium hover:bg-[#444444] transition-colors"
-                            >
-                                Lihat Semua
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
 
             {/* ── Destination cards carousel ── */}
             {destList.length > 0 && (

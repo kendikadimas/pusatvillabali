@@ -30,9 +30,10 @@ export default function PublicHeader({
     const [mobileOpen, setMobileOpen] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [searchExpanded, setSearchExpanded] = useState(false);
-    const [activeSegment, setActiveSegment] = useState<'where' | 'dates' | 'guests' | null>(null);
+    const [activeSegment, setActiveSegment] = useState<'where' | 'dates' | 'bedrooms' | 'guests' | null>(null);
     const [searchWhere, setSearchWhere] = useState('');
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+    const [searchBedrooms, setSearchBedrooms] = useState(0);
     const [searchGuests, setSearchGuests] = useState(2);
     const pillRef = useRef<HTMLDivElement>(null);
     const appName = settings?.settings_prop_name ?? 'PusatVillaBali';
@@ -71,21 +72,11 @@ export default function PublicHeader({
         e.preventDefault();
         const params: Record<string, string> = {};
 
-        if (searchWhere.trim()) {
-params.search = searchWhere.trim();
-}
-
-        if (searchCheckIn) {
-params.checkIn = searchCheckIn;
-}
-
-        if (searchCheckOut) {
-params.checkOut = searchCheckOut;
-}
-
-        if (searchGuests > 0) {
-params.guests = String(searchGuests);
-}
+        if (searchWhere.trim()) params.search = searchWhere.trim();
+        if (searchCheckIn) params.checkIn = searchCheckIn;
+        if (searchCheckOut) params.checkOut = searchCheckOut;
+        if (searchBedrooms > 0) params.bedrooms = String(searchBedrooms);
+        if (searchGuests > 0) params.guests = String(searchGuests);
 
         router.get('/villas', params);
         setSearchExpanded(false);
@@ -99,7 +90,14 @@ params.guests = String(searchGuests);
     const dateLabel = dateRange?.from
         ? `${format(dateRange.from, 'd MMM', { locale: id })}${dateRange.to ? ` – ${format(dateRange.to, 'd MMM', { locale: id })}` : ''}`
         : 'Kapan saja';
+    const bedroomsLabel = searchBedrooms > 0 ? `${searchBedrooms} Kamar` : 'Kamar tidur';
     const guestsLabel = searchGuests > 0 ? `${searchGuests} Tamu` : 'Tambahkan tamu';
+
+    const { destinations: pageDestinations } = usePage<{ destinations?: Array<{ id: number; name: string; city: string; image: string }> }>().props;
+    const destSuggestions = pageDestinations ?? [];
+    const filteredSuggestions = searchWhere.trim()
+        ? destSuggestions.filter(d => d.name.toLowerCase().includes(searchWhere.toLowerCase()) || d.city.toLowerCase().includes(searchWhere.toLowerCase()))
+        : destSuggestions.slice(0, 6);
 
     return (
         <header className={`${positionClass} z-50 bg-white border-b border-slate-100`}>
@@ -159,6 +157,11 @@ params.guests = String(searchGuests);
                                     <span className="text-sm text-slate-500 truncate">{dateLabel}</span>
                                 </div>
                                 <span className="w-px h-4 bg-slate-200 shrink-0" />
+                                {/* Kamar */}
+                                <div className="flex-1 flex items-center justify-center px-4 py-2.5 min-w-0">
+                                    <span className="text-sm text-slate-500 truncate">{bedroomsLabel}</span>
+                                </div>
+                                <span className="w-px h-4 bg-slate-200 shrink-0" />
                                 {/* Tamu */}
                                 <div className="flex-1 flex items-center justify-center px-4 py-2.5 min-w-0">
                                     <span className="text-sm text-slate-500 truncate">{guestsLabel}</span>
@@ -184,16 +187,41 @@ params.guests = String(searchGuests);
                                 <div
                                     className={`${segmentBase} flex-1 min-w-0 ${activeSegment === 'where' ? segmentActive : segmentHover}`}
                                     onClick={() => setActiveSegment('where')}
-                                >
+                                 >
                                     <span className="text-[10px] font-bold text-slate-900 uppercase tracking-wide mb-0.5">Ke mana</span>
                                     <input
                                         autoFocus={activeSegment === 'where'}
                                         type="text"
                                         value={searchWhere}
                                         onChange={e => setSearchWhere(e.target.value)}
+                                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); setActiveSegment('dates'); } }}
                                         placeholder="Cari destinasi"
                                         className="text-sm text-slate-700 outline-none bg-transparent w-full placeholder:text-slate-400 font-medium"
                                     />
+                                    {/* Location suggestions dropdown */}
+                                    {activeSegment === 'where' && filteredSuggestions.length > 0 && (
+                                        <div
+                                            className="absolute top-full left-0 mt-3 z-50 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden w-72"
+                                            onClick={e => e.stopPropagation()}
+                                        >
+                                            {filteredSuggestions.map(dest => (
+                                                <button
+                                                    key={dest.id}
+                                                    type="button"
+                                                    onClick={() => { setSearchWhere(dest.name); setActiveSegment('dates'); }}
+                                                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left"
+                                                >
+                                                    <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0">
+                                                        <img src={dest.image} alt={dest.name} className="w-full h-full object-cover" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-semibold text-slate-800">{dest.name}</p>
+                                                        <p className="text-xs text-slate-400">{dest.city}</p>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <span className="w-px bg-slate-200 self-stretch my-3" />
@@ -221,7 +249,7 @@ params.guests = String(searchGuests);
                                                     setDateRange(range);
 
                                                     if (range?.from && range?.to) {
-                                                        setActiveSegment('guests');
+                                                        setActiveSegment('bedrooms');
                                                     }
                                                 }}
                                                 numberOfMonths={typeof window !== 'undefined' && window.innerWidth < 768 ? 1 : 2}
@@ -247,6 +275,37 @@ params.guests = String(searchGuests);
                                                     </button>
                                                 </div>
                                             )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <span className="w-px bg-slate-200 self-stretch my-3" />
+
+                                {/* Kamar Tidur */}
+                                <div
+                                    className={`${segmentBase} flex-1 min-w-0 relative ${activeSegment === 'bedrooms' ? segmentActive : segmentHover}`}
+                                    onClick={() => setActiveSegment('bedrooms')}
+                                >
+                                    <span className="text-[10px] font-bold text-slate-900 uppercase tracking-wide mb-0.5">Kamar</span>
+                                    <span className="text-sm text-slate-700 font-medium whitespace-nowrap">{bedroomsLabel}</span>
+                                    {activeSegment === 'bedrooms' && (
+                                        <div
+                                            className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 w-56"
+                                            onClick={e => e.stopPropagation()}
+                                        >
+                                            <p className="text-xs font-semibold text-slate-500 mb-3">Jumlah kamar tidur</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {[0, 1, 2, 3, 4, 5, 6].map(n => (
+                                                    <button
+                                                        key={n}
+                                                        type="button"
+                                                        onClick={() => { setSearchBedrooms(n); setActiveSegment('guests'); }}
+                                                        className={`w-10 h-10 rounded-full text-sm font-semibold border transition-colors ${searchBedrooms === n ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-300 text-slate-700 hover:border-slate-900'}`}
+                                                    >
+                                                        {n === 0 ? 'Semua' : n}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -440,6 +499,23 @@ params.guests = String(searchGuests);
                                             Hapus tanggal
                                         </button>
                                     )}
+                                </div>
+
+                                {/* Bedrooms */}
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Kamar Tidur</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {[0, 1, 2, 3, 4, 5, 6].map(n => (
+                                            <button
+                                                key={n}
+                                                type="button"
+                                                onClick={() => setSearchBedrooms(n)}
+                                                className={`w-11 h-11 rounded-full text-sm font-semibold border transition-colors ${searchBedrooms === n ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-300 text-slate-700 hover:border-slate-900 bg-slate-50'}`}
+                                            >
+                                                {n === 0 ? 'Semua' : n}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 {/* Guests */}

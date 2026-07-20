@@ -143,10 +143,10 @@ export default function AdminAnalyticsPage() {
                     <button
                         onClick={handleExport}
                         disabled={exporting || loading}
-                        className="inline-flex items-center gap-2 bg-slate-800 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-slate-900 transition-colors disabled:opacity-60"
+                        className="inline-flex items-center gap-2 bg-slate-800 text-white text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl hover:bg-slate-900 transition-colors disabled:opacity-60"
                     >
                         <Download className="w-4 h-4" />
-                        {exporting ? 'Mengunduh...' : 'Export Excel'}
+                        <span className="hidden sm:inline">{exporting ? 'Mengunduh...' : 'Export Excel'}</span>
                     </button>
                 </div>
 

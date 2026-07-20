@@ -180,10 +180,10 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
                     <button
                         type="button"
                         onClick={openCreate}
-                        className="flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                        className="flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                     >
                         <Plus className="w-4 h-4" />
-                        Tambah Ulasan
+                        <span className="hidden sm:inline">Tambah Ulasan</span>
                     </button>
                 </div>
 

@@ -242,10 +242,10 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
                             <p className="text-sm text-slate-500">{paymentMethods.length} metode pembayaran</p>
                             <button
                                 onClick={openPmCreate}
-                                className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer"
+                                className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-3 sm:px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer"
                             >
                                 <Plus className="w-4 h-4" />
-                                Tambah Metode
+                                <span className="hidden sm:inline">Tambah Metode</span>
                             </button>
                         </div>
 

@@ -75,9 +75,9 @@ return;
                     </div>
                     <Link
                         href="/admin/villas/new"
-                        className="flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors"
+                        className="flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors"
                     >
-                        <Plus className="w-4 h-4" /> Tambah Villa
+                        <Plus className="w-4 h-4" /><span className="hidden sm:inline">Tambah Villa</span>
                     </Link>
                 </div>
 
@@ -176,6 +176,13 @@ return;
                                     <Link href={`/admin/villas/${villa.id}/edit`} className="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg">
                                         <Edit className="w-4 h-4" />
                                     </Link>
+                                    <button
+                                        onClick={() => handleDelete(villa.id, villa.name)}
+                                        disabled={deleting === villa.id}
+                                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </div>
                         ))}

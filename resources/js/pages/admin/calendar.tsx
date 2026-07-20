@@ -216,7 +216,7 @@ export default function AdminCalendarPage({ villas }: Props) {
                     <select
                         value={selectedId}
                         onChange={(e) => setSelectedId(e.target.value)}
-                        className="border border-slate-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-sm"
+                        className="border border-slate-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 w-full"
                     >
                         <option value="">-- Pilih Villa --</option>
                         {villas.map((v) => (

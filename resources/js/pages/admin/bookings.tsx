@@ -165,15 +165,15 @@ export default function AdminBookingsPage({ bookings, villas: _villas, filters, 
 
                 {/* Filters */}
                 <div className="flex flex-wrap gap-3">
-                    <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2">
-                        <Search className="w-4 h-4 text-slate-400" />
+                    <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 flex-1 min-w-0">
+                        <Search className="w-4 h-4 text-slate-400 shrink-0" />
                         <input
                             type="text"
                             placeholder="Cari nama, kode, email..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleFilter()}
-                            className="text-sm outline-none text-slate-700 w-52 placeholder:text-slate-400"
+                            className="text-sm outline-none text-slate-700 w-full placeholder:text-slate-400"
                         />
                     </div>
                     <select

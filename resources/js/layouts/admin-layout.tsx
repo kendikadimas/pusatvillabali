@@ -92,7 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
 
     return (
-        <div className="flex min-h-screen bg-gray-50">
+        <div className="flex h-screen overflow-hidden bg-gray-50">
             {/* Mobile overlay */}
             {mobileOpen && (
                 <div
@@ -105,7 +105,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <aside
                 className={`
                     fixed inset-y-0 left-0 z-50 flex flex-col bg-slate-900 text-white transition-transform duration-200
-                    lg:relative lg:translate-x-0 lg:z-auto
+                    lg:relative lg:translate-x-0 lg:z-auto lg:flex-shrink-0
                     ${sidebarOpen ? 'lg:w-64' : 'lg:w-16'}
                     w-64
                     ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
@@ -115,12 +115,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </aside>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col min-w-0">
+            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 {/* Top bar */}
-                <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+                <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 flex items-center justify-between flex-shrink-0">
                     <button
                         onClick={() => {
-                            // On mobile: toggle drawer; on desktop: toggle collapsed width
                             if (window.innerWidth < 1024) {
                                 setMobileOpen(!mobileOpen);
                             } else {
@@ -134,21 +133,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
+
+                    {/* Profile section */}
                     <div className="flex items-center gap-3">
-                        <div className="text-right">
-                            <div className="text-sm font-medium text-gray-700">{auth?.user?.name ?? 'Admin'}</div>
-                            <div className="text-xs text-slate-400 capitalize">{auth?.user?.role ?? 'admin'}</div>
+                        <div className="hidden sm:flex flex-col text-right">
+                            <span className="text-sm font-semibold text-slate-800 leading-tight">{auth?.user?.name ?? 'Admin'}</span>
+                            <span className="text-xs text-slate-400 capitalize leading-tight">{auth?.user?.role ?? 'admin'}</span>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                            {(auth?.user?.name ?? 'A').charAt(0).toUpperCase()}
                         </div>
                         <button
                             onClick={handleLogout}
-                            className="text-xs text-red-500 hover:text-red-700 font-medium"
+                            className="text-xs font-semibold text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-3 py-1.5 rounded-lg transition-colors"
                         >
                             Keluar
                         </button>
                     </div>
                 </header>
 
-                <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
+                <main className="flex-1 p-4 sm:p-6 overflow-y-auto">{children}</main>
             </div>
         </div>
     );

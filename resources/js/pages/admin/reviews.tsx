@@ -2,7 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { Star, Check, X, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Star, Check, X, Plus, Pencil, Trash2, Upload } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import type { Review, PaginatedData, Villa } from '@/types';
@@ -17,6 +17,7 @@ interface ReviewForm {
     villa_id: number | '';
     guest_name: string;
     guest_subtitle: string;
+    guest_avatar: string;
     rating: number;
     comment: string;
     is_approved: boolean;
@@ -26,6 +27,7 @@ const emptyForm: ReviewForm = {
     villa_id: '',
     guest_name: '',
     guest_subtitle: '',
+    guest_avatar: '',
     rating: 5,
     comment: '',
     is_approved: true,
@@ -61,6 +63,24 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
     const [form, setForm] = useState<ReviewForm>(emptyForm);
     const [saving, setSaving] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
+    const handleAvatarUpload = async (file: File) => {
+        setUploadingAvatar(true);
+        try {
+            const fd = new FormData();
+            fd.append('avatar', file);
+            const res = await axios.post('/api/v1/admin/reviews/upload-avatar', fd, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            setForm((f) => ({ ...f, guest_avatar: res.data.avatar_url }));
+            toast.success('Avatar berhasil diunggah');
+        } catch {
+            toast.error('Gagal mengunggah avatar');
+        } finally {
+            setUploadingAvatar(false);
+        }
+    };
 
     const openCreate = () => {
         setEditingReview(null);
@@ -75,6 +95,7 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
             villa_id: review.villa_id,
             guest_name: review.guest_name,
             guest_subtitle: review.guest_subtitle ?? '',
+            guest_avatar: review.guest_avatar ?? '',
             rating: review.rating,
             comment: review.comment,
             is_approved: review.is_approved,
@@ -99,6 +120,7 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
                 villa_id: form.villa_id,
                 guest_name: form.guest_name,
                 guest_subtitle: form.guest_subtitle || null,
+                guest_avatar: form.guest_avatar || null,
                 rating: form.rating,
                 comment: form.comment,
                 is_approved: form.is_approved,
@@ -275,6 +297,37 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
                         </div>
 
                         <form onSubmit={handleSave} className="p-5 space-y-4">
+                            {/* Avatar upload */}
+                            <div>
+                                <label className="block text-xs font-medium text-slate-600 mb-1">Avatar Tamu</label>
+                                <div className="flex items-center gap-3">
+                                    {form.guest_avatar ? (
+                                        <img src={form.guest_avatar} alt="Avatar" className="w-12 h-12 rounded-full object-cover border border-slate-200" />
+                                    ) : (
+                                        <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+                                            <Upload className="w-5 h-5 text-slate-400" />
+                                        </div>
+                                    )}
+                                    <div className="flex flex-col gap-1">
+                                        <label className="cursor-pointer inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700">
+                                            {uploadingAvatar ? 'Mengunggah...' : form.guest_avatar ? 'Ganti foto' : 'Pilih foto'}
+                                            <input
+                                                type="file"
+                                                accept="image/jpeg,image/png,image/webp"
+                                                className="hidden"
+                                                disabled={uploadingAvatar}
+                                                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAvatarUpload(f); }}
+                                            />
+                                        </label>
+                                        {form.guest_avatar && (
+                                            <button type="button" onClick={() => setForm((f) => ({ ...f, guest_avatar: '' }))} className="text-xs text-red-500 hover:text-red-700 text-left cursor-pointer">
+                                                Hapus foto
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
                             {/* Villa */}
                             <div>
                                 <label className="block text-xs font-medium text-slate-600 mb-1">Villa *</label>

@@ -9,6 +9,20 @@ import AuthLayout from '@/layouts/auth-layout';
 import PublicLayout from '@/layouts/public-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 
+// Seed tokens from Inertia's initial data-page payload before any component
+// mounts, so axios calls in useEffect on first render always have a valid token.
+try {
+    const pageEl = document.getElementById('app');
+    const pageData = pageEl?.dataset?.page ? JSON.parse(pageEl.dataset.page) : null;
+    const props = pageData?.props;
+    if (props) {
+        if (props.admin_token) localStorage.setItem('admin_token', props.admin_token);
+        if (props.sanctum_token) localStorage.setItem('sanctum_token', props.sanctum_token);
+    }
+} catch {
+    // Parsing failed or localStorage unavailable — hooks will sync on mount
+}
+
 // Base axios config
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['Accept'] = 'application/json';

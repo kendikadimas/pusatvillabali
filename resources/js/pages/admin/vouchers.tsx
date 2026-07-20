@@ -93,8 +93,8 @@ export default function VouchersPage() {
             max_discount: v.max_discount ? String(v.max_discount) : '',
             usage_limit: v.usage_limit ? String(v.usage_limit) : '',
             is_active: v.is_active,
-            valid_from: v.valid_from ?? '',
-            valid_until: v.valid_until ?? '',
+            valid_from: v.valid_from ? v.valid_from.slice(0, 10) : '',
+            valid_until: v.valid_until ? v.valid_until.slice(0, 10) : '',
         });
         setErrors({});
         setShowModal(true);

@@ -1,4 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import {
@@ -59,6 +60,22 @@ export default function ProfilePage({
     const [processing, setProcessing] = useState(false);
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [userHasPassword, setUserHasPassword] = useState(hasPassword);
+    const [resetLinkSent, setResetLinkSent] = useState(false);
+    const [sendingReset, setSendingReset] = useState(false);
+
+    const handleSendResetLink = async () => {
+        if (!auth?.user?.email || sendingReset) return;
+        setSendingReset(true);
+        try {
+            await axios.post('/api/v1/forgot-password', { email: auth.user.email });
+            setResetLinkSent(true);
+            toast.success('Link reset password sudah dikirim ke email kamu.');
+        } catch {
+            toast.error('Gagal mengirim link reset. Coba lagi.');
+        } finally {
+            setSendingReset(false);
+        }
+    };
 
     const filtered = userBookings.filter((b) => {
         if (tab === 'active') {
@@ -212,12 +229,14 @@ export default function ProfilePage({
                                 <CheckCircle className="w-3.5 h-3.5" />
                                 Password sudah diatur
                             </span>
-                            <Link
-                                href="/forgot-password"
-                                className="text-xs font-semibold text-slate-600 underline underline-offset-2 hover:text-slate-900"
+                            <button
+                                type="button"
+                                onClick={handleSendResetLink}
+                                disabled={sendingReset || resetLinkSent}
+                                className="text-xs font-semibold text-slate-600 underline underline-offset-2 hover:text-slate-900 disabled:opacity-50"
                             >
-                                Lupa password?
-                            </Link>
+                                {resetLinkSent ? 'Link terkirim' : sendingReset ? 'Mengirim...' : 'Lupa password?'}
+                            </button>
                         </div>
                     )}
 
@@ -252,9 +271,14 @@ export default function ProfilePage({
                                     )}
                                     <p className="text-xs text-slate-400 mt-1.5">
                                         Lupa password?{' '}
-                                        <Link href="/forgot-password" className="font-semibold text-slate-600 underline underline-offset-2 hover:text-slate-900">
-                                            Reset lewat email
-                                        </Link>
+                                        <button
+                                            type="button"
+                                            onClick={handleSendResetLink}
+                                            disabled={sendingReset || resetLinkSent}
+                                            className="font-semibold text-slate-600 underline underline-offset-2 hover:text-slate-900 disabled:opacity-50"
+                                        >
+                                            {resetLinkSent ? 'Link terkirim' : sendingReset ? 'Mengirim...' : 'Reset lewat email'}
+                                        </button>
                                     </p>
                                 </div>
                             )}

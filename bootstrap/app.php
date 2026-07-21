@@ -3,6 +3,7 @@
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PermissionMiddleware;
+use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RequirePasswordCustom;
 use App\Http\Middleware\SuperAdminMiddleware;
 use App\Http\Middleware\WebAdminMiddleware;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'super_admin' => SuperAdminMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'password.confirm' => RequirePasswordCustom::class,
+            'guest' => RedirectIfAuthenticated::class,
         ]);
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);

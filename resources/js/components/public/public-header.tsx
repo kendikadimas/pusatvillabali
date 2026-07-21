@@ -1,13 +1,14 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { format, isSameDay } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { ChevronLeft, X, Search, User } from 'lucide-react';
+import { ChevronLeft, X, Search, User, LogOut } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import type { DateRange } from 'react-day-picker';
 import type { AppSettings } from '@/types';
 import { normaliseStorageUrl } from '@/lib/villaUtils';
 import AppLogoIcon from '@/components/app-logo-icon';
+import { logout } from '@/routes';
 import 'react-day-picker/style.css';
 
 interface PublicHeaderProps {
@@ -594,26 +595,46 @@ export default function PublicHeader({
                             )}
                         </div>
                         {auth?.user ? (
-                            <Link
-                                href="/profile"
-                                className="flex items-center gap-2 p-2 rounded-full hover:bg-slate-100 transition-colors"
-                                title="Profil Saya"
-                            >
-                                {auth.user.avatar ? (
-                                    <img
-                                        src={auth.user.avatar}
-                                        alt={auth.user.name}
-                                        className="w-8 h-8 rounded-full object-cover border-2 border-slate-200"
-                                    />
-                                ) : (
-                                    <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">
-                                        <User className="w-4 h-4 text-slate-600" />
-                                    </div>
-                                )}
-                                <span className="text-sm font-medium text-slate-700 hidden lg:block">
-                                    {auth.user.name}
-                                </span>
-                            </Link>
+                            <div className="relative group">
+                                <button
+                                    className="flex items-center gap-2 p-2 rounded-full hover:bg-slate-100 transition-colors"
+                                    title="Profil Saya"
+                                >
+                                    {auth.user.avatar ? (
+                                        <img
+                                            src={auth.user.avatar}
+                                            alt={auth.user.name}
+                                            className="w-8 h-8 rounded-full object-cover border-2 border-slate-200"
+                                        />
+                                    ) : (
+                                        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">
+                                            <User className="w-4 h-4 text-slate-600" />
+                                        </div>
+                                    )}
+                                    <span className="text-sm font-medium text-slate-700 hidden lg:block">
+                                        {auth.user.name}
+                                    </span>
+                                </button>
+                                {/* Dropdown */}
+                                <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-slate-100 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                                    <Link
+                                        href="/profile"
+                                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                                    >
+                                        <User className="w-4 h-4" />
+                                        Profil Saya
+                                    </Link>
+                                    <Link
+                                        href={logout()}
+                                        method="post"
+                                        as="button"
+                                        className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                    >
+                                        <LogOut className="w-4 h-4" />
+                                        Keluar
+                                    </Link>
+                                </div>
+                            </div>
                         ) : (
                             <>
                                 <Link
@@ -898,19 +919,31 @@ export default function PublicHeader({
                         </nav>
                         <div className="px-4 py-5 border-t border-slate-100 flex flex-col gap-2">
                             {auth?.user ? (
-                                <Link href="/profile" onClick={() => setMobileOpen(false)}
-                                    className="flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold">
-                                    {auth.user.avatar ? (
-                                        <img
-                                            src={auth.user.avatar}
-                                            alt={auth.user.name}
-                                            className="w-6 h-6 rounded-full object-cover"
-                                        />
-                                    ) : (
-                                        <User className="w-4 h-4" />
-                                    )}
-                                    {auth.user.name}
-                                </Link>
+                                <>
+                                    <Link href="/profile" onClick={() => setMobileOpen(false)}
+                                        className="flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold">
+                                        {auth.user.avatar ? (
+                                            <img
+                                                src={auth.user.avatar}
+                                                alt={auth.user.name}
+                                                className="w-6 h-6 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <User className="w-4 h-4" />
+                                        )}
+                                        {auth.user.name}
+                                    </Link>
+                                    <Link
+                                        href={logout()}
+                                        method="post"
+                                        as="button"
+                                        onClick={() => setMobileOpen(false)}
+                                        className="flex items-center justify-center gap-2 py-3 rounded-xl border border-red-200 text-red-600 text-sm font-semibold hover:bg-red-50 transition-colors w-full"
+                                    >
+                                        <LogOut className="w-4 h-4" />
+                                        Keluar
+                                    </Link>
+                                </>
                             ) : (
                                 <>
                                     <Link href="/login" onClick={() => setMobileOpen(false)}

@@ -1,11 +1,12 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import {
     Calendar, MapPin, Users, CheckCircle, XCircle, AlertCircle,
-    Download, CreditCard,
+    Download, CreditCard, KeyRound, Eye, EyeOff,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
 import { generateInvoicePDF } from '@/lib/generateInvoicePDF';
 import { getMainPhoto } from '@/lib/villaUtils';
@@ -14,6 +15,8 @@ import type { Booking, AppSettings } from '@/types';
 interface Props {
     userBookings: Booking[];
     settings: AppSettings;
+    hasPassword?: boolean;
+    isGoogleAccount?: boolean;
 }
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
@@ -39,18 +42,32 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
     },
 };
 
-export default function ProfilePage({ userBookings, settings }: Props) {
-    const { auth } = usePage<{ auth: { user: { name: string; email: string } } }>().props;
+export default function ProfilePage({
+    userBookings,
+    settings,
+    hasPassword = true,
+    isGoogleAccount = false,
+}: Props) {
+    const { auth } = usePage<{ auth: { user: { name: string; email: string; avatar?: string | null } } }>().props;
     const [tab, setTab] = useState<'all' | 'active' | 'past'>('all');
+    const [passwordFormOpen, setPasswordFormOpen] = useState(!hasPassword);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [showCurrent, setShowCurrent] = useState(false);
+    const [showNew, setShowNew] = useState(false);
+    const [processing, setProcessing] = useState(false);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+    const [userHasPassword, setUserHasPassword] = useState(hasPassword);
 
     const filtered = userBookings.filter((b) => {
         if (tab === 'active') {
-return ['pending', 'confirmed'].includes(b.status);
-}
+            return ['pending', 'confirmed'].includes(b.status);
+        }
 
         if (tab === 'past') {
-return ['completed', 'cancelled'].includes(b.status);
-}
+            return ['completed', 'cancelled'].includes(b.status);
+        }
 
         return true;
     });
@@ -63,11 +80,49 @@ return ['completed', 'cancelled'].includes(b.status);
         });
     };
 
+    const handlePasswordSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setProcessing(true);
+        setFormErrors({});
+
+        const data: Record<string, string> = {
+            password,
+            password_confirmation: passwordConfirmation,
+        };
+
+        if (userHasPassword) {
+            data.current_password = currentPassword;
+        }
+
+        router.put('/settings/password', data, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success(
+                    userHasPassword
+                        ? 'Password berhasil diperbarui.'
+                        : 'Password berhasil dibuat. Anda bisa login dengan email & password.',
+                );
+                setCurrentPassword('');
+                setPassword('');
+                setPasswordConfirmation('');
+                setUserHasPassword(true);
+                setPasswordFormOpen(false);
+            },
+            onError: (errors) => {
+                setFormErrors(errors as Record<string, string>);
+            },
+            onFinish: () => setProcessing(false),
+        });
+    };
+
     const tabs: { key: 'all' | 'active' | 'past'; label: string }[] = [
         { key: 'all', label: `Semua (${userBookings.length})` },
         { key: 'active', label: `Aktif (${userBookings.filter(b => ['pending', 'confirmed'].includes(b.status)).length})` },
         { key: 'past', label: `Selesai (${userBookings.filter(b => ['completed', 'cancelled'].includes(b.status)).length})` },
     ];
+
+    const inputClass =
+        'w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] transition pr-10';
 
     return (
         <>
@@ -75,18 +130,28 @@ return ['completed', 'cancelled'].includes(b.status);
 
             <div className="max-w-4xl mx-auto px-4 sm:px-8 py-10">
                 {/* User info */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-8">
+                <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-6">
                     <div className="flex items-center gap-5">
-                        <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-white text-xl font-bold">
-                                {auth?.user?.name?.[0]?.toUpperCase() ?? 'U'}
-                            </span>
-                        </div>
+                        {auth?.user?.avatar ? (
+                            <img
+                                src={auth.user.avatar}
+                                alt={auth.user.name}
+                                className="w-16 h-16 rounded-full object-cover border-2 border-slate-100 flex-shrink-0"
+                            />
+                        ) : (
+                            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-white text-xl font-bold">
+                                    {auth?.user?.name?.[0]?.toUpperCase() ?? 'U'}
+                                </span>
+                            </div>
+                        )}
                         <div className="flex-1 min-w-0">
                             <h1 className="text-xl font-black text-slate-800 truncate font-heading">{auth?.user?.name}</h1>
                             <p className="text-sm text-slate-500 truncate">{auth?.user?.email}</p>
+                            {isGoogleAccount && (
+                                <p className="text-xs text-slate-400 mt-1">Login dengan Google</p>
+                            )}
                         </div>
-
                     </div>
 
                     {/* Summary stats */}
@@ -108,6 +173,171 @@ return ['completed', 'cancelled'].includes(b.status);
                             <p className="text-xs text-slate-500">Selesai</p>
                         </div>
                     </div>
+                </div>
+
+                {/* Password / security */}
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 mb-8">
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                        <div className="flex items-start gap-3 min-w-0">
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                                <KeyRound className="w-5 h-5 text-slate-600" />
+                            </div>
+                            <div className="min-w-0">
+                                <h2 className="text-base font-bold text-slate-800">
+                                    {userHasPassword ? 'Password & Keamanan' : 'Buat Password'}
+                                </h2>
+                                <p className="text-sm text-slate-500 mt-0.5">
+                                    {userHasPassword
+                                        ? 'Ubah password login email, atau reset lewat email jika lupa.'
+                                        : isGoogleAccount
+                                            ? 'Akun Google Anda belum punya password. Buat password agar bisa login tanpa Google.'
+                                            : 'Buat password untuk login dengan email.'}
+                                </p>
+                            </div>
+                        </div>
+                        {userHasPassword && !passwordFormOpen && (
+                            <button
+                                type="button"
+                                onClick={() => setPasswordFormOpen(true)}
+                                className="shrink-0 text-sm font-semibold text-[#00A86B] hover:text-[#008f5a] px-3 py-1.5 rounded-lg hover:bg-emerald-50 transition-colors"
+                            >
+                                Ubah
+                            </button>
+                        )}
+                    </div>
+
+                    {userHasPassword && !passwordFormOpen && (
+                        <div className="flex flex-wrap items-center gap-3 pt-2">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+                                <CheckCircle className="w-3.5 h-3.5" />
+                                Password sudah diatur
+                            </span>
+                            <Link
+                                href="/forgot-password"
+                                className="text-xs font-semibold text-slate-600 underline underline-offset-2 hover:text-slate-900"
+                            >
+                                Lupa password?
+                            </Link>
+                        </div>
+                    )}
+
+                    {passwordFormOpen && (
+                        <form onSubmit={handlePasswordSubmit} className="mt-4 space-y-4 border-t border-slate-100 pt-4">
+                            {userHasPassword && (
+                                <div>
+                                    <label htmlFor="current_password" className="block text-xs font-semibold text-slate-600 mb-1.5">
+                                        Password saat ini
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="current_password"
+                                            type={showCurrent ? 'text' : 'password'}
+                                            value={currentPassword}
+                                            onChange={(e) => setCurrentPassword(e.target.value)}
+                                            autoComplete="current-password"
+                                            className={inputClass}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowCurrent((v) => !v)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                            aria-label={showCurrent ? 'Sembunyikan' : 'Tampilkan'}
+                                        >
+                                            {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
+                                    </div>
+                                    {formErrors.current_password && (
+                                        <p className="text-xs text-red-600 mt-1">{formErrors.current_password}</p>
+                                    )}
+                                    <p className="text-xs text-slate-400 mt-1.5">
+                                        Lupa password?{' '}
+                                        <Link href="/forgot-password" className="font-semibold text-slate-600 underline underline-offset-2 hover:text-slate-900">
+                                            Reset lewat email
+                                        </Link>
+                                    </p>
+                                </div>
+                            )}
+
+                            <div>
+                                <label htmlFor="password" className="block text-xs font-semibold text-slate-600 mb-1.5">
+                                    {userHasPassword ? 'Password baru' : 'Password baru'}
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="password"
+                                        type={showNew ? 'text' : 'password'}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        autoComplete="new-password"
+                                        className={inputClass}
+                                        required
+                                        minLength={8}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowNew((v) => !v)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                        aria-label={showNew ? 'Sembunyikan' : 'Tampilkan'}
+                                    >
+                                        {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
+                                </div>
+                                {formErrors.password && (
+                                    <p className="text-xs text-red-600 mt-1">{formErrors.password}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label htmlFor="password_confirmation" className="block text-xs font-semibold text-slate-600 mb-1.5">
+                                    Konfirmasi password
+                                </label>
+                                <input
+                                    id="password_confirmation"
+                                    type={showNew ? 'text' : 'password'}
+                                    value={passwordConfirmation}
+                                    onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                    autoComplete="new-password"
+                                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] transition"
+                                    required
+                                    minLength={8}
+                                />
+                                {formErrors.password_confirmation && (
+                                    <p className="text-xs text-red-600 mt-1">{formErrors.password_confirmation}</p>
+                                )}
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2 pt-1">
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-sm font-bold text-white disabled:opacity-50 transition-transform active:scale-[0.98]"
+                                    style={{ backgroundColor: '#00A86B' }}
+                                >
+                                    {processing
+                                        ? 'Menyimpan...'
+                                        : userHasPassword
+                                            ? 'Simpan password'
+                                            : 'Buat password'}
+                                </button>
+                                {userHasPassword && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setPasswordFormOpen(false);
+                                            setFormErrors({});
+                                            setCurrentPassword('');
+                                            setPassword('');
+                                            setPasswordConfirmation('');
+                                        }}
+                                        className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                                    >
+                                        Batal
+                                    </button>
+                                )}
+                            </div>
+                        </form>
+                    )}
                 </div>
 
                 {/* Bookings */}

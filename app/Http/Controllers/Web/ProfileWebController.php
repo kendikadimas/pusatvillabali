@@ -33,6 +33,8 @@ class ProfileWebController extends Controller
         return Inertia::render('public/profile', [
             'userBookings' => $bookings,
             'settings' => $settings,
+            'hasPassword' => $user->hasUserPassword(),
+            'isGoogleAccount' => $user->isGoogleAccount(),
         ]);
     }
 

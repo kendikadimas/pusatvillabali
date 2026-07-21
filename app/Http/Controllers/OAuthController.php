@@ -38,7 +38,9 @@ class OAuthController extends Controller
                 'email' => $googleUser->getEmail(),
                 'google_id' => $googleUser->getId(),
                 'avatar' => $googleUser->getAvatar(),
+                // Random hash only — user never chose this password
                 'password' => Hash::make(Str::password(32)),
+                'password_set_by_user' => false,
                 'role' => 'user',
                 'email_verified_at' => now(), // Google sudah verifikasi email
             ]);

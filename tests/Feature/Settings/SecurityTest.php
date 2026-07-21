@@ -71,7 +71,7 @@ test('password can be updated', function () {
     $response
         ->assertOk()
         ->assertJsonFragment([
-            'message' => __('Password updated.'),
+            'message' => 'Password berhasil diperbarui.',
         ]);
 
     expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue();

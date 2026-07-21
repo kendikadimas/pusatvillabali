@@ -159,6 +159,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'password_set_by_user' => true,
             'role' => 'user',
         ]);
 
@@ -284,6 +285,7 @@ class AuthController extends Controller
             function ($user, $password) {
                 $user->forceFill([
                     'password' => Hash::make($password),
+                    'password_set_by_user' => true,
                 ])->save();
             }
         );

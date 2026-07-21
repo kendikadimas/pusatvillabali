@@ -17,9 +17,28 @@ class PasswordUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->user();
+        $needsCurrent = $user?->hasUserPassword() ?? true;
+
         return [
-            'current_password' => $this->currentPasswordRules(),
+            // Google / OAuth users never chose a password — skip current_password
+            'current_password' => $needsCurrent
+                ? $this->currentPasswordRules()
+                : ['nullable', 'string'],
             'password' => $this->passwordRules(),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'current_password.required' => 'Password saat ini wajib diisi.',
+            'current_password.current_password' => 'Password saat ini tidak cocok.',
+            'password.required' => 'Password baru wajib diisi.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ];
     }
 }

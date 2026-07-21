@@ -522,7 +522,7 @@ export default function PublicHeader({
                     <div className="hidden md:flex items-center gap-2 shrink-0">
                         {auth?.user ? (
                             <Link
-                                href="/settings/profile"
+                                href="/profile"
                                 className="flex items-center gap-2 p-2 rounded-full hover:bg-slate-100 transition-colors"
                                 title="Profil Saya"
                             >
@@ -825,7 +825,7 @@ export default function PublicHeader({
                         </nav>
                         <div className="px-4 py-5 border-t border-slate-100 flex flex-col gap-2">
                             {auth?.user ? (
-                                <Link href="/settings/profile" onClick={() => setMobileOpen(false)}
+                                <Link href="/profile" onClick={() => setMobileOpen(false)}
                                     className="flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold">
                                     {auth.user.avatar ? (
                                         <img

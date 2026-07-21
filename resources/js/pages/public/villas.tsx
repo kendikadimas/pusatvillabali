@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Home, Search, SlidersHorizontal, X } from 'lucide-react';
+import { Home, SlidersHorizontal, X } from 'lucide-react';
 import React, { useState } from 'react';
 import VillaCard from '@/components/public/villa-card';
 import type { Villa, AppSettings, PaginatedData } from '@/types';
@@ -104,19 +104,6 @@ params.max_price = maxPrice;
             {/* Top bar */}
             <div className="sticky top-16 z-40 bg-white border-b border-slate-200 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex flex-wrap items-center gap-3">
-                    {/* Search input */}
-                    <div className="flex items-center gap-2 flex-1 bg-slate-100 rounded-lg px-3 py-2 max-w-sm">
-                        <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                        <input
-                            type="text"
-                            placeholder="Cari lokasi..."
-                            value={locationInput}
-                            onChange={(e) => setLocationInput(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
-                            className="flex-1 text-sm outline-none bg-transparent text-slate-700 placeholder:text-slate-400"
-                        />
-                    </div>
-
                     {/* Sort */}
                     <select
                         value={`${sortBy}-${sortOrder}`}

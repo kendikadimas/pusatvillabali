@@ -246,7 +246,7 @@ export default function PublicHeader({
                         )}
                         <Link href="/" className="flex items-center gap-2 group">
                             <AppLogoIcon className="w-7 h-7" />
-                            <span className="font-black italic text-slate-900 text-[15px] leading-tight hidden sm:block">
+                            <span className="font-heading font-bold text-slate-900 text-[16px] leading-tight hidden sm:block">
                                 {appName}
                             </span>
                         </Link>

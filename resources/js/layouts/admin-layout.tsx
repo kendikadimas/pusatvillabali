@@ -148,11 +148,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 />
             )}
 
-            {/* Sidebar — drawer on mobile, static on desktop */}
+            {/* Sidebar — drawer on mobile, sticky on desktop */}
             <aside
                 className={`
-                    fixed inset-y-0 left-0 z-50 flex flex-col bg-slate-900 text-white transition-transform duration-200
-                    lg:relative lg:translate-x-0 lg:z-auto lg:flex-shrink-0
+                    fixed inset-y-0 left-0 z-50 flex flex-col bg-slate-900 text-white transition-all duration-200
+                    lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:z-auto lg:flex-shrink-0
                     ${sidebarOpen ? 'lg:w-64' : 'lg:w-16'}
                     w-64
                     ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}

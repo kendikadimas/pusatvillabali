@@ -15,6 +15,7 @@ class RedirectIfAuthenticated
     protected array $except = [
         'forgot-password',
         'reset-password',
+        'reset-password/*',
     ];
 
     /**

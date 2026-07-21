@@ -2,7 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { CheckCircle, Search, Upload, Copy, Check } from 'lucide-react';
+import { CheckCircle, Search, Upload, Copy, Check, Download, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
@@ -21,6 +21,7 @@ export default function BookingPaymentPage({ booking, paymentMethods, settings, 
     const [uploading, setUploading] = useState(false);
     const [uploaded, setUploaded] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
     const copyAccountNumber = () => {
         if (!pm?.account_number) return;
@@ -79,6 +80,7 @@ return;
             });
             toast.success('Bukti pembayaran berhasil dikirim!');
             setUploaded(true);
+            setShowInvoiceModal(true);
         } catch (err: any) {
             toast.error(err.response?.data?.message ?? 'Gagal mengirim bukti pembayaran.');
         } finally {
@@ -213,6 +215,47 @@ return;
                     )}
                 </div>
             </div>
+
+            {/* Invoice Modal */}
+            {showInvoiceModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowInvoiceModal(false)} />
+                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
+                        <button
+                            onClick={() => setShowInvoiceModal(false)}
+                            className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+                        >
+                            <X className="w-4 h-4 text-slate-500" />
+                        </button>
+
+                        <div className="flex items-center justify-center w-14 h-14 bg-green-100 rounded-full mx-auto mb-4">
+                            <CheckCircle className="w-7 h-7 text-green-600" />
+                        </div>
+
+                        <h3 className="text-lg font-bold text-slate-800 mb-1">Bukti Pembayaran Terkirim</h3>
+                        <p className="text-sm text-slate-500 mb-6">
+                            Tim kami akan memverifikasi dalam 1×24 jam. Unduh invoice sebagai bukti pemesanan Anda.
+                        </p>
+
+                        <a
+                            href={`/booking/${booking.booking_code}/invoice`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-xl transition-colors text-sm mb-3"
+                        >
+                            <Download className="w-4 h-4" />
+                            Unduh Invoice
+                        </a>
+
+                        <button
+                            onClick={() => setShowInvoiceModal(false)}
+                            className="w-full text-sm text-slate-500 hover:text-slate-700 py-2 transition-colors"
+                        >
+                            Lewati
+                        </button>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\Web\BookingWebController;
 use App\Http\Controllers\Web\HomeController;
+use App\Http\Controllers\Web\InvoiceController;
 use App\Http\Controllers\Web\ProfileWebController;
 use App\Http\Controllers\Web\VillaWebController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,7 @@ Route::get('/booking/payment', [BookingWebController::class, 'payment'])->name('
 Route::get('/booking/status', [BookingWebController::class, 'status'])->name('booking.status');
 Route::get('/booking/success', [BookingWebController::class, 'success'])->name('booking.success');
 Route::get('/booking/failed', [BookingWebController::class, 'failed'])->name('booking.failed');
+Route::get('/booking/{code}/invoice', [InvoiceController::class, 'download'])->name('booking.invoice');
 
 // Review (via token, public access)
 Route::get('/review', [BookingWebController::class, 'review'])->name('booking.review');

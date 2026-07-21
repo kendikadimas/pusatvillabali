@@ -81,7 +81,8 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::get('/bookings/{code}/payment-proof', [BookingController::class, 'showPaymentProof']);
 
         // User Settings (Profile, Security, Password)
-        Route::get('/settings/profile', [ProfileController::class, 'edit']);
+        // Profile edit page disabled — public profile is /profile
+        // Route::get('/settings/profile', [ProfileController::class, 'edit']);
         Route::patch('/settings/profile', [ProfileController::class, 'update']);
         Route::delete('/settings/profile', [ProfileController::class, 'destroy']);
         Route::get('/settings/security', [SecurityController::class, 'edit']);

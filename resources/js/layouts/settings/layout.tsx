@@ -1,13 +1,11 @@
 import { Link } from '@inertiajs/react';
-import { KeyRound, Palette, User } from 'lucide-react';
+import { KeyRound, Palette } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
-import { edit } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
 
 const navItems = [
-    { title: 'Profil', href: edit(), icon: User },
     { title: 'Keamanan', href: editSecurity(), icon: KeyRound },
     { title: 'Tampilan', href: '/settings/appearance', icon: Palette },
 ];

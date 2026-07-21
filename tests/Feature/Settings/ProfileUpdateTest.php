@@ -2,17 +2,14 @@
 
 use App\Models\User;
 
-test('profile page is displayed', function () {
+test('settings profile page redirects to public profile', function () {
     $user = User::factory()->create();
 
     $response = $this
         ->actingAs($user)
         ->get(route('profile.edit'));
 
-    $response->assertOk()
-        ->assertJsonStructure([
-            'user', 'mustVerifyEmail', 'status',
-        ]);
+    $response->assertRedirect('/profile');
 });
 
 test('profile information can be updated', function () {
@@ -81,14 +78,12 @@ test('correct password must be provided to delete account', function () {
 
     $response = $this
         ->actingAs($user)
-        ->from(route('profile.edit'))
+        ->from('/profile')
         ->delete(route('profile.destroy'), [
             'password' => 'wrong-password',
         ]);
 
-    $response
-        ->assertSessionHasErrors('password')
-        ->assertRedirect(route('profile.edit'));
+    $response->assertSessionHasErrors('password');
 
     expect($user->fresh())->not->toBeNull();
 });

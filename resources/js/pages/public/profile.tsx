@@ -3,7 +3,7 @@ import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
 import {
     Calendar, MapPin, Users, CheckCircle, XCircle, AlertCircle,
-    Download, CreditCard, Settings,
+    Download, CreditCard,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { formatPrice } from '@/lib/format';
@@ -86,14 +86,7 @@ return ['completed', 'cancelled'].includes(b.status);
                             <h1 className="text-xl font-black text-slate-800 truncate font-heading">{auth?.user?.name}</h1>
                             <p className="text-sm text-slate-500 truncate">{auth?.user?.email}</p>
                         </div>
-                        <div className="flex gap-2 flex-shrink-0">
-                            <Link
-                                href="/settings/profile"
-                                className="flex items-center gap-1.5 text-sm text-slate-600 border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors"
-                            >
-                                <Settings className="w-3.5 h-3.5" /> Pengaturan
-                            </Link>
-                        </div>
+
                     </div>
 
                     {/* Summary stats */}

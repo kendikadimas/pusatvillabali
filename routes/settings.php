@@ -6,9 +6,11 @@ use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', '/settings/profile');
+    // Public profile (booking history) lives at /profile — do not expose settings/profile UI
+    Route::redirect('settings', '/profile');
+    Route::get('settings/profile', fn () => redirect('/profile'))->name('profile.edit');
 
-    Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Keep JSON update endpoint for API clients (no public settings page)
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 

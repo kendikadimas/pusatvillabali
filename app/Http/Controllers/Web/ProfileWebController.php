@@ -17,7 +17,13 @@ class ProfileWebController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $bookings = Booking::where('user_id', $user->id)
+        // Match by user_id OR guest_email so bookings made while auth token
+        // failed to attach (or guest checkout with same email) still appear.
+        $bookings = Booking::query()
+            ->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhereRaw('LOWER(guest_email) = ?', [strtolower($user->email)]);
+            })
             ->with(['villa', 'payment'])
             ->latest()
             ->get();

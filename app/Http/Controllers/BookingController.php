@@ -186,11 +186,16 @@ class BookingController extends Controller
 
                 $notes = $request->notes;
 
+                // Resolve authenticated user from Sanctum token and/or session (stateful SPA)
+                $authUser = $request->user()
+                    ?? auth('sanctum')->user()
+                    ?? auth('web')->user();
+
                 // 5. Save Booking
                 $booking = Booking::create([
                     'booking_code' => $bookingCode,
                     'villa_id' => $villa->id,
-                    'user_id' => $request->user()?->id,
+                    'user_id' => $authUser?->id,
                     'payment_method_id' => $request->payment_method_id,
                     'guest_name' => $request->guest_name,
                     'guest_email' => $request->guest_email,
@@ -456,11 +461,16 @@ class BookingController extends Controller
 
     /**
      * Fetch list of bookings for the authenticated user.
+     * Includes bookings linked by user_id and guest bookings made with the same email.
      */
     public function userBookings(Request $request): JsonResponse
     {
         $user = $request->user();
-        $bookings = Booking::where('user_id', $user->id)
+        $bookings = Booking::query()
+            ->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhereRaw('LOWER(guest_email) = ?', [strtolower($user->email)]);
+            })
             ->with(['villa', 'payment'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);

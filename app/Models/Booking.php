@@ -33,6 +33,8 @@ class Booking extends Model
         'utm_source',
         'utm_medium',
         'utm_campaign',
+        'voucher_id',
+        'discount_amount',
         'cancel_reason',
         'cancelled_at',
         'ktp_image',
@@ -47,6 +49,7 @@ class Booking extends Model
         'base_price' => 'decimal:2',
         'tax_amount' => 'integer',
         'admin_fee' => 'integer',
+        'discount_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'cancelled_at' => 'datetime',
     ];

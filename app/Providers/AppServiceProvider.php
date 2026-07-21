@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Custom URL for Reset Password notification
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
-            return config('app.frontend_url').'/reset-password?token='.$token.'&email='.urlencode($notifiable->getEmailForPasswordReset());
+            return config('app.frontend_url').'/reset-password/'.$token.'?email='.urlencode($notifiable->getEmailForPasswordReset());
         });
 
         // Clear Sanctum tokens on Fortify / session logout

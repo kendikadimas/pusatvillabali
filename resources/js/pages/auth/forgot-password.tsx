@@ -43,6 +43,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                             </div>
 
                             <Button
+                                type="submit"
                                 className="mt-2 h-11 w-full rounded-lg bg-blue-600 text-base font-semibold text-white transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
                                 disabled={processing}
                                 data-test="email-password-reset-link-button"

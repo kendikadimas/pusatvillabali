@@ -2,7 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { CheckCircle, Search, Upload } from 'lucide-react';
+import { CheckCircle, Search, Upload, Copy, Check } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
@@ -20,6 +20,14 @@ export default function BookingPaymentPage({ booking, paymentMethods, settings, 
     const [proofPreview, setProofPreview] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
     const [uploaded, setUploaded] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    const copyAccountNumber = () => {
+        if (!pm?.account_number) return;
+        navigator.clipboard.writeText(pm.account_number);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     if (!booking) {
         return (
@@ -105,9 +113,23 @@ return;
                                 <span className="font-bold text-slate-800">{pm.name}</span>
                             </div>
                             {pm.account_number && (
-                                <div className="flex justify-between">
+                                <div className="flex justify-between items-center">
                                     <span className="text-slate-500">Nomor Rekening</span>
-                                    <span className="font-bold text-slate-800 font-mono">{pm.account_number}</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-bold text-slate-800 font-mono">{pm.account_number}</span>
+                                        <button
+                                            type="button"
+                                            onClick={copyAccountNumber}
+                                            className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors text-xs font-medium text-slate-600"
+                                            title="Salin nomor rekening"
+                                        >
+                                            {copied ? (
+                                                <><Check className="w-3 h-3 text-green-600" /><span className="text-green-600">Disalin</span></>
+                                            ) : (
+                                                <><Copy className="w-3 h-3" /><span>Salin</span></>
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                             {pm.account_name && (

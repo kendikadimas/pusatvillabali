@@ -10,11 +10,12 @@ import type { Booking, AppSettings } from '@/types';
 
 interface Props {
     booking: Booking | null;
+    paymentMethods: Array<{ id: number; name: string; code: string; account_number?: string; account_name?: string; logo_url?: string; instructions?: string; admin_fee: number }>;
     settings: AppSettings;
     code?: string;
 }
 
-export default function BookingPaymentPage({ booking, settings, code: _code }: Props) {
+export default function BookingPaymentPage({ booking, paymentMethods, settings, code: _code }: Props) {
     const [proofFile, setProofFile] = useState<File | null>(null);
     const [proofPreview, setProofPreview] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
@@ -35,7 +36,11 @@ export default function BookingPaymentPage({ booking, settings, code: _code }: P
         );
     }
 
-    const pm = booking.payment_method;
+    // Resolve payment method: from booking relation, or from paymentMethods list via payment_method_id
+    const pm = booking.payment_method
+        ?? (booking.payment_method_id
+            ? paymentMethods.find(m => m.id === booking.payment_method_id) ?? null
+            : null);
 
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();

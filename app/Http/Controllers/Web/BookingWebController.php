@@ -48,14 +48,19 @@ class BookingWebController extends Controller
         $booking = null;
         if ($request->filled('code')) {
             $booking = Booking::where('booking_code', $request->code)
-                ->with(['villa', 'payment', 'payment.paymentMethod'])
+                ->with(['villa', 'payment', 'payment.paymentMethod', 'paymentMethod'])
                 ->first();
         }
+
+        $paymentMethods = PaymentMethod::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
 
         $settings = Setting::pluck('value', 'key')->toArray();
 
         return Inertia::render('public/booking-payment', [
             'booking' => $booking,
+            'paymentMethods' => $paymentMethods,
             'settings' => $settings,
             'code' => $request->code,
         ]);

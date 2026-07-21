@@ -17,6 +17,11 @@ class ProfileWebController extends Controller
         /** @var User $user */
         $user = $request->user();
 
+        // Redirect admin users to admin dashboard
+        if ($user->isAdmin()) {
+            abort(redirect('/admin/dashboard'));
+        }
+
         // Match by user_id OR guest_email so bookings made while auth token
         // failed to attach (or guest checkout with same email) still appear.
         $bookings = Booking::query()

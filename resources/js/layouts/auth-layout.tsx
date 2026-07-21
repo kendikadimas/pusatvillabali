@@ -1,6 +1,7 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
+import type { AppSettings } from '@/types';
 
 export default function AuthSplitLayout({
     children,
@@ -11,6 +12,9 @@ export default function AuthSplitLayout({
     title?: string;
     description?: string;
 }) {
+    const { settings } = usePage<{ settings: AppSettings }>().props;
+    const appName = settings?.settings_prop_name ?? 'PusatVillaBali';
+
     return (
         <div className="flex min-h-dvh">
             {/* Left Panel */}
@@ -32,7 +36,9 @@ export default function AuthSplitLayout({
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
                             <AppLogoIcon className="size-6" />
                         </div>
-                        <span className="text-lg font-semibold tracking-tight text-white">PusatVillaBali</span>
+                        <span className="text-lg font-semibold tracking-tight text-white">
+                            {appName}
+                        </span>
                     </Link>
                 </div>
 

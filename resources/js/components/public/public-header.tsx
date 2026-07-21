@@ -7,6 +7,7 @@ import { DayPicker } from 'react-day-picker';
 import type { DateRange } from 'react-day-picker';
 import type { AppSettings } from '@/types';
 import { normaliseStorageUrl } from '@/lib/villaUtils';
+import AppLogoIcon from '@/components/app-logo-icon';
 import 'react-day-picker/style.css';
 
 interface PublicHeaderProps {
@@ -244,10 +245,7 @@ export default function PublicHeader({
                             </button>
                         )}
                         <Link href="/" className="flex items-center gap-2 group">
-                            <svg viewBox="0 0 32 32" fill="currentColor" className="w-7 h-7 text-[#00A86B]">
-                                <path d="M16 1c-2.008 0-3.92.518-5.59 1.432A15.011 15.011 0 0 0 .91 18.066c1.196 4.398 4.73 7.828 9.098 9.098C11.954 27.674 13.914 28 16 28c2.086 0 4.046-.326 5.992-.836 4.368-1.27 7.902-4.7 9.098-9.098A15.01 15.01 0 0 0 16 1zm0 25c-1.748 0-3.388-.274-5.012-.702A12.012 12.012 0 0 1 3.702 11.23C4.898 6.832 8.432 3.4 12.8 2.13A12.01 12.01 0 0 1 16 2a11.983 11.983 0 0 1 12.298 9.23c1.196 4.398-2.336 7.828-6.702 9.098C19.966 25.666 18.066 26 16 26z"/>
-                                <path d="M16 7.5L7.5 14.5h3.5v9h10v-9h3.5zM18 21.5h-4v-7.5h4z"/>
-                            </svg>
+                            <AppLogoIcon className="w-7 h-7" />
                             <span className="font-black italic text-slate-900 text-[15px] leading-tight hidden sm:block">
                                 {appName}
                             </span>

@@ -66,7 +66,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
     const handleToggleActive = async (pm: PaymentMethod) => {
         setTogglingId(pm.id);
         try {
-            await axios.patch(`/api/v1/admin/payment-methods/${pm.id}`, { is_active: !pm.is_active });
+            await axios.patch(`/api/v1/admin/payment-methods/${pm.id}/toggle`);
             setPaymentMethods((prev) => prev.map((p) => (p.id === pm.id ? { ...p, is_active: !p.is_active } : p)));
             toast.success(`${pm.name} ${!pm.is_active ? 'diaktifkan' : 'dinonaktifkan'}`);
         } catch (err: any) {

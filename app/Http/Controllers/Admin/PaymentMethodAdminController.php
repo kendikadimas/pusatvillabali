@@ -117,6 +117,25 @@ class PaymentMethodAdminController extends Controller
     }
 
     /**
+     * Toggle the active status of a payment method.
+     */
+    public function toggleStatus(int $id): JsonResponse
+    {
+        $method = PaymentMethod::find($id);
+
+        if (! $method) {
+            return response()->json(['message' => 'Metode pembayaran tidak ditemukan.'], 404);
+        }
+
+        $method->update(['is_active' => ! $method->is_active]);
+
+        return response()->json([
+            'payment_method' => $method,
+            'message' => 'Status metode pembayaran berhasil diubah.',
+        ]);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(int $id): JsonResponse

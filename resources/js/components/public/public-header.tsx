@@ -6,6 +6,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import type { DateRange } from 'react-day-picker';
 import type { AppSettings } from '@/types';
+import { normaliseStorageUrl } from '@/lib/villaUtils';
 import 'react-day-picker/style.css';
 
 interface PublicHeaderProps {
@@ -14,6 +15,52 @@ interface PublicHeaderProps {
     showBackButton?: boolean;
     onBackClick?: () => void;
     children?: React.ReactNode;
+}
+
+function StepperRow({
+    label,
+    hint,
+    value,
+    min = 0,
+    max = 16,
+    onChange,
+}: {
+    label: string;
+    hint?: string;
+    value: number;
+    min?: number;
+    max?: number;
+    onChange: (n: number) => void;
+}) {
+    return (
+        <div className="flex items-center justify-between gap-3 sm:gap-4 py-3.5 sm:py-4 border-b border-slate-100 last:border-0">
+            <div className="min-w-0 pr-2">
+                <p className="text-sm sm:text-[15px] font-medium text-slate-900">{label}</p>
+                {hint && <p className="text-xs sm:text-sm text-slate-500 mt-0.5 leading-snug">{hint}</p>}
+            </div>
+            <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+                <button
+                    type="button"
+                    disabled={value <= min}
+                    onClick={() => onChange(Math.max(min, value - 1))}
+                    className="w-9 h-9 sm:w-8 sm:h-8 rounded-full border border-slate-300 flex items-center justify-center text-slate-700 hover:border-slate-900 disabled:opacity-30 disabled:hover:border-slate-300 transition-colors text-lg leading-none touch-manipulation"
+                    aria-label={`Kurangi ${label}`}
+                >
+                    −
+                </button>
+                <span className="w-6 text-center text-sm sm:text-[15px] font-medium text-slate-900 tabular-nums">{value}</span>
+                <button
+                    type="button"
+                    disabled={value >= max}
+                    onClick={() => onChange(Math.min(max, value + 1))}
+                    className="w-9 h-9 sm:w-8 sm:h-8 rounded-full border border-slate-300 flex items-center justify-center text-slate-700 hover:border-slate-900 disabled:opacity-30 disabled:hover:border-slate-300 transition-colors text-lg leading-none touch-manipulation"
+                    aria-label={`Tambah ${label}`}
+                >
+                    +
+                </button>
+            </div>
+        </div>
+    );
 }
 
 export default function PublicHeader({
@@ -34,8 +81,13 @@ export default function PublicHeader({
     const [searchWhere, setSearchWhere] = useState('');
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
     const [searchBedrooms, setSearchBedrooms] = useState(0);
-    const [searchGuests, setSearchGuests] = useState(2);
+    const [searchAdults, setSearchAdults] = useState(2);
+    const [searchChildren, setSearchChildren] = useState(0);
+    const [searchInfants, setSearchInfants] = useState(0);
+    const [searchPets, setSearchPets] = useState(0);
+    const [destinations, setDestinations] = useState<Array<{ id: number; name: string; city: string; image: string }>>([]);
     const pillRef = useRef<HTMLDivElement>(null);
+    const searchGuests = searchAdults + searchChildren;
     const appName = settings?.settings_prop_name ?? 'PusatVillaBali';
     const currentUrl = typeof window !== 'undefined' ? window.location.pathname : '';
 
@@ -60,13 +112,34 @@ export default function PublicHeader({
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
- setSearchExpanded(false); setActiveSegment(null); 
-}
+                setSearchExpanded(false);
+                setActiveSegment(null);
+            }
         };
         window.addEventListener('keydown', handler);
 
         return () => window.removeEventListener('keydown', handler);
     }, []);
+
+    useEffect(() => {
+        fetch('/api/v1/destinations')
+            .then(r => r.json())
+            .then(data => setDestinations(Array.isArray(data) ? data : (data.data ?? [])))
+            .catch(() => {});
+    }, []);
+
+    // Lock body scroll when mobile search sheet is open
+    useEffect(() => {
+        if (!mobileSearchOpen) {
+            return;
+        }
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.body.style.overflow = prev;
+        };
+    }, [mobileSearchOpen]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -81,6 +154,7 @@ export default function PublicHeader({
         router.get('/villas', params);
         setSearchExpanded(false);
         setActiveSegment(null);
+        setMobileSearchOpen(false);
     };
 
     const segmentBase = 'relative flex flex-col justify-center px-6 py-3 cursor-pointer transition-colors rounded-full';
@@ -90,19 +164,28 @@ export default function PublicHeader({
     const dateLabel = dateRange?.from
         ? `${format(dateRange.from, 'd MMM', { locale: id })}${dateRange.to ? ` – ${format(dateRange.to, 'd MMM', { locale: id })}` : ''}`
         : 'Kapan saja';
-    const bedroomsLabel = searchBedrooms > 0 ? `${searchBedrooms} Kamar` : 'Kamar tidur';
-    const guestsLabel = searchGuests > 0 ? `${searchGuests} Tamu` : 'Tambahkan tamu';
+    const bedroomsLabel = searchBedrooms > 0 ? `${searchBedrooms}+ kamar` : 'Kamar tidur';
+    const guestsLabel = (() => {
+        if (searchGuests <= 0 && searchInfants <= 0 && searchPets <= 0) return 'Tambahkan tamu';
+        const parts: string[] = [];
+        if (searchGuests > 0) parts.push(`${searchGuests} tamu`);
+        if (searchInfants > 0) parts.push(`${searchInfants} bayi`);
+        if (searchPets > 0) parts.push(`${searchPets} hewan`);
+        return parts.join(', ');
+    })();
 
-    const [destinations, setDestinations] = useState<Array<{ id: number; name: string; city: string; image: string }>>([]);
-    useEffect(() => {
-        fetch('/api/v1/destinations')
-            .then(r => r.json())
-            .then(data => setDestinations(Array.isArray(data) ? data : (data.data ?? [])))
-            .catch(() => {});
-    }, []);
     const filteredSuggestions = searchWhere.trim()
-        ? destinations.filter(d => d.name.toLowerCase().includes(searchWhere.toLowerCase()) || d.city.toLowerCase().includes(searchWhere.toLowerCase()))
-        : destinations.slice(0, 6);
+        ? destinations.filter(d => {
+            const q = searchWhere.toLowerCase();
+            return d.name?.toLowerCase().includes(q) || d.city?.toLowerCase().includes(q);
+        })
+        : destinations.slice(0, 8);
+    const suggestionsTitle = searchWhere.trim() ? 'Hasil pencarian' : 'Destinasi populer';
+
+    const selectDestination = (name: string) => {
+        setSearchWhere(name);
+        setActiveSegment('dates');
+    };
 
     return (
         <header className={`${positionClass} z-50 bg-white border-b border-slate-100`}>
@@ -203,28 +286,49 @@ export default function PublicHeader({
                                         placeholder="Cari destinasi"
                                         className="text-sm text-slate-700 outline-none bg-transparent w-full placeholder:text-slate-400 font-medium"
                                     />
-                                    {/* Location suggestions dropdown */}
-                                    {activeSegment === 'where' && filteredSuggestions.length > 0 && (
+                                    {/* Airbnb-style destination suggestions */}
+                                    {activeSegment === 'where' && (
                                         <div
-                                            className="absolute top-full left-0 mt-3 z-50 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden w-72"
+                                            className="absolute top-full left-0 mt-3 z-50 bg-white border border-slate-200 rounded-3xl shadow-2xl w-[min(420px,calc(100vw-2rem))] py-4"
                                             onClick={e => e.stopPropagation()}
                                         >
-                                            {filteredSuggestions.map(dest => (
-                                                <button
-                                                    key={dest.id}
-                                                    type="button"
-                                                    onClick={() => { setSearchWhere(dest.name); setActiveSegment('dates'); }}
-                                                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left"
-                                                >
-                                                    <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0">
-                                                        <img src={dest.image} alt={dest.name} className="w-full h-full object-cover" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-semibold text-slate-800">{dest.name}</p>
-                                                        <p className="text-xs text-slate-400">{dest.city}</p>
-                                                    </div>
-                                                </button>
-                                            ))}
+                                            <p className="px-6 pb-2 text-xs font-semibold text-slate-500 tracking-wide">
+                                                {suggestionsTitle}
+                                            </p>
+                                            {filteredSuggestions.length > 0 ? (
+                                                <div className="max-h-80 overflow-y-auto">
+                                                    {filteredSuggestions.map(dest => (
+                                                        <button
+                                                            key={dest.id}
+                                                            type="button"
+                                                            onClick={() => selectDestination(dest.name)}
+                                                            className="w-full flex items-center gap-4 px-4 py-2.5 mx-0 hover:bg-slate-50 transition-colors text-left rounded-xl"
+                                                        >
+                                                            <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100 border border-slate-100">
+                                                                <img
+                                                                    src={normaliseStorageUrl(dest.image)}
+                                                                    alt={dest.name}
+                                                                    className="w-full h-full object-cover"
+                                                                    onError={(e) => {
+                                                                        (e.target as HTMLImageElement).src =
+                                                                            'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=200&q=80';
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <p className="text-[15px] font-medium text-slate-900 truncate">{dest.name}</p>
+                                                                <p className="text-sm text-slate-500 truncate">
+                                                                    {dest.city ? `Villa di ${dest.city}` : 'Destinasi di Bali'}
+                                                                </p>
+                                                            </div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p className="px-6 py-6 text-sm text-slate-400">
+                                                    Tidak ada destinasi yang cocok
+                                                </p>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -241,10 +345,10 @@ export default function PublicHeader({
                                         {dateLabel}
                                     </span>
 
-                                    {/* DayPicker dropdown */}
+                                    {/* Airbnb-style dual-month calendar */}
                                     {activeSegment === 'dates' && (
                                         <div
-                                            className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 bg-white border border-slate-200 rounded-2xl shadow-2xl p-3 max-w-[calc(100vw-2rem)] overflow-x-hidden"
+                                            className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 sm:p-8 w-[min(720px,calc(100vw-2rem))]"
                                             onClick={e => e.stopPropagation()}
                                         >
                                             <DayPicker
@@ -252,34 +356,56 @@ export default function PublicHeader({
                                                 selected={dateRange}
                                                 onSelect={(range) => {
                                                     setDateRange(range);
-
                                                     if (range?.from && range?.to) {
                                                         setActiveSegment('bedrooms');
                                                     }
                                                 }}
-                                                numberOfMonths={typeof window !== 'undefined' && window.innerWidth < 768 ? 1 : 2}
+                                                numberOfMonths={2}
                                                 locale={id}
                                                 disabled={{ before: new Date() }}
                                                 showOutsideDays={false}
+                                                className="search-date-picker mx-auto"
                                                 classNames={{
+                                                    months: 'flex flex-col sm:flex-row gap-6 sm:gap-10',
+                                                    month: 'space-y-4',
+                                                    month_caption: 'flex justify-center items-center h-10 relative',
+                                                    caption_label: 'text-[15px] font-semibold text-slate-900',
+                                                    nav: 'absolute inset-x-0 top-0 flex items-center justify-between pointer-events-none',
+                                                    button_previous: 'pointer-events-auto w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 text-slate-700 transition-colors',
+                                                    button_next: 'pointer-events-auto w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 text-slate-700 transition-colors',
+                                                    weekdays: 'flex',
+                                                    weekday: 'w-10 text-center text-xs font-medium text-slate-400',
+                                                    week: 'flex mt-1',
+                                                    day: 'w-10 h-10 p-0 text-center text-sm relative',
+                                                    day_button: 'w-10 h-10 rounded-full font-medium text-slate-800 hover:border hover:border-slate-900 transition-colors',
                                                     today: 'font-bold text-[#00A86B]',
-                                                    selected: 'bg-[#00A86B] text-white rounded-full',
+                                                    selected: 'bg-[#00A86B] text-white hover:bg-[#00A86B]',
                                                     range_start: 'bg-[#00A86B] text-white rounded-full',
                                                     range_end: 'bg-[#00A86B] text-white rounded-full',
                                                     range_middle: 'bg-[#00A86B]/10 text-slate-800 rounded-none',
+                                                    disabled: 'text-slate-300 opacity-50 pointer-events-none',
+                                                    outside: 'invisible',
+                                                    hidden: 'invisible',
                                                 }}
                                             />
-                                            {dateRange?.from && (
-                                                <div className="flex justify-end px-2 pb-1">
+                                            <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
+                                                <p className="text-sm text-slate-500">
+                                                    {dateRange?.from
+                                                        ? dateRange.to
+                                                            ? `${format(dateRange.from, 'd MMM yyyy', { locale: id })} – ${format(dateRange.to, 'd MMM yyyy', { locale: id })}`
+                                                            : `Check-in: ${format(dateRange.from, 'd MMM yyyy', { locale: id })}`
+                                                        : 'Pilih tanggal check-in dan check-out'}
+                                                </p>
+                                                {dateRange?.from && (
                                                     <button
                                                         type="button"
                                                         onClick={() => setDateRange(undefined)}
-                                                        className="text-xs text-slate-500 hover:text-slate-700 underline"
+                                                        className="text-sm font-semibold text-slate-800 underline underline-offset-2 hover:text-slate-600"
                                                     >
-                                                        Reset tanggal
+                                                        Hapus tanggal
                                                     </button>
-                                                </div>
-                                            )}
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -292,24 +418,28 @@ export default function PublicHeader({
                                     onClick={() => setActiveSegment('bedrooms')}
                                 >
                                     <span className="text-[10px] font-bold text-slate-900 uppercase tracking-wide mb-0.5">Kamar</span>
-                                    <span className="text-sm text-slate-700 font-medium whitespace-nowrap">{bedroomsLabel}</span>
+                                    <span className="text-sm text-slate-700 font-medium whitespace-nowrap truncate">{bedroomsLabel}</span>
                                     {activeSegment === 'bedrooms' && (
                                         <div
-                                            className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 w-56"
+                                            className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 bg-white border border-slate-200 rounded-3xl shadow-2xl px-6 w-[min(360px,calc(100vw-2rem))]"
                                             onClick={e => e.stopPropagation()}
                                         >
-                                            <p className="text-xs font-semibold text-slate-500 mb-3">Jumlah kamar tidur</p>
-                                            <div className="flex flex-wrap gap-2">
-                                                {[0, 1, 2, 3, 4, 5, 6].map(n => (
-                                                    <button
-                                                        key={n}
-                                                        type="button"
-                                                        onClick={() => { setSearchBedrooms(n); setActiveSegment('guests'); }}
-                                                        className={`w-10 h-10 rounded-full text-sm font-semibold border transition-colors ${searchBedrooms === n ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-300 text-slate-700 hover:border-slate-900'}`}
-                                                    >
-                                                        {n === 0 ? 'Semua' : n}
-                                                    </button>
-                                                ))}
+                                            <StepperRow
+                                                label="Kamar tidur"
+                                                hint="Minimal jumlah kamar tidur"
+                                                value={searchBedrooms}
+                                                min={0}
+                                                max={10}
+                                                onChange={(n) => setSearchBedrooms(n)}
+                                            />
+                                            <div className="pb-4 flex justify-end">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setActiveSegment('guests')}
+                                                    className="text-sm font-semibold text-slate-800 underline underline-offset-2 hover:text-slate-600"
+                                                >
+                                                    Lanjut
+                                                </button>
                                             </div>
                                         </div>
                                     )}
@@ -319,28 +449,12 @@ export default function PublicHeader({
 
                                 {/* Tamu + Search button */}
                                 <div
-                                    className={`${segmentBase} flex-1 min-w-0 flex-row items-center gap-2 pr-2 ${activeSegment === 'guests' ? segmentActive : segmentHover}`}
+                                    className={`${segmentBase} flex-1 min-w-0 flex-row items-center gap-2 pr-2 relative ${activeSegment === 'guests' ? segmentActive : segmentHover}`}
                                     onClick={() => setActiveSegment('guests')}
                                 >
                                     <div className="flex-1 min-w-0">
                                         <span className="text-[10px] font-bold text-slate-900 uppercase tracking-wide mb-0.5 block">Tamu</span>
-                                        <div className="flex items-center gap-1.5">
-                                            <button
-                                                type="button"
-                                                onClick={e => {
- e.stopPropagation(); setSearchGuests(g => Math.max(1, g - 1)); 
-}}
-                                                className="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 hover:border-slate-500 text-xs font-bold"
-                                            >−</button>
-                                            <span className="text-sm font-semibold text-slate-800 w-4 text-center">{searchGuests}</span>
-                                            <button
-                                                type="button"
-                                                onClick={e => {
- e.stopPropagation(); setSearchGuests(g => Math.min(20, g + 1)); 
-}}
-                                                className="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 hover:border-slate-500 text-xs font-bold"
-                                            >+</button>
-                                        </div>
+                                        <span className="text-sm text-slate-700 font-medium whitespace-nowrap truncate block">{guestsLabel}</span>
                                     </div>
                                     <button
                                         type="submit"
@@ -350,6 +464,45 @@ export default function PublicHeader({
                                     >
                                         <Search className="w-4 h-4 text-white" strokeWidth={2.5} />
                                     </button>
+                                    {activeSegment === 'guests' && (
+                                        <div
+                                            className="absolute top-full right-0 mt-3 z-50 bg-white border border-slate-200 rounded-3xl shadow-2xl px-6 w-[min(380px,calc(100vw-2rem))]"
+                                            onClick={e => e.stopPropagation()}
+                                        >
+                                            <StepperRow
+                                                label="Dewasa"
+                                                hint="Umur 13+"
+                                                value={searchAdults}
+                                                min={1}
+                                                max={16}
+                                                onChange={setSearchAdults}
+                                            />
+                                            <StepperRow
+                                                label="Anak-anak"
+                                                hint="Umur 2–12"
+                                                value={searchChildren}
+                                                min={0}
+                                                max={15}
+                                                onChange={setSearchChildren}
+                                            />
+                                            <StepperRow
+                                                label="Bayi"
+                                                hint="Di bawah 2"
+                                                value={searchInfants}
+                                                min={0}
+                                                max={5}
+                                                onChange={setSearchInfants}
+                                            />
+                                            <StepperRow
+                                                label="Hewan peliharaan"
+                                                hint="Membawa hewan peliharaan?"
+                                                value={searchPets}
+                                                min={0}
+                                                max={5}
+                                                onChange={setSearchPets}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </form>
                         )}
@@ -412,21 +565,22 @@ export default function PublicHeader({
                 {/* Mobile search bar (below header row) */}
                 <div className="sm:hidden pb-3">
                     <button
+                        type="button"
                         onClick={() => setMobileSearchOpen(true)}
-                        className="w-full flex items-center gap-3 border border-slate-200 rounded-full px-4 py-2.5 shadow-sm bg-white"
+                        className="w-full flex items-center gap-3 border border-slate-200 rounded-full px-4 py-2.5 shadow-sm bg-white active:scale-[0.99] transition-transform"
                     >
                         <div
-                            className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
                             style={{ backgroundColor: '#00A86B' }}
                         >
                             <Search className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
                         </div>
-                        <div className="flex flex-col items-start min-w-0">
-                            <span className="text-sm font-semibold text-slate-800 leading-tight">
+                        <div className="flex flex-col items-start min-w-0 flex-1">
+                            <span className="text-sm font-semibold text-slate-800 leading-tight truncate w-full text-left">
                                 {searchWhere.trim() ? searchWhere.trim() : 'Ke mana saja'}
                             </span>
-                            <span className="text-xs text-slate-400 leading-tight">
-                                {dateLabel !== 'Kapan saja' ? dateLabel : 'Kapan saja'} · {guestsLabel}
+                            <span className="text-xs text-slate-400 leading-tight truncate w-full text-left">
+                                {dateLabel} · {bedroomsLabel} · {guestsLabel}
                             </span>
                         </div>
                     </button>
@@ -436,122 +590,204 @@ export default function PublicHeader({
                 {mobileSearchOpen && (
                     <>
                         <div
-                            className="fixed inset-0 bg-black/40 z-[70]"
+                            className="fixed inset-0 bg-black/50 z-[70] sm:hidden"
                             onClick={() => setMobileSearchOpen(false)}
                         />
-                        <div className="fixed bottom-0 left-0 right-0 z-[80] bg-white rounded-t-3xl shadow-2xl max-h-[92vh] flex flex-col sm:hidden">
-                            {/* Handle */}
+                        <div
+                            className="fixed inset-x-0 bottom-0 z-[80] bg-white rounded-t-3xl shadow-2xl flex flex-col sm:hidden"
+                            style={{ maxHeight: 'min(94dvh, 100%)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Cari villa"
+                        >
                             <div className="flex justify-center pt-3 pb-1 shrink-0">
                                 <div className="w-10 h-1 rounded-full bg-slate-200" />
                             </div>
-                            {/* Header */}
-                            <div className="flex items-center justify-between px-5 pb-4 pt-2 border-b border-slate-100 shrink-0">
+                            <div className="flex items-center justify-between px-4 pb-3 pt-1 border-b border-slate-100 shrink-0">
                                 <h3 className="text-base font-black text-slate-900">Cari Villa</h3>
                                 <button
                                     type="button"
                                     onClick={() => setMobileSearchOpen(false)}
-                                    className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
+                                    className="p-2.5 -mr-1 rounded-full hover:bg-slate-100 transition-colors touch-manipulation"
                                     aria-label="Tutup"
                                 >
                                     <X className="w-5 h-5 text-slate-500" />
                                 </button>
                             </div>
-                            {/* Form */}
                             <form
                                 onSubmit={(e) => { handleSearch(e); setMobileSearchOpen(false); }}
-                                className="flex-1 overflow-y-auto px-5 pt-4 pb-6 space-y-5"
+                                className="flex flex-col flex-1 min-h-0"
                             >
-                                {/* Where */}
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Lokasi / Destinasi</label>
-                                    <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 py-2.5 bg-slate-50">
-                                        <Search className="w-4 h-4 text-slate-400 shrink-0" />
-                                        <input
-                                            type="text"
-                                            placeholder="Canggu, Seminyak, Ubud..."
-                                            value={searchWhere}
-                                            onChange={(e) => setSearchWhere(e.target.value)}
-                                            className="flex-1 text-sm outline-none bg-transparent text-slate-700 placeholder:text-slate-400"
-                                            autoFocus
-                                        />
-                                        {searchWhere && (
-                                            <button type="button" onClick={() => setSearchWhere('')} className="shrink-0">
-                                                <X className="w-4 h-4 text-slate-400" />
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Dates */}
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Tanggal</label>
-                                    <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden flex justify-center">
-                                        <DayPicker
-                                            mode="range"
-                                            selected={dateRange}
-                                            onSelect={setDateRange}
-                                            disabled={{ before: new Date() }}
-                                            numberOfMonths={1}
-                                            locale={id}
-                                        />
-                                    </div>
-                                    {dateRange?.from && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setDateRange(undefined)}
-                                            className="mt-2 text-xs text-slate-400 hover:text-slate-600 underline"
-                                        >
-                                            Hapus tanggal
-                                        </button>
-                                    )}
-                                </div>
-
-                                {/* Bedrooms */}
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Kamar Tidur</label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {[0, 1, 2, 3, 4, 5, 6].map(n => (
-                                            <button
-                                                key={n}
-                                                type="button"
-                                                onClick={() => setSearchBedrooms(n)}
-                                                className={`w-11 h-11 rounded-full text-sm font-semibold border transition-colors ${searchBedrooms === n ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-300 text-slate-700 hover:border-slate-900 bg-slate-50'}`}
-                                            >
-                                                {n === 0 ? 'Semua' : n}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Guests */}
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Jumlah Tamu</label>
-                                    <div className="flex items-center gap-4 border border-slate-200 rounded-xl px-4 py-3 bg-slate-50">
-                                        <span className="flex-1 text-sm font-medium text-slate-700">{searchGuests} tamu</span>
-                                        <div className="flex items-center gap-3">
-                                            <button
-                                                type="button"
-                                                onClick={() => setSearchGuests(g => Math.max(1, g - 1))}
-                                                className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 hover:border-slate-500 font-bold text-lg leading-none"
-                                            >−</button>
-                                            <span className="text-sm font-semibold text-slate-800 w-4 text-center">{searchGuests}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => setSearchGuests(g => Math.min(20, g + 1))}
-                                                className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 hover:border-slate-500 font-bold text-lg leading-none"
-                                            >+</button>
+                                <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-4 pb-3 space-y-4">
+                                    {/* Where */}
+                                    <section className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm">
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Ke mana</label>
+                                        <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 bg-slate-50 border border-slate-100">
+                                            <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                                            <input
+                                                type="text"
+                                                placeholder="Canggu, Seminyak, Ubud..."
+                                                value={searchWhere}
+                                                onChange={(e) => setSearchWhere(e.target.value)}
+                                                className="flex-1 min-w-0 text-sm outline-none bg-transparent text-slate-700 placeholder:text-slate-400"
+                                                autoFocus
+                                            />
+                                            {searchWhere && (
+                                                <button type="button" onClick={() => setSearchWhere('')} className="shrink-0 p-1 touch-manipulation" aria-label="Hapus lokasi">
+                                                    <X className="w-4 h-4 text-slate-400" />
+                                                </button>
+                                            )}
                                         </div>
-                                    </div>
+                                        {filteredSuggestions.length > 0 && (
+                                            <div className="mt-3 max-h-48 overflow-y-auto overscroll-contain -mx-1">
+                                                <p className="px-1 pb-1.5 text-xs font-semibold text-slate-500 sticky top-0 bg-white">
+                                                    {suggestionsTitle}
+                                                </p>
+                                                {filteredSuggestions.map(dest => (
+                                                    <button
+                                                        key={dest.id}
+                                                        type="button"
+                                                        onClick={() => setSearchWhere(dest.name)}
+                                                        className="w-full flex items-center gap-3 px-1 py-2 hover:bg-slate-50 active:bg-slate-100 transition-colors text-left rounded-xl touch-manipulation"
+                                                    >
+                                                        <div className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100">
+                                                            <img
+                                                                src={normaliseStorageUrl(dest.image)}
+                                                                alt={dest.name}
+                                                                className="w-full h-full object-cover"
+                                                                onError={(e) => {
+                                                                    (e.target as HTMLImageElement).src =
+                                                                        'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=200&q=80';
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="text-sm font-medium text-slate-900 truncate">{dest.name}</p>
+                                                            <p className="text-xs text-slate-500 truncate">
+                                                                {dest.city ? `Villa di ${dest.city}` : 'Destinasi di Bali'}
+                                                            </p>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </section>
+
+                                    {/* Dates */}
+                                    <section className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tanggal</label>
+                                            {dateRange?.from && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setDateRange(undefined)}
+                                                    className="text-xs font-semibold text-slate-600 underline underline-offset-2 touch-manipulation"
+                                                >
+                                                    Hapus
+                                                </button>
+                                            )}
+                                        </div>
+                                        <p className="text-sm font-medium text-slate-800 mb-2">
+                                            {dateRange?.from
+                                                ? dateRange.to
+                                                    ? `${format(dateRange.from, 'd MMM', { locale: id })} – ${format(dateRange.to, 'd MMM', { locale: id })}`
+                                                    : `Check-in: ${format(dateRange.from, 'd MMM', { locale: id })}`
+                                                : 'Pilih check-in & check-out'}
+                                        </p>
+                                        <div className="flex justify-center overflow-x-auto -mx-1">
+                                            <DayPicker
+                                                mode="range"
+                                                selected={dateRange}
+                                                onSelect={setDateRange}
+                                                disabled={{ before: new Date() }}
+                                                numberOfMonths={1}
+                                                locale={id}
+                                                showOutsideDays={false}
+                                                className="mx-auto"
+                                                classNames={{
+                                                    month_caption: 'flex justify-center items-center h-9',
+                                                    caption_label: 'text-sm font-semibold text-slate-900',
+                                                    nav: 'absolute inset-x-0 top-0 flex items-center justify-between pointer-events-none px-1',
+                                                    button_previous: 'pointer-events-auto w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100',
+                                                    button_next: 'pointer-events-auto w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100',
+                                                    weekday: 'w-9 text-center text-[11px] font-medium text-slate-400',
+                                                    day: 'w-9 h-9 p-0 text-center text-sm',
+                                                    day_button: 'w-9 h-9 rounded-full font-medium hover:border hover:border-slate-900 touch-manipulation',
+                                                    today: 'font-bold text-[#00A86B]',
+                                                    selected: 'bg-[#00A86B] text-white',
+                                                    range_start: 'bg-[#00A86B] text-white rounded-full',
+                                                    range_end: 'bg-[#00A86B] text-white rounded-full',
+                                                    range_middle: 'bg-[#00A86B]/10 text-slate-800 rounded-none',
+                                                    disabled: 'text-slate-300 opacity-50',
+                                                }}
+                                            />
+                                        </div>
+                                    </section>
+
+                                    {/* Bedrooms */}
+                                    <section className="rounded-2xl border border-slate-200 bg-white px-3.5 shadow-sm">
+                                        <div className="pt-3.5 pb-0">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Kamar tidur</label>
+                                        </div>
+                                        <StepperRow
+                                            label="Jumlah kamar"
+                                            hint="Minimal kamar tidur"
+                                            value={searchBedrooms}
+                                            min={0}
+                                            max={10}
+                                            onChange={setSearchBedrooms}
+                                        />
+                                    </section>
+
+                                    {/* Guests */}
+                                    <section className="rounded-2xl border border-slate-200 bg-white px-3.5 shadow-sm">
+                                        <div className="pt-3.5 pb-0">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Tamu</label>
+                                        </div>
+                                        <StepperRow
+                                            label="Dewasa"
+                                            hint="Umur 13+"
+                                            value={searchAdults}
+                                            min={1}
+                                            max={16}
+                                            onChange={setSearchAdults}
+                                        />
+                                        <StepperRow
+                                            label="Anak-anak"
+                                            hint="Umur 2–12"
+                                            value={searchChildren}
+                                            min={0}
+                                            max={15}
+                                            onChange={setSearchChildren}
+                                        />
+                                        <StepperRow
+                                            label="Bayi"
+                                            hint="Di bawah 2"
+                                            value={searchInfants}
+                                            min={0}
+                                            max={5}
+                                            onChange={setSearchInfants}
+                                        />
+                                        <StepperRow
+                                            label="Hewan peliharaan"
+                                            hint="Membawa hewan?"
+                                            value={searchPets}
+                                            min={0}
+                                            max={5}
+                                            onChange={setSearchPets}
+                                        />
+                                    </section>
                                 </div>
 
-                                {/* Submit */}
-                                <button
-                                    type="submit"
-                                    className="w-full py-3.5 rounded-2xl text-white text-sm font-bold transition-colors active:scale-95"
-                                    style={{ backgroundColor: '#00A86B' }}
-                                >
-                                    Cari Villa
-                                </button>
+                                <div className="shrink-0 border-t border-slate-100 px-4 pt-3 pb-4 bg-white">
+                                    <button
+                                        type="submit"
+                                        className="w-full py-3.5 rounded-2xl text-white text-sm font-bold transition-transform active:scale-[0.98] touch-manipulation shadow-md"
+                                        style={{ backgroundColor: '#00A86B' }}
+                                    >
+                                        Cari Villa
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </>

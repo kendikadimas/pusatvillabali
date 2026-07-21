@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { ChevronLeft, X, Search, User } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
@@ -95,13 +95,19 @@ export default function PublicHeader({
     const searchCheckOut = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : '';
     const positionClass = fixed ? 'fixed top-0 left-0 right-0' : 'sticky top-0';
 
-    // Close expanded search on outside click
+    // Close expanded search on outside click (ignore clicks inside date/guest popovers)
     useEffect(() => {
         const handler = (e: MouseEvent) => {
-            if (pillRef.current && !pillRef.current.contains(e.target as Node)) {
-                setSearchExpanded(false);
-                setActiveSegment(null);
+            const target = e.target as Node;
+            if (pillRef.current?.contains(target)) {
+                return;
             }
+            // DayPicker portals / popover still under pillRef; also ignore if inside rdp
+            if (target instanceof Element && target.closest('.rdp-root, .search-date-picker, [class*="rdp"]')) {
+                return;
+            }
+            setSearchExpanded(false);
+            setActiveSegment(null);
         };
         document.addEventListener('mousedown', handler);
 
@@ -355,6 +361,12 @@ export default function PublicHeader({
                                                 mode="range"
                                                 selected={dateRange}
                                                 onSelect={(range) => {
+                                                    // DayPicker may set from+to to the same day on first click.
+                                                    // Keep the panel open until a real check-out day is chosen.
+                                                    if (range?.from && range?.to && isSameDay(range.from, range.to)) {
+                                                        setDateRange({ from: range.from, to: undefined });
+                                                        return;
+                                                    }
                                                     setDateRange(range);
                                                     if (range?.from && range?.to) {
                                                         setActiveSegment('bedrooms');

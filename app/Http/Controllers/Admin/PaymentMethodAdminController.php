@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PaymentMethod;
+use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -52,6 +53,8 @@ class PaymentMethodAdminController extends Controller
             'admin_fee' => $request->input('admin_fee', 0),
             'is_active' => $request->input('is_active', true),
         ]);
+
+        ActivityLogService::log('create', 'Metode Pembayaran', $method->name, 'Metode pembayaran baru ditambahkan: '.$method->name);
 
         return response()->json([
             'payment_method' => $method,

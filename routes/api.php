@@ -172,6 +172,26 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::delete('/payment-methods/{id}', [PaymentMethodAdminController::class, 'destroy'])->middleware('permission:payment_methods.manage');
         Route::post('/payment-methods/upload-logo', [PaymentMethodAdminController::class, 'uploadLogo'])->middleware('permission:payment_methods.manage');
 
+        // ── Activity Logs ──
+        Route::get('/activity-logs', function (\Illuminate\Http\Request $request) {
+            $query = \App\Models\ActivityLog::latest();
+            if ($request->filled('module')) $query->where('module', $request->module);
+            if ($request->filled('action')) $query->where('action', $request->action);
+            if ($request->filled('actor')) $query->where('actor_name', 'like', '%' . $request->actor . '%');
+            if ($request->filled('date')) $query->whereDate('created_at', $request->date);
+            $logs = $query->paginate($request->input('per_page', 25));
+            $logs->getCollection()->transform(fn ($log) => [
+                'id'          => $log->id,
+                'actor'       => $log->actor_name ?? 'System',
+                'action'      => $log->action,
+                'module'      => $log->module,
+                'subject'     => $log->subject,
+                'description' => $log->description,
+                'created_at'  => $log->created_at->setTimezone('Asia/Jakarta')->format('d M Y, H:i'),
+            ]);
+            return response()->json($logs);
+        });
+
         // ── Vouchers ──
         Route::get('/vouchers', [VoucherAdminController::class, 'index']);
         Route::post('/vouchers', [VoucherAdminController::class, 'store']);

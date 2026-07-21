@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Voucher;
+use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -43,6 +44,8 @@ class VoucherAdminController extends Controller
 
         $voucher = Voucher::create($data);
 
+        ActivityLogService::log('create', 'Voucher', $voucher->code, 'Voucher baru dibuat: '.$voucher->code);
+
         return response()->json(['voucher' => $voucher, 'message' => 'Voucher berhasil dibuat.'], 201);
     }
 
@@ -79,6 +82,8 @@ class VoucherAdminController extends Controller
 
         $voucher->update($data);
 
+        ActivityLogService::log('update', 'Voucher', $voucher->code, 'Voucher diperbarui: '.$voucher->code);
+
         return response()->json(['voucher' => $voucher->fresh(), 'message' => 'Voucher berhasil diperbarui.']);
     }
 
@@ -90,8 +95,12 @@ class VoucherAdminController extends Controller
         if ($voucher->used_count > 0) {
             $voucher->update(['is_active' => false]);
 
+            ActivityLogService::log('disable', 'Voucher', $voucher->code, 'Voucher dinonaktifkan (sudah pernah digunakan): '.$voucher->code);
+
             return response()->json(['message' => 'Voucher sudah pernah digunakan, dinonaktifkan saja.']);
         }
+
+        ActivityLogService::log('delete', 'Voucher', $voucher->code, 'Voucher dihapus: '.$voucher->code);
 
         $voucher->delete();
 

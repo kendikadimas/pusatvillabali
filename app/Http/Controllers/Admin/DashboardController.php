@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Review;
@@ -118,6 +119,21 @@ class DashboardController extends Controller
             'recent_bookings' => $recentBookings,
             'today_checkins' => $todayCheckIns,
             'today_checkouts' => $todayCheckOuts,
+            'activity_logs' => ActivityLog::with('user:id,name')
+                ->latest()
+                ->limit(20)
+                ->get()
+                ->map(fn ($log) => [
+                    'id' => $log->id,
+                    'actor' => $log->actor_name ?? $log->user?->name ?? 'System',
+                    'action' => $log->action,
+                    'module' => $log->module,
+                    'subject' => $log->subject,
+                    'description' => $log->description,
+                    'created_at' => $log->created_at
+                        ->setTimezone('Asia/Jakarta')
+                        ->format('d M Y, H:i'),
+                ]),
         ]);
     }
 }

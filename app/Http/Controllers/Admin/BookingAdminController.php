@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\BookingConfirmationMail;
 use App\Mail\ManualPaymentRejectedMail;
 use App\Models\Booking;
+use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -183,6 +184,8 @@ class BookingAdminController extends Controller
             }
         }
 
+        ActivityLogService::log('update', 'Booking', $booking->booking_code, 'Status booking '.$booking->booking_code.' diubah ke '.($request->status ?? '-').' / '.($request->payment_status ?? '-'));
+
         return response()->json([
             'booking' => $booking,
             'message' => 'Status booking berhasil diperbarui.',
@@ -258,6 +261,8 @@ class BookingAdminController extends Controller
             Log::error("Gagal mengirim email konfirmasi (approve manual) untuk booking {$booking->booking_code}: ".$e->getMessage());
         }
 
+        ActivityLogService::log('approve', 'Booking', $booking->booking_code, 'Pembayaran manual disetujui untuk booking '.$booking->booking_code);
+
         return response()->json([
             'booking' => $booking->fresh(['villa', 'payment']),
             'message' => 'Pembayaran manual disetujui & booking dikonfirmasi. Email konfirmasi telah dikirim ke tamu.',
@@ -312,6 +317,8 @@ class BookingAdminController extends Controller
         } catch (\Exception $e) {
             Log::error("Gagal mengirim email penolakan pembayaran untuk booking {$booking->booking_code}: ".$e->getMessage());
         }
+
+        ActivityLogService::log('reject', 'Booking', $booking->booking_code, 'Pembayaran manual ditolak untuk booking '.$booking->booking_code.'. Alasan: '.$request->rejection_reason);
 
         return response()->json([
             'booking' => $booking->fresh(['villa', 'payment']),

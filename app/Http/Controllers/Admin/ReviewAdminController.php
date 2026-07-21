@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Review;
+use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -55,6 +56,8 @@ class ReviewAdminController extends Controller
         $review->approved_by = $request->user()->id;
         $review->save();
 
+        ActivityLogService::log('approve', 'Review', 'Review #'.$id, 'Review disetujui dari '.($review->reviewer_name ?? 'tamu'));
+
         return response()->json([
             'review' => $review,
             'message' => 'Review berhasil disetujui dan sekarang tampil di halaman detail villa.',
@@ -73,6 +76,8 @@ class ReviewAdminController extends Controller
         }
 
         $review->delete();
+
+        ActivityLogService::log('delete', 'Review', 'Review #'.$id, 'Review dihapus/ditolak');
 
         return response()->json([
             'message' => 'Review berhasil dihapus/ditolak.',

@@ -1,16 +1,27 @@
 import { Head, Link } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { BookOpen, Star, TrendingUp, Percent, Clock, ArrowUpRight, UserCheck, UserMinus } from 'lucide-react';
+import { BookOpen, Star, TrendingUp, Percent, Clock, ArrowUpRight, UserCheck, UserMinus, Activity } from 'lucide-react';
 import React from 'react';
 import { formatPrice } from '@/lib/format';
 import type { AdminStats, Booking } from '@/types';
+
+interface ActivityLogEntry {
+    id: number;
+    actor: string;
+    action: string;
+    module: string;
+    subject: string;
+    description: string;
+    created_at: string;
+}
 
 interface Props {
     stats: AdminStats;
     recentBookings: Booking[];
     todayCheckins: Booking[];
     todayCheckouts: Booking[];
+    activityLogs: ActivityLogEntry[];
 }
 
 function StatCard({ label, value, icon, color = 'blue', href }: { label: string; value: string | number; icon: React.ReactNode; color?: string; href?: string }) {
@@ -52,7 +63,7 @@ const statusLabels: Record<string, string> = {
     pending: 'Menunggu', confirmed: 'Konfirmasi', cancelled: 'Batal', completed: 'Selesai',
 };
 
-export default function AdminDashboardPage({ stats, recentBookings, todayCheckins, todayCheckouts }: Props) {
+export default function AdminDashboardPage({ stats, recentBookings, todayCheckins, todayCheckouts, activityLogs }: Props) {
     return (
         <>
             <Head title="Admin Dashboard" />
@@ -142,6 +153,33 @@ export default function AdminDashboardPage({ stats, recentBookings, todayCheckin
                                 )}
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Activity Log */}
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+                        <h2 className="font-bold text-slate-800 flex items-center gap-2">
+                            <Activity className="w-4 h-4 text-slate-500" /> Log Aktivitas Admin
+                        </h2>
+                    </div>
+                    <div className="divide-y divide-slate-100">
+                        {(activityLogs ?? []).slice(0, 15).map((log) => (
+                            <div key={log.id} className="px-5 py-3 flex items-start justify-between gap-4">
+                                <div className="min-w-0">
+                                    <p className="text-sm text-slate-800 truncate">
+                                        <span className="font-semibold">{log.actor}</span>
+                                        {' '}
+                                        <span className="text-slate-500">{log.description}</span>
+                                    </p>
+                                    <p className="text-xs text-slate-400 mt-0.5">{log.module} &middot; {log.subject}</p>
+                                </div>
+                                <span className="text-xs text-slate-400 shrink-0 whitespace-nowrap">{log.created_at}</span>
+                            </div>
+                        ))}
+                        {(activityLogs ?? []).length === 0 && (
+                            <div className="px-5 py-6 text-center text-sm text-slate-400">Belum ada aktivitas tercatat</div>
+                        )}
                     </div>
                 </div>
             </div>

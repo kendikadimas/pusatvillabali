@@ -9,7 +9,7 @@
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f5;
+            background-color: #f0fdf4;
             color: #1e293b;
         }
         .wrapper {
@@ -21,12 +21,19 @@
             background: #ffffff;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+            border: 1px solid #dcfce7;
         }
         .header {
-            background: linear-gradient(135deg, #f43f5e, #e11d48);
+            background: linear-gradient(135deg, #15803d, #166534);
             padding: 36px 32px 28px;
             text-align: center;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 16px;
+            width: 56px;
+            height: 56px;
         }
         .header h1 {
             color: #ffffff;
@@ -36,7 +43,7 @@
             letter-spacing: -0.3px;
         }
         .header p {
-            color: #fecdd3;
+            color: #bbf7d0;
             font-size: 14px;
             margin: 0;
         }
@@ -49,6 +56,7 @@
             padding: 4px 14px;
             border-radius: 20px;
             margin-top: 12px;
+            border: 1px solid rgba(255,255,255,0.15);
         }
         .body {
             padding: 32px;
@@ -56,7 +64,8 @@
         .greeting {
             font-size: 16px;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin-bottom: 8px;
+            color: #0f172a;
         }
         .detail-table {
             width: 100%;
@@ -85,7 +94,7 @@
         .price-row td:last-child {
             font-size: 18px;
             font-weight: 700;
-            color: #f43f5e;
+            color: #15803d;
         }
         .villa-name {
             font-weight: 700;
@@ -118,13 +127,13 @@
             line-height: 1.6;
         }
         .footer-text a {
-            color: #f43f5e;
+            color: #15803d;
             text-decoration: underline;
         }
         .btn {
             display: inline-block;
-            background: #f43f5e;
-            color: #ffffff;
+            background: #15803d;
+            color: #ffffff !important;
             font-size: 14px;
             font-weight: 700;
             padding: 12px 28px;
@@ -133,13 +142,14 @@
             margin: 16px 0 8px;
         }
         .info-note {
-            background: #fff7ed;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
             border-radius: 12px;
             padding: 16px;
             font-size: 13px;
-            color: #9a3412;
+            color: #166534;
             margin-top: 20px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
         @media (max-width: 480px) {
             .body { padding: 20px; }
@@ -152,7 +162,31 @@
     <div class="wrapper">
         <div class="card">
             <div class="header">
-                <h1>Booking Dikonfirmasi!</h1>
+                <!-- Logo SVG inline — villa joglo PusatVillaBali -->
+                <svg class="logo" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="96" fill="#166534"/>
+                    <polygon points="30,118 170,118 155,98 45,98" fill="#f0fdf4"/>
+                    <polygon points="52,98 148,98 136,80 64,80" fill="#dcfce7"/>
+                    <polygon points="72,80 128,80 120,65 80,65" fill="#f0fdf4"/>
+                    <line x1="80" y1="65" x2="120" y2="65" stroke="#15803d" stroke-width="2.5" stroke-linecap="round"/>
+                    <rect x="72" y="118" width="56" height="36" fill="#f0fdf4"/>
+                    <path d="M91,154 L91,134 Q100,126 109,134 L109,154 Z" fill="#15803d"/>
+                    <rect x="77" y="123" width="10" height="10" rx="1" fill="#15803d" opacity="0.5"/>
+                    <rect x="113" y="123" width="10" height="10" rx="1" fill="#15803d" opacity="0.5"/>
+                    <line x1="55" y1="154" x2="145" y2="154" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M55,154 Q42,130 30,120" stroke="#86efac" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    <path d="M55,154 Q38,138 28,138" stroke="#86efac" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <path d="M55,154 Q40,150 30,155" stroke="#86efac" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <path d="M145,154 Q158,130 170,120" stroke="#86efac" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    <path d="M145,154 Q162,138 172,138" stroke="#86efac" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <path d="M145,154 Q160,150 170,155" stroke="#86efac" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <circle cx="100" cy="44" r="5" fill="#86efac"/>
+                    <line x1="100" y1="34" x2="100" y2="32" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="100" y1="54" x2="100" y2="56" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="90" y1="44" x2="88" y2="44" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="110" y1="44" x2="112" y2="44" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h1>Booking Dikonfirmasi</h1>
                 <p>Pembayaran Anda telah berhasil diverifikasi</p>
                 <div class="badge">{{ $booking->booking_code }}</div>
             </div>
@@ -160,7 +194,7 @@
             <div class="body">
                 <div class="greeting">Halo, {{ $booking->guest_name }}!</div>
 
-                <p style="font-size:14px;color:#475569;margin:0 0 20px">
+                <p style="font-size:14px;color:#475569;margin:8px 0 20px">
                     Terima kasih, pembayaran untuk pemesanan villa Anda telah kami terima.
                     Berikut detail reservasi Anda:
                 </p>
@@ -236,13 +270,13 @@
                     @if ($booking->villa->maps_url)
                     <tr>
                         <td>Lokasi</td>
-                        <td><a href="{{ $booking->villa->maps_url }}" target="_blank" style="color:#f43f5e;font-weight:600">Lihat di Google Maps</a></td>
+                        <td><a href="{{ $booking->villa->maps_url }}" target="_blank" style="color:#15803d;font-weight:600">Lihat di Google Maps</a></td>
                     </tr>
                     @endif
                 </table>
 
                 <div class="info-note">
-                    <strong>🕐 Perlu diingat:</strong> Koordinasi check-in dan serah terima kunci akan diatur melalui WhatsApp oleh tim kami. Jika ada perubahan jadwal atau pertanyaan, hubungi kami segera.
+                    <strong>Perlu diingat:</strong> Koordinasi check-in dan serah terima kunci akan diatur melalui WhatsApp oleh tim kami. Jika ada perubahan jadwal atau pertanyaan, hubungi kami segera.
                 </div>
 
                 <div style="text-align:center;margin-top:24px">
@@ -252,16 +286,16 @@
         </div>
 
         <div class="footer-text">
-            <p style="margin:0 0 8px;font-weight:600;color:#1e293b">PusatVilla.id</p>
-            <p style="margin:0 0 4px">Platform persewaan villa premium terbaik di Indonesia</p>
+            <p style="margin:0 0 4px;font-weight:700;font-size:15px;color:#15803d">PusatVillaBali</p>
+            <p style="margin:0 0 4px">Platform persewaan villa premium di Indonesia</p>
             <p style="margin:0">
-                <a href="mailto:support@pusatvillabali">support@pusatvillabali</a>
+                <a href="mailto:admin@pusatvillabali.com">admin@pusatvillabali.com</a>
                 @if ($booking->villa->maps_url)
-                &nbsp;·&nbsp; <a href="{{ $booking->villa->maps_url }}" target="_blank">Google Maps</a>
+                &nbsp;&middot;&nbsp; <a href="{{ $booking->villa->maps_url }}" target="_blank">Google Maps</a>
                 @endif
             </p>
-            <p style="margin:8px 0 0;font-size:12px;color:#cbd5e1">
-                © {{ date('Y') }} PusatVilla.id. All rights reserved.
+            <p style="margin:10px 0 0;font-size:12px;color:#cbd5e1">
+                &copy; {{ date('Y') }} PusatVillaBali. All rights reserved.
             </p>
         </div>
     </div>

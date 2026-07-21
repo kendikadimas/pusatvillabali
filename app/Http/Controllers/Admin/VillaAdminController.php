@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BlockedDate;
 use App\Models\Booking;
 use App\Models\Villa;
+use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -89,6 +90,8 @@ class VillaAdminController extends Controller
             'co_hosts' => [],
             'safety_property' => $request->safety_property ?? [],
         ]));
+
+        ActivityLogService::log('create', 'Villa', $villa->name, 'Villa baru ditambahkan: ' . $villa->name);
 
         return response()->json([
             'villa' => $villa,
@@ -183,6 +186,10 @@ class VillaAdminController extends Controller
             'safety_property' => $request->safety_property ?? $villa->safety_property ?? [],
         ]));
 
+        ActivityLogService::log('update', 'Villa', $villa->name, 'Villa diperbarui: ' . $villa->name);
+
+        ActivityLogService::log('update', 'Villa', $villa->name, 'Villa diperbarui: ' . $villa->name);
+
         return response()->json([
             'villa' => $villa,
             'message' => 'Detail villa berhasil diperbarui.',
@@ -204,6 +211,8 @@ class VillaAdminController extends Controller
         // or support hard deletion if requested. Let's toggle is_active to false.
         $villa->is_active = false;
         $villa->save();
+
+        ActivityLogService::log('delete', 'Villa', $villa->name, 'Villa dinonaktifkan: ' . $villa->name);
 
         return response()->json([
             'message' => 'Villa telah dinonaktifkan.',

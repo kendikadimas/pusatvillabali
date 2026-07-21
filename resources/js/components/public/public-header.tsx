@@ -77,6 +77,10 @@ export default function PublicHeader({
     const [mobileOpen, setMobileOpen] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const [searchExpanded, setSearchExpanded] = useState(false);
+    const [villaSearchOpen, setVillaSearchOpen] = useState(false);
+    const [villaSearchQuery, setVillaSearchQuery] = useState('');
+    const villaSearchRef = useRef<HTMLDivElement>(null);
+    const villaSearchInputRef = useRef<HTMLInputElement>(null);
     const [activeSegment, setActiveSegment] = useState<'where' | 'dates' | 'bedrooms' | 'guests' | null>(null);
     const [searchWhere, setSearchWhere] = useState('');
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
@@ -134,6 +138,19 @@ export default function PublicHeader({
             .catch(() => {});
     }, []);
 
+    // Close villa search on outside click
+    useEffect(() => {
+        if (!villaSearchOpen) return;
+        const handler = (e: MouseEvent) => {
+            if (villaSearchRef.current && !villaSearchRef.current.contains(e.target as Node)) {
+                setVillaSearchOpen(false);
+                setVillaSearchQuery('');
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [villaSearchOpen]);
+
     // Lock body scroll when mobile search sheet is open
     useEffect(() => {
         if (!mobileSearchOpen) {
@@ -146,6 +163,14 @@ export default function PublicHeader({
             document.body.style.overflow = prev;
         };
     }, [mobileSearchOpen]);
+
+    const handleVillaSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!villaSearchQuery.trim()) return;
+        router.get('/villas', { search: villaSearchQuery.trim() });
+        setVillaSearchOpen(false);
+        setVillaSearchQuery('');
+    };
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -532,6 +557,44 @@ export default function PublicHeader({
                         </svg>
                     </button>
                     <div className="hidden md:flex items-center gap-2 shrink-0">
+                        {/* Villa name quick-search */}
+                        <div ref={villaSearchRef} className="relative">
+                            {villaSearchOpen ? (
+                                <form onSubmit={handleVillaSearch} className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1.5 shadow-sm">
+                                    <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                    <input
+                                        ref={villaSearchInputRef}
+                                        type="text"
+                                        value={villaSearchQuery}
+                                        onChange={e => setVillaSearchQuery(e.target.value)}
+                                        placeholder="Cari nama villa..."
+                                        className="w-44 text-sm text-slate-800 placeholder:text-slate-400 bg-transparent outline-none"
+                                        autoFocus
+                                    />
+                                    {villaSearchQuery && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setVillaSearchQuery('')}
+                                            className="text-slate-400 hover:text-slate-600"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    )}
+                                </form>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setVillaSearchOpen(true);
+                                        setTimeout(() => villaSearchInputRef.current?.focus(), 50);
+                                    }}
+                                    className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors px-2 py-1.5 rounded-full hover:bg-slate-100"
+                                >
+                                    <Search className="w-3.5 h-3.5" />
+                                    <span>Cari villa</span>
+                                </button>
+                            )}
+                        </div>
                         {auth?.user ? (
                             <Link
                                 href="/profile"

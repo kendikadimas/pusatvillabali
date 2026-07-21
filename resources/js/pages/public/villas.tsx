@@ -99,7 +99,7 @@ params.max_price = maxPrice;
 
     return (
         <>
-            <Head title={destination_name ? `Villa di ${destination_name}` : 'Daftar Villa di Bali'} />
+            <Head title={destination_name ? `Villa di ${destination_name}` : 'Semua Villa'} />
 
             {/* Top bar */}
             <div className="sticky top-16 z-40 bg-white border-b border-slate-200 shadow-sm">
@@ -194,11 +194,11 @@ params.max_price = maxPrice;
                 {/* Page header */}
                 <div className="mb-8">
                     <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 tracking-[-0.02em] font-heading">
-                        {destination_name ? `Semua Villa di ${destination_name}` : 'Daftar Villa di Bali'}
+                        {destination_name ? `Semua Villa di ${destination_name}` : 'Semua Villa'}
                     </h1>
                     <p className="text-sm text-zinc-500 mt-1.5">
                         {villas.total > 0
-                            ? `Menampilkan ${villas.data.length} dari ${villas.total} villa${destination_name ? ` di ${destination_name}` : ' terbaik di Bali'}`
+                            ? `Menampilkan ${villas.data.length} dari ${villas.total} villa${destination_name ? ` di ${destination_name}` : ''}`
                             : 'Tidak ada villa ditemukan'}
                     </p>
                 </div>

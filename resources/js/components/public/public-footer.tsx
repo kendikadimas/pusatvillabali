@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { MapPin, Mail, Heart, User } from 'lucide-react';
+import { Mail, Heart } from 'lucide-react';
 import React from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import type { AppSettings } from '@/types';
@@ -19,7 +19,7 @@ return '';
 };
 
 export default function PublicFooter() {
-    const { settings, auth } = usePage<{ settings: AppSettings; auth: { user: { name: string } | null } }>().props;
+    const { settings } = usePage<{ settings: AppSettings }>().props;
     const appName = settings?.settings_prop_name ?? 'PusatVillaBali';
     const whatsappRaw = settings?.settings_whatsapp ?? '6281234567890';
     const whatsappDisplay = formatWhatsAppDisplay(whatsappRaw);
@@ -150,17 +150,6 @@ export default function PublicFooter() {
                                     </a>
                                 </li>
                             )}
-                            <li>
-                                <Link href="/profile" className="flex items-center gap-3 group">
-                                    <span className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-500/20 transition-colors">
-                                        <User className="w-5 h-5 text-blue-400" />
-                                    </span>
-                                    <div>
-                                        <p className="text-sm font-semibold text-white group-hover:text-blue-200 transition-colors">Akun Saya</p>
-                                        <p className="text-xs text-blue-400/60">{auth?.user ? auth.user.name : 'Masuk atau daftar'}</p>
-                                    </div>
-                                </Link>
-                            </li>
                         </ul>
                     </div>
 

@@ -195,23 +195,15 @@ handlePrev(e as unknown as React.MouseEvent);
                 <p className="text-sm text-slate-500 truncate">{villa.location}</p>
 
                 {/* Capacity */}
-                <div className="flex items-center gap-3 pt-0.5">
-                    <span className="flex items-center gap-1 text-xs text-slate-500">
-                        <Users className="w-3.5 h-3.5 shrink-0" />
-                        {villa.max_guests} tamu
-                    </span>
-                    {villa.beds != null && villa.beds > 0 && (
-                        <span className="flex items-center gap-1 text-xs text-slate-500">
-                            <BedDouble className="w-3.5 h-3.5 shrink-0" />
-                            {villa.beds} kasur
-                        </span>
-                    )}
-                </div>
-
-                {/* Review count */}
-                {reviewCount > 0 && (
-                    <p className="text-xs text-slate-400">{reviewCount} ulasan</p>
-                )}
+                <p className="text-xs text-slate-500 pt-0.5">
+                    {[
+                        villa.bedrooms != null && villa.bedrooms > 0 ? `${villa.bedrooms} kamar` : null,
+                        villa.beds != null && villa.beds > 0 ? `${villa.beds} kasur` : null,
+                        `${villa.max_guests} tamu`,
+                    ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                </p>
 
                 {/* Price */}
                 <div className="text-[13px] sm:text-[14px] text-slate-800 font-normal pt-1">

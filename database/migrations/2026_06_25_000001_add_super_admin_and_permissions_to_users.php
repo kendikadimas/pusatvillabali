@@ -19,7 +19,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             // JSON array of permission slugs, e.g. ["bookings.view","villas.manage"]
             // Null = no explicit permissions (super_admin ignores this column)
-            $table->json('permissions')->nullable()->after('role');
+            $table->json('permissions')->nullable();
         });
     }
 

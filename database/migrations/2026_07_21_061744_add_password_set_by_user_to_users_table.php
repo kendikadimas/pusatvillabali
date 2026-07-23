@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('password_set_by_user')->default(true)->after('password');
+            $table->boolean('password_set_by_user')->default(true);
         });
 
         // Google-only accounts were created with a random unknown password

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payments', function (Blueprint $table) {
-            $table->string('payment_proof', 1000)->nullable()->after('snap_token');
+            $table->string('payment_proof', 1000)->nullable();
         });
     }
 

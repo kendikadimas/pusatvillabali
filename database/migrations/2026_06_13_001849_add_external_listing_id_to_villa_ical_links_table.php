@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('villa_ical_links', function (Blueprint $table) {
-            $table->string('external_listing_id')->nullable()->after('ical_url');
+            $table->string('external_listing_id')->nullable();
             $table->unique(['channel_name', 'external_listing_id']);
         });
     }

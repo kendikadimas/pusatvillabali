@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('villas', function (Blueprint $table) {
-            $table->unsignedTinyInteger('beds')->nullable()->after('bedrooms')->comment('Total jumlah tempat tidur (opsional, berbeda dari jumlah kamar)');
-            $table->decimal('cleaning_fee', 12, 2)->nullable()->after('weekend_price')->comment('Biaya kebersihan sekali bayar, opsional');
+            $table->unsignedTinyInteger('beds')->nullable()->comment('Total jumlah tempat tidur (opsional, berbeda dari jumlah kamar)');
+            $table->decimal('cleaning_fee', 12, 2)->nullable()->comment('Biaya kebersihan sekali bayar, opsional');
         });
     }
 

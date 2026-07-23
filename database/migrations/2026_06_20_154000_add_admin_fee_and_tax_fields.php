@@ -13,14 +13,14 @@ return new class extends Migration
     {
         // 1. Add admin_fee to payment_methods
         Schema::table('payment_methods', function (Blueprint $table) {
-            $table->integer('admin_fee')->default(0)->after('logo_url');
+            $table->integer('admin_fee')->default(0);
         });
 
         // 2. Add billing details to bookings
         Schema::table('bookings', function (Blueprint $table) {
-            $table->unsignedBigInteger('payment_method_id')->nullable()->after('user_id');
-            $table->integer('tax_amount')->default(0)->after('base_price');
-            $table->integer('admin_fee')->default(0)->after('tax_amount');
+            $table->unsignedBigInteger('payment_method_id')->nullable();
+            $table->integer('tax_amount')->default(0);
+            $table->integer('admin_fee')->default(0);
 
             $table->foreign('payment_method_id')->references('id')->on('payment_methods')->onDelete('set null');
         });

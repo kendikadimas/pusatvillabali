@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->nullOnDelete()->after('total_amount');
-            $table->decimal('discount_amount', 12, 2)->default(0)->after('voucher_id');
+            $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->nullOnDelete();
+            $table->decimal('discount_amount', 12, 2)->default(0);
         });
     }
 

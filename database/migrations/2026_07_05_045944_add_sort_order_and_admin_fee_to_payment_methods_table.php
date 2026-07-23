@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::table('payment_methods', function (Blueprint $table) {
             if (! Schema::hasColumn('payment_methods', 'sort_order')) {
-                $table->integer('sort_order')->default(0)->after('is_active');
+                $table->integer('sort_order')->default(0);
             }
             if (! Schema::hasColumn('payment_methods', 'admin_fee')) {
-                $table->integer('admin_fee')->default(0)->after('sort_order');
+                $table->integer('admin_fee')->default(0);
             }
         });
     }

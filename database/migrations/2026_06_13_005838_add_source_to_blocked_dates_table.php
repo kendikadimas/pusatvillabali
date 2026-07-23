@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('blocked_dates', function (Blueprint $table) {
-            $table->string('source', 50)->nullable()->default('manual')->after('created_by');
+            $table->string('source', 50)->nullable()->default('manual');
         });
     }
 

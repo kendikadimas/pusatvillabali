@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payments', function (Blueprint $table) {
-            $table->text('rejection_reason')->nullable()->after('payment_proof');
-            $table->timestamp('rejected_at')->nullable()->after('paid_at');
+            $table->text('rejection_reason')->nullable();
+            $table->timestamp('rejected_at')->nullable();
         });
     }
 

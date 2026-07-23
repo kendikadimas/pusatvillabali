@@ -30,7 +30,7 @@ jobs:
           node-version: '22'
 
       - name: Install PHP dependencies
-        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --no-scripts
 
       - name: Install Node dependencies
         run: npm ci

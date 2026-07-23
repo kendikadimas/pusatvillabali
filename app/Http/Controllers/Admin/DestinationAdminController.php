@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Destination;
-use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -47,8 +46,6 @@ class DestinationAdminController extends Controller
         }
 
         $destination = Destination::create($validated);
-
-        ActivityLogService::log('create', 'Destinasi', $destination->name, 'Destinasi baru ditambahkan: '.$destination->name);
 
         return response()->json([
             'message' => 'Destinasi berhasil dibuat.',
@@ -97,8 +94,6 @@ class DestinationAdminController extends Controller
 
         $destination->update($validated);
 
-        ActivityLogService::log('update', 'Destinasi', $destination->name, 'Destinasi diperbarui: '.$destination->name);
-
         return response()->json([
             'message' => 'Destinasi berhasil diperbarui.',
             'data' => $destination,
@@ -117,8 +112,6 @@ class DestinationAdminController extends Controller
         }
 
         $destination->delete();
-
-        ActivityLogService::log('delete', 'Destinasi', $destination->name, 'Destinasi dihapus: '.$destination->name);
 
         return response()->json([
             'message' => 'Destinasi berhasil dihapus.',

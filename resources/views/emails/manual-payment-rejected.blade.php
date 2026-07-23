@@ -9,7 +9,7 @@
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0fdf4;
+            background-color: #f4f4f5;
             color: #1e293b;
         }
         .wrapper {
@@ -21,34 +21,11 @@
             background: #ffffff;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
-            border: 1px solid #dcfce7;
-        }
-        /* Header tetap merah untuk konteks penolakan — tapi dengan brand strip hijau di atas */
-        .brand-strip {
-            background: #15803d;
-            padding: 12px 32px;
-            text-align: center;
-        }
-        .brand-strip-inner {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .brand-strip svg {
-            width: 24px;
-            height: 24px;
-            vertical-align: middle;
-        }
-        .brand-strip span {
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         }
         .header {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            padding: 28px 32px 24px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            padding: 36px 32px 28px;
             text-align: center;
         }
         .header h1 {
@@ -59,7 +36,7 @@
             letter-spacing: -0.3px;
         }
         .header p {
-            color: #fecaca;
+            color: #fee2e2;
             font-size: 14px;
             margin: 0;
         }
@@ -72,7 +49,6 @@
             padding: 4px 14px;
             border-radius: 20px;
             margin-top: 12px;
-            border: 1px solid rgba(255,255,255,0.15);
         }
         .body {
             padding: 32px;
@@ -80,8 +56,7 @@
         .greeting {
             font-size: 16px;
             font-weight: 600;
-            margin-bottom: 8px;
-            color: #0f172a;
+            margin-bottom: 24px;
         }
         .detail-table {
             width: 100%;
@@ -126,19 +101,6 @@
         .rejection-box strong {
             color: #7f1d1d;
         }
-        .info-note {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 13px;
-            color: #166534;
-            margin-top: 16px;
-            line-height: 1.6;
-        }
-        .info-note strong {
-            color: #15803d;
-        }
         .footer-text {
             text-align: center;
             padding: 24px 32px 32px;
@@ -147,13 +109,13 @@
             line-height: 1.6;
         }
         .footer-text a {
-            color: #15803d;
+            color: #ef4444;
             text-decoration: underline;
         }
         .btn {
             display: inline-block;
-            background: #15803d;
-            color: #ffffff !important;
+            background: #ef4444;
+            color: #ffffff;
             font-size: 14px;
             font-weight: 700;
             padding: 12px 28px;
@@ -161,9 +123,18 @@
             text-decoration: none;
             margin: 16px 0 8px;
         }
+        .info-note {
+            background: #fff7ed;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            color: #9a3412;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
         @media (max-width: 480px) {
             .body { padding: 20px; }
-            .header { padding: 22px 20px 20px; }
+            .header { padding: 28px 20px 24px; }
             .detail-table td:first-child { width: 100px; }
         }
     </style>
@@ -171,23 +142,6 @@
 <body>
     <div class="wrapper">
         <div class="card">
-            <!-- Brand strip hijau di atas header merah -->
-            <div class="brand-strip">
-                <div class="brand-strip-inner">
-                    <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="100" cy="100" r="96" fill="#166534"/>
-                        <polygon points="30,118 170,118 155,98 45,98" fill="#f0fdf4"/>
-                        <polygon points="52,98 148,98 136,80 64,80" fill="#dcfce7"/>
-                        <polygon points="72,80 128,80 120,65 80,65" fill="#f0fdf4"/>
-                        <rect x="72" y="118" width="56" height="36" fill="#f0fdf4"/>
-                        <path d="M91,154 L91,134 Q100,126 109,134 L109,154 Z" fill="#15803d"/>
-                        <path d="M55,154 Q42,130 30,120" stroke="#86efac" stroke-width="3" stroke-linecap="round" fill="none"/>
-                        <path d="M145,154 Q158,130 170,120" stroke="#86efac" stroke-width="3" stroke-linecap="round" fill="none"/>
-                    </svg>
-                    <span>PusatVillaBali</span>
-                </div>
-            </div>
-
             <div class="header">
                 <h1>Bukti Pembayaran Perlu Diperbaiki</h1>
                 <p>Maaf, bukti transfer yang Anda unggah tidak dapat divalidasi</p>
@@ -197,7 +151,7 @@
             <div class="body">
                 <div class="greeting">Halo, {{ $booking->guest_name }}!</div>
 
-                <p style="font-size:14px;color:#475569;margin:8px 0 20px">
+                <p style="font-size:14px;color:#475569;margin:0 0 20px">
                     Kami telah memeriksa bukti pembayaran manual yang Anda kirimkan untuk pemesanan villa berikut:
                 </p>
 
@@ -221,7 +175,7 @@
                     </tr>
                     <tr>
                         <td>Total Pembayaran</td>
-                        <td style="font-weight: 700; color: #dc2626;">Rp {{ number_format((float) $booking->total_amount, 0, ',', '.') }}</td>
+                        <td style="font-weight: 700; color: #ef4444;">Rp {{ number_format((float) $booking->total_amount, 0, ',', '.') }}</td>
                     </tr>
                 </table>
 
@@ -231,7 +185,7 @@
                 </div>
 
                 <div class="info-note">
-                    <strong>Langkah selanjutnya:</strong> Silakan klik tombol di bawah untuk masuk ke halaman pembayaran kami, periksa kembali nomor rekening tujuan, transfer jumlah yang sesuai, dan unggah ulang foto bukti transfer yang asli dan jelas.
+                    <strong>👉 Langkah selanjutnya:</strong> Silakan klik tombol di bawah untuk masuk ke halaman pembayaran aman kami, periksa kembali nomor rekening tujuan Anda, transfer jumlah yang sesuai, dan unggah ulang foto bukti transfer yang asli dan jelas.
                 </div>
 
                 <div style="text-align:center;margin-top:24px">
@@ -241,13 +195,13 @@
         </div>
 
         <div class="footer-text">
-            <p style="margin:0 0 4px;font-weight:700;font-size:15px;color:#15803d">PusatVillaBali</p>
-            <p style="margin:0 0 4px">Platform persewaan villa premium di Indonesia</p>
+            <p style="margin:0 0 8px;font-weight:600;color:#1e293b">PusatVilla.id</p>
+            <p style="margin:0 0 4px">Platform persewaan villa premium terbaik di Indonesia</p>
             <p style="margin:0">
-                <a href="mailto:admin@pusatvillabali.com">admin@pusatvillabali.com</a>
+                <a href="mailto:support@pusatvilla.id">support@pusatvilla.id</a>
             </p>
-            <p style="margin:10px 0 0;font-size:12px;color:#cbd5e1">
-                &copy; {{ date('Y') }} PusatVillaBali. All rights reserved.
+            <p style="margin:8px 0 0;font-size:12px;color:#cbd5e1">
+                © {{ date('Y') }} External. All rights reserved.
             </p>
         </div>
     </div>

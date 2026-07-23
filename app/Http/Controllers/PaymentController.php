@@ -5,13 +5,11 @@ namespace App\Http\Controllers;
 use App\Mail\BookingConfirmationMail;
 use App\Models\Booking;
 use App\Models\Payment;
-use App\Models\ReviewToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 class PaymentController extends Controller
 {
@@ -35,7 +33,7 @@ class PaymentController extends Controller
         }
 
         // 1. Signature Key Verification (SHA512) - SECURITY: Server key MUST be configured
-        $serverKey = config('midtrans.server_key');
+        $serverKey = env('MIDTRANS_SERVER_KEY');
         if (empty($serverKey)) {
             Log::error('Midtrans Webhook: Server key not configured. Rejecting webhook for security.');
 

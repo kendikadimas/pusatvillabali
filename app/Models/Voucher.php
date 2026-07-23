@@ -13,24 +13,26 @@ class Voucher extends Model
     protected $fillable = [
         'code',
         'description',
-        'type',
-        'value',
-        'min_booking_amount',
+        'discount_type',
+        'discount_value',
         'max_discount',
+        'min_booking_amount',
         'usage_limit',
         'used_count',
-        'is_active',
         'valid_from',
         'valid_until',
+        'is_active',
     ];
 
     protected $casts = [
-        'value' => 'decimal:2',
-        'min_booking_amount' => 'decimal:2',
-        'max_discount' => 'decimal:2',
+        'discount_value' => 'integer',
+        'max_discount' => 'integer',
+        'min_booking_amount' => 'integer',
+        'usage_limit' => 'integer',
+        'used_count' => 'integer',
+        'valid_from' => 'datetime',
+        'valid_until' => 'datetime',
         'is_active' => 'boolean',
-        'valid_from' => 'date',
-        'valid_until' => 'date',
     ];
 
     public function bookings(): HasMany
@@ -39,21 +41,39 @@ class Voucher extends Model
     }
 
     /**
-     * Check whether this voucher is currently usable.
+     * Calculate the discount amount for a given booking total.
      */
-    public function isValid(float $bookingAmount): bool
+    public function calculateDiscount(int $bookingAmount): int
+    {
+        if ($this->discount_type === 'percentage') {
+            $discount = (int) round($bookingAmount * $this->discount_value / 100);
+            if ($this->max_discount) {
+                $discount = min($discount, $this->max_discount);
+            }
+
+            return $discount;
+        }
+
+        // fixed
+        return min($this->discount_value, $bookingAmount);
+    }
+
+    /**
+     * Check if voucher is currently valid (active, within date range, usage not exceeded).
+     */
+    public function isValid(): bool
     {
         if (! $this->is_active) {
             return false;
         }
 
-        $today = now()->toDateString();
+        $now = now();
 
-        if ($this->valid_from && $this->valid_from->toDateString() > $today) {
+        if ($this->valid_from && $now->lt($this->valid_from)) {
             return false;
         }
 
-        if ($this->valid_until && $this->valid_until->toDateString() < $today) {
+        if ($this->valid_until && $now->gt($this->valid_until)) {
             return false;
         }
 
@@ -61,29 +81,6 @@ class Voucher extends Model
             return false;
         }
 
-        if ($bookingAmount < $this->min_booking_amount) {
-            return false;
-        }
-
         return true;
-    }
-
-    /**
-     * Calculate the discount amount for a given booking total.
-     */
-    public function calculateDiscount(float $bookingAmount): float
-    {
-        if ($this->type === 'percent') {
-            $discount = $bookingAmount * ($this->value / 100);
-
-            if ($this->max_discount !== null) {
-                $discount = min($discount, (float) $this->max_discount);
-            }
-
-            return round($discount, 2);
-        }
-
-        // fixed
-        return min((float) $this->value, $bookingAmount);
     }
 }

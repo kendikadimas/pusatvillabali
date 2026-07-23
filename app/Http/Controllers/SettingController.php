@@ -15,13 +15,11 @@ class SettingController extends Controller
         $settings = [
             'settings_prop_name' => Setting::getValue('settings_prop_name', 'PusatVilla.id'),
             'settings_website' => Setting::getValue('settings_website', 'https://pusatvillaid.com'),
-            'settings_whatsapp' => Setting::getValue('settings_whatsapp', '6281234567890'),
-            'settings_email' => Setting::getValue('settings_email', 'noreply@pusatvillabali'),
+            'settings_wa' => Setting::getValue('settings_wa', '081234567890'),
+            'settings_email' => Setting::getValue('settings_email', 'noreply@pusatvilla.id'),
             'settings_address' => Setting::getValue('settings_address', 'Cisarua, Puncak, Bogor, Jawa Barat'),
             'settings_checkin' => Setting::getValue('settings_checkin', '14:00'),
             'settings_checkout' => Setting::getValue('settings_checkout', '12:00'),
-            'settings_meta_title' => Setting::getValue('settings_meta_title', ''),
-            'settings_meta_description' => Setting::getValue('settings_meta_description', ''),
             'tax_percentage' => (int) Setting::getValue('tax_percentage', 0),
         ];
 

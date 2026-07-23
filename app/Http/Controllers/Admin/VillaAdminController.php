@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlockedDate;
-use App\Models\Booking;
 use App\Models\Villa;
-use App\Services\ActivityLogService;
+use App\Models\VillaIcalLink;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -42,7 +43,7 @@ class VillaAdminController extends Controller
             'max_guests' => 'required|integer|min:1',
             'price_per_night' => 'required|numeric|min:0',
             'weekend_price' => 'nullable|numeric|min:0',
-            'min_nights' => 'nullable|integer|min:0',
+            'min_nights' => 'required|integer|min:1',
             'amenities' => 'nullable|array',
             'amenities.*.name' => 'required|string|max:255',
             'amenities.*.icon' => 'required|string|max:100',
@@ -52,7 +53,7 @@ class VillaAdminController extends Controller
             'is_active' => 'boolean',
             'host_name' => 'nullable|string|max:255',
             'host_years' => 'nullable|integer|min:0',
-            'host_avatar' => 'nullable|string|max:1000',
+            'host_avatar' => 'nullable|string|url|max:1000',
             'host_phone' => 'nullable|string|max:50',
             'highlights' => 'nullable|array',
             'bedrooms_info' => 'nullable|array',
@@ -90,8 +91,6 @@ class VillaAdminController extends Controller
             'co_hosts' => [],
             'safety_property' => $request->safety_property ?? [],
         ]));
-
-        ActivityLogService::log('create', 'Villa', $villa->name, 'Villa baru ditambahkan: ' . $villa->name);
 
         return response()->json([
             'villa' => $villa,
@@ -136,7 +135,7 @@ class VillaAdminController extends Controller
             'max_guests' => 'required|integer|min:1',
             'price_per_night' => 'required|numeric|min:0',
             'weekend_price' => 'nullable|numeric|min:0',
-            'min_nights' => 'nullable|integer|min:0',
+            'min_nights' => 'required|integer|min:1',
             'amenities' => 'nullable|array',
             'amenities.*.name' => 'required|string|max:255',
             'amenities.*.icon' => 'required|string|max:100',
@@ -147,7 +146,7 @@ class VillaAdminController extends Controller
             'photos' => 'nullable|array', // Allow updating photos list reordering
             'host_name' => 'nullable|string|max:255',
             'host_years' => 'nullable|integer|min:0',
-            'host_avatar' => 'nullable|string|max:1000',
+            'host_avatar' => 'nullable|string|url|max:1000',
             'host_phone' => 'nullable|string|max:50',
             'highlights' => 'nullable|array',
             'bedrooms_info' => 'nullable|array',
@@ -186,10 +185,6 @@ class VillaAdminController extends Controller
             'safety_property' => $request->safety_property ?? $villa->safety_property ?? [],
         ]));
 
-        ActivityLogService::log('update', 'Villa', $villa->name, 'Villa diperbarui: ' . $villa->name);
-
-        ActivityLogService::log('update', 'Villa', $villa->name, 'Villa diperbarui: ' . $villa->name);
-
         return response()->json([
             'villa' => $villa,
             'message' => 'Detail villa berhasil diperbarui.',
@@ -211,8 +206,6 @@ class VillaAdminController extends Controller
         // or support hard deletion if requested. Let's toggle is_active to false.
         $villa->is_active = false;
         $villa->save();
-
-        ActivityLogService::log('delete', 'Villa', $villa->name, 'Villa dinonaktifkan: ' . $villa->name);
 
         return response()->json([
             'message' => 'Villa telah dinonaktifkan.',
@@ -245,7 +238,7 @@ class VillaAdminController extends Controller
                 // Save to public storage disk (storage/app/public/villas)
                 $path = $file->store('villas', 'public');
                 $uploadedPhotos[] = [
-                    'url' => '/storage/'.$path,
+                    'url' => asset('storage/'.$path),
                     'description' => '',
                     'category' => 'Lainnya',
                 ];
@@ -296,12 +289,9 @@ class VillaAdminController extends Controller
             unset($photos[$foundKey]);
 
             // Delete actual file from storage if it is local
-            if (Str::startsWith($photoUrl, '/storage/')) {
-                $relativePath = Str::after($photoUrl, '/storage/');
-                Storage::disk('public')->delete($relativePath);
-            } elseif (Str::contains($photoUrl, '/storage/')) {
-                // Handle legacy absolute URLs still in the DB
-                $relativePath = Str::after($photoUrl, '/storage/');
+            $pathPrefix = asset('storage/');
+            if (Str::startsWith($photoUrl, $pathPrefix)) {
+                $relativePath = Str::after($photoUrl, $pathPrefix);
                 Storage::disk('public')->delete($relativePath);
             }
         }
@@ -356,10 +346,11 @@ class VillaAdminController extends Controller
         }
 
         // Check if date is already booked
-        $booked = Booking::where('villa_id', $request->villa_id)
-            ->where('status', '!=', 'cancelled')
-            ->where('check_in', '<=', $request->date)
-            ->where('check_out', '>', $request->date)
+        $booked = BlockedDate::join('bookings', 'bookings.villa_id', '=', 'blocked_dates.villa_id')
+            ->where('bookings.villa_id', $request->villa_id)
+            ->where('bookings.status', '!=', 'cancelled')
+            ->where('bookings.check_in', '<=', $request->date)
+            ->where('bookings.check_out', '>', $request->date)
             ->exists();
 
         if ($booked) {
@@ -402,6 +393,189 @@ class VillaAdminController extends Controller
     // ==========================================
 
     /**
+     * List all iCal links for a specific villa.
+     */
+    public function listIcalLinks(int $villaId): JsonResponse
+    {
+        $villa = Villa::find($villaId);
+
+        if (! $villa) {
+            return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
+        }
+
+        $links = $villa->icalLinks()->orderBy('created_at', 'desc')->get();
+
+        return response()->json([
+            'data' => $links,
+            'export_url' => url("/api/v1/villas/{$villaId}/ical.ics"),
+        ]);
+    }
+
+    /**
+     * Add a new iCal link for a villa.
+     */
+    public function storeIcalLink(Request $request, int $villaId): JsonResponse
+    {
+        $villa = Villa::find($villaId);
+
+        if (! $villa) {
+            return response()->json(['message' => 'Villa tidak ditemukan.'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'channel_name' => 'required|string|max:100',
+            'ical_url' => 'required|url|max:2000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $url = $request->ical_url;
+        $channelName = $request->channel_name;
+
+        // Extract listing ID
+        $externalId = null;
+        if (preg_match('/ical\/([a-zA-Z0-9_\-]+)\.ics/', $url, $idMatches)) {
+            $externalId = $idMatches[1];
+        } elseif (preg_match('/ical\/([a-zA-Z0-9_\-]+)/', $url, $idMatches)) {
+            $externalId = $idMatches[1];
+        }
+
+        // Cek duplikasi di DB sebelum menyimpan
+        if ($externalId) {
+            $exists = VillaIcalLink::where('channel_name', $channelName)
+                ->where('external_listing_id', $externalId)
+                ->exists();
+            if ($exists) {
+                return response()->json(['message' => 'Kalender dari channel ini sudah dihubungkan ke villa lain.'], 422);
+            }
+        }
+
+        $link = VillaIcalLink::create([
+            'villa_id' => $villaId,
+            'channel_name' => $channelName,
+            'ical_url' => $url,
+            'external_listing_id' => $externalId,
+            'sync_status' => 'active',
+        ]);
+
+        return response()->json([
+            'data' => $link,
+            'message' => "iCal link dari {$channelName} berhasil ditambahkan.",
+        ], 201);
+    }
+
+    /**
+     * Verify an iCal feed and check for duplicates.
+     */
+    public function verifyIcal(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'channel_name' => 'required|string|max:100',
+            'ical_url' => 'required|url|max:2000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $url = $request->input('ical_url');
+        $channelName = $request->input('channel_name');
+
+        try {
+            // 1. Fetch iCal content
+            $response = Http::timeout(10)->get($url);
+            if (! $response->successful()) {
+                return response()->json(['message' => 'URL iCal tidak valid atau tidak dapat diakses.'], 400);
+            }
+
+            $body = $response->body();
+
+            // 2. Parse metadata (mencari nama kalender)
+            $calName = null;
+            if (preg_match('/^X-WR-CALNAME:(.*)$/m', $body, $matches)) {
+                $calName = trim($matches[1]);
+            }
+
+            // 3. Ekstrak listing ID
+            $externalId = null;
+            if (preg_match('/ical\/([a-zA-Z0-9_\-]+)\.ics/', $url, $idMatches)) {
+                $externalId = $idMatches[1];
+            } elseif (preg_match('/ical\/([a-zA-Z0-9_\-]+)/', $url, $idMatches)) {
+                $externalId = $idMatches[1];
+            }
+
+            // 4. Cek duplikasi di DB
+            $exists = null;
+            if ($externalId) {
+                $exists = VillaIcalLink::where('channel_name', $channelName)
+                    ->where('external_listing_id', $externalId)
+                    ->with('villa:id,name')
+                    ->first();
+            }
+
+            return response()->json([
+                'calendar_name' => $calName ?? 'Tidak diketahui',
+                'external_listing_id' => $externalId,
+                'is_already_linked' => ! is_null($exists),
+                'linked_to_villa' => $exists ? $exists->villa->name : null,
+                'message' => 'iCal feed verified successfully.',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('iCal verification failed: '.$e->getMessage());
+
+            return response()->json(['message' => 'Gagal memverifikasi feed iCal. Pastikan URL valid dan dapat diakses.'], 400);
+        }
+    }
+
+    /**
+     * Delete an iCal link.
+     */
+    public function destroyIcalLink(int $id): JsonResponse
+    {
+        $link = VillaIcalLink::find($id);
+
+        if (! $link) {
+            return response()->json(['message' => 'iCal link tidak ditemukan.'], 404);
+        }
+
+        $channelName = $link->channel_name;
+        $link->delete();
+
+        return response()->json([
+            'message' => "iCal link {$channelName} berhasil dihapus.",
+        ]);
+    }
+
+    /**
+     * Trigger manual iCal sync for a specific link ID.
+     */
+    public function syncIcalLinks(int $linkId): JsonResponse
+    {
+        $link = VillaIcalLink::find($linkId);
+
+        if (! $link) {
+            return response()->json(['message' => 'iCal link tidak ditemukan.'], 404);
+        }
+
+        if ($link->sync_status !== 'active') {
+            return response()->json(['message' => 'iCal link tidak aktif.'], 422);
+        }
+
+        // Run sync command for this specific link ID
+        Artisan::call('ical:sync', ['--link-id' => $linkId]);
+
+        // Refresh link to show updated sync status
+        $link->refresh();
+
+        return response()->json([
+            'data' => $link,
+            'message' => "Sync selesai untuk iCal feed {$link->channel_name}.",
+        ]);
+    }
+
+    /**
      * Upload host avatar for a villa.
      */
     public function uploadHostAvatar(Request $request, int $id): JsonResponse
@@ -423,16 +597,15 @@ class VillaAdminController extends Controller
         if ($request->hasFile('avatar')) {
             // Delete old avatar if it exists and is local
             $oldAvatar = $villa->host_avatar;
-            if ($oldAvatar && Str::startsWith($oldAvatar, '/storage/')) {
-                Storage::disk('public')->delete(Str::after($oldAvatar, '/storage/'));
-            } elseif ($oldAvatar && Str::contains($oldAvatar, '/storage/')) {
-                // Handle legacy absolute URLs still in the DB
-                Storage::disk('public')->delete(Str::after($oldAvatar, '/storage/'));
+            $pathPrefix = asset('storage/');
+            if ($oldAvatar && Str::startsWith($oldAvatar, $pathPrefix)) {
+                $relativePath = Str::after($oldAvatar, $pathPrefix);
+                Storage::disk('public')->delete($relativePath);
             }
 
             // Store new avatar in public storage disk under avatars
             $path = $request->file('avatar')->store('avatars', 'public');
-            $villa->host_avatar = '/storage/'.$path;
+            $villa->host_avatar = asset('storage/'.$path);
             $villa->save();
         }
 
@@ -458,7 +631,7 @@ class VillaAdminController extends Controller
         if ($request->hasFile('image')) {
             // Save to public storage disk (storage/app/public/villas/extras)
             $path = $request->file('image')->store('villas/extras', 'public');
-            $url = '/storage/'.$path;
+            $url = asset('storage/'.$path);
 
             return response()->json([
                 'url' => $url,

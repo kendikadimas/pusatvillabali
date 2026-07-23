@@ -6,11 +6,9 @@ use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
-    // Public profile (booking history) lives at /profile — do not expose settings/profile UI
-    Route::redirect('settings', '/profile');
-    Route::get('settings/profile', fn () => redirect('/profile'))->name('profile.edit');
+    Route::redirect('settings', '/settings/profile');
 
-    // Keep JSON update endpoint for API clients (no public settings page)
+    Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
@@ -21,7 +19,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware(RequirePassword::class)
         ->name('security.edit');
 
-    // No password.confirm middleware — Google users set password without knowing current
     Route::put('settings/password', [SecurityController::class, 'update'])
         ->middleware('throttle:6,1')
         ->name('user-password.update');

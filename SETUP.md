@@ -9,7 +9,7 @@ Dua opsi gratis — pilih salah satu:
 **Daftar:**
 1. Buka [resend.com](https://resend.com) → Register
 2. Verifikasi email
-3. Dashboard → **Add Domain** → masukkan domain Anda (misal: `pusatvillabali`)
+3. Dashboard → **Add Domain** → masukkan domain Anda (misal: `pusatvilla.id`)
 4. Salin **DNS records** yang diberikan, lalu tambahkan ke cPanel:
    - cPanel → **Zone Editor** → pilih domain → **Add Record**
    - Tambahkan **TXT**, **MX**, dan **CNAME** sesuai petunjuk Resend
@@ -27,7 +27,7 @@ Edit `.env`:
 
 ```env
 MAIL_MAILER=resend
-MAIL_FROM_ADDRESS=noreply@pusatvillabali
+MAIL_FROM_ADDRESS=noreply@pusatvilla.id
 MAIL_FROM_NAME="PusatVilla.id"
 RESEND_API_KEY=re_xxxxxxxxxxxx
 ```
@@ -62,7 +62,7 @@ MAIL_HOST=smtp-relay.brevo.com
 MAIL_PORT=587
 MAIL_USERNAME=email-anda@gmail.com
 MAIL_PASSWORD=xsmtp_xxxxxxxxxxxx
-MAIL_FROM_ADDRESS=noreply@pusatvillabali
+MAIL_FROM_ADDRESS=noreply@pusatvilla.id
 MAIL_FROM_NAME="PusatVilla.id"
 ```
 
@@ -123,16 +123,25 @@ php artisan optimize
 
 ---
 
-## 🌐 Frontend Assets (Inertia + React)
+## 🌐 Frontend (Next.js)
 
-Build frontend assets (TSX/React dikompilasi via Vite — tidak butuh Node.js server di production):
+**Build:**
 
 ```bash
+cd frontend
 npm ci
 npm run build
 ```
 
-Hasil build ada di `public/build/`. Semua halaman dilayani oleh Laravel + Inertia, tidak perlu Setup Node.js App di cPanel.
+**cPanel Node.js Setup:**
+1. cPanel → **Setup Node.js App**
+2. Pilih folder `frontend/`
+3. Application mode: **Production**
+4. Startup file: `node_modules/next/dist/bin/next start`
+5. Environment:
+   - `NODE_ENV=production`
+   - `NEXT_PUBLIC_API_URL=https://domain-anda.com/api/v1`
+   - `NEXT_PUBLIC_BACKEND_URL=https://domain-anda.com`
 
 ---
 

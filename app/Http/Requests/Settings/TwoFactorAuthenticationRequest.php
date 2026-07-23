@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Settings;
 
-use App\Exceptions\PasswordConfirmationRequiredException;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Fortify\Features;
+use Laravel\Fortify\Http\Requests\PasswordConfirmationRequiredException;
 use Laravel\Fortify\InteractsWithTwoFactorState;
 
 class TwoFactorAuthenticationRequest extends FormRequest
@@ -41,8 +41,7 @@ class TwoFactorAuthenticationRequest extends FormRequest
             throw new PasswordConfirmationRequiredException;
         }
 
-        $confirmedAt = Cache::get('auth.password_confirmed_at.'.$user->id)
-            ?? session('auth.password_confirmed_at', 0);
+        $confirmedAt = Cache::get('auth.password_confirmed_at.'.$user->id, 0);
         $timeout = config('auth.password_timeout', 10800);
 
         if (time() - $confirmedAt > $timeout) {

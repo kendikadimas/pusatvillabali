@@ -1,96 +1,10 @@
 import { createInertiaApp } from '@inertiajs/react';
-import axios from 'axios';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
-import AdminLayout from '@/layouts/admin-layout';
 import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
-import PublicLayout from '@/layouts/public-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-
-// Seed tokens from Inertia's initial data-page payload before any component
-// mounts, so axios calls in useEffect on first render always have a valid token.
-try {
-    const pageEl = document.getElementById('app');
-    const pageData = pageEl?.dataset?.page ? JSON.parse(pageEl.dataset.page) : null;
-    const props = pageData?.props;
-    if (props) {
-        if (props.admin_token) localStorage.setItem('admin_token', props.admin_token);
-        if (props.sanctum_token) localStorage.setItem('sanctum_token', props.sanctum_token);
-    }
-} catch {
-    // Parsing failed or localStorage unavailable — hooks will sync on mount
-}
-
-// Base axios config
-axios.defaults.withCredentials = true;
-axios.defaults.headers.common['Accept'] = 'application/json';
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
-axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
-// Avoid silent POST→GET conversion when a host/protocol redirect occurs
-axios.defaults.maxRedirects = 0;
-
-// Attach Sanctum Bearer token from localStorage on every request
-axios.interceptors.request.use((config) => {
-    const url = String(config.url ?? '');
-    const isAdminApi = url.includes('/api/v1/admin') || url.includes('/admin/');
-    const token = isAdminApi
-        ? localStorage.getItem('admin_token') || localStorage.getItem('sanctum_token')
-        : localStorage.getItem('sanctum_token') || localStorage.getItem('admin_token');
-
-    config.headers = config.headers ?? {};
-    config.headers['Accept'] = 'application/json';
-    config.headers['X-Requested-With'] = 'XMLHttpRequest';
-
-    if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    // Normalize relative API paths (no trailing slash) to prevent 301→GET
-    if (typeof config.url === 'string' && config.url.startsWith('/api/')) {
-        config.url = config.url.replace(/\/+$/, '') || config.url;
-    }
-
-    return config;
-});
-
-// On 401: drop stale Bearer and retry once so session cookie can authenticate
-axios.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const config = error.config as (typeof error.config & { _authRetry?: boolean }) | undefined;
-        const status = error.response?.status;
-
-        // 401 with Bearer → strip token and retry once (session fallback)
-        if (status === 401 && config && !config._authRetry) {
-            const authHeader = config.headers?.Authorization ?? config.headers?.authorization;
-
-            if (authHeader) {
-                config._authRetry = true;
-                const raw = String(authHeader).replace(/^Bearer\s+/i, '');
-
-                if (localStorage.getItem('sanctum_token') === raw) {
-                    localStorage.removeItem('sanctum_token');
-                }
-
-                if (localStorage.getItem('admin_token') === raw) {
-                    localStorage.removeItem('admin_token');
-                }
-
-                if (config.headers) {
-                    delete config.headers.Authorization;
-                    delete config.headers.authorization;
-                }
-
-                return axios.request(config);
-            }
-        }
-
-        return Promise.reject(error);
-    },
-);
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -100,16 +14,10 @@ createInertiaApp({
         switch (true) {
             case name === 'welcome':
                 return null;
-            case name === 'admin/login':
-                return null;
-            case name.startsWith('public/'):
-                return PublicLayout;
-            case name.startsWith('admin/'):
-                return AdminLayout;
             case name.startsWith('auth/'):
                 return AuthLayout;
             case name.startsWith('settings/'):
-                return [PublicLayout, SettingsLayout];
+                return [AppLayout, SettingsLayout];
             default:
                 return AppLayout;
         }
@@ -128,4 +36,5 @@ createInertiaApp({
     },
 });
 
+// This will set light / dark mode on load...
 initializeTheme();

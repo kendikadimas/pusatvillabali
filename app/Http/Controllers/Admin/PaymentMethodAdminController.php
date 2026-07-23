@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PaymentMethod;
-use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -53,8 +52,6 @@ class PaymentMethodAdminController extends Controller
             'admin_fee' => $request->input('admin_fee', 0),
             'is_active' => $request->input('is_active', true),
         ]);
-
-        ActivityLogService::log('create', 'Metode Pembayaran', $method->name, 'Metode pembayaran baru ditambahkan: '.$method->name);
 
         return response()->json([
             'payment_method' => $method,
@@ -120,25 +117,6 @@ class PaymentMethodAdminController extends Controller
     }
 
     /**
-     * Toggle the active status of a payment method.
-     */
-    public function toggleStatus(int $id): JsonResponse
-    {
-        $method = PaymentMethod::find($id);
-
-        if (! $method) {
-            return response()->json(['message' => 'Metode pembayaran tidak ditemukan.'], 404);
-        }
-
-        $method->update(['is_active' => ! $method->is_active]);
-
-        return response()->json([
-            'payment_method' => $method,
-            'message' => 'Status metode pembayaran berhasil diubah.',
-        ]);
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function destroy(int $id): JsonResponse
@@ -170,7 +148,7 @@ class PaymentMethodAdminController extends Controller
     public function uploadLogo(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // Max 5MB
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,webp,svg|max:5120', // Max 5MB
         ]);
 
         if ($validator->fails()) {

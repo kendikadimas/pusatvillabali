@@ -8,12 +8,10 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -53,15 +51,6 @@ class AuthController extends Controller
         // Generate Sanctum token with admin-only ability
         // Multi-device sessions are allowed — no existing tokens revoked
         $token = $user->createToken('admin-token', ['admin-access'])->plainTextToken;
-
-        // Log in via session so Inertia requests work (stateful SPA only)
-        Auth::login($user);
-
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-            $request->session()->put('admin_token', $token);
-            $request->session()->put('sanctum_token', $token);
-        }
 
         return response()->json([
             'token' => $token,
@@ -112,14 +101,6 @@ class AuthController extends Controller
         // Generate Sanctum plain text token
         $token = $user->createToken('user-token')->plainTextToken;
 
-        // Log in via session so Inertia requests work (stateful SPA only)
-        Auth::login($user);
-
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-            $request->session()->put('sanctum_token', $token);
-        }
-
         return response()->json([
             'token' => $token,
             'user' => [
@@ -159,19 +140,10 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'password_set_by_user' => true,
             'role' => 'user',
         ]);
 
         $token = $user->createToken('user-token')->plainTextToken;
-
-        // Log in via session so Inertia requests work (stateful SPA only)
-        Auth::login($user);
-
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-            $request->session()->put('sanctum_token', $token);
-        }
 
         return response()->json([
             'token' => $token,
@@ -186,30 +158,11 @@ class AuthController extends Controller
     }
 
     /**
-     * Revoke current token and logout session.
+     * Revoke current token.
      */
     public function logout(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        // Revoke personal access tokens (session auth uses TransientToken — skip delete)
-        if ($user) {
-            $accessToken = $user->currentAccessToken();
-
-            if ($accessToken instanceof PersonalAccessToken) {
-                $accessToken->delete();
-            } else {
-                $user->tokens()->delete();
-            }
-        }
-
-        Auth::logout();
-
-        if ($request->hasSession()) {
-            $request->session()->forget(['sanctum_token', 'admin_token']);
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-        }
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json([
             'message' => 'Logout berhasil. Token telah dinonaktifkan.',
@@ -265,12 +218,13 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'token' => 'required|string',
-            'email' => 'required|email',
+            'email' => 'required|email|exists:users,email',
             'password' => 'required|string|min:8|confirmed',
         ], [
             'token.required' => 'Token wajib disertakan.',
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
+            'email.exists' => 'Email tidak terdaftar.',
             'password.required' => 'Password baru wajib diisi.',
             'password.min' => 'Password minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
@@ -285,7 +239,6 @@ class AuthController extends Controller
             function ($user, $password) {
                 $user->forceFill([
                     'password' => Hash::make($password),
-                    'password_set_by_user' => true,
                 ])->save();
             }
         );

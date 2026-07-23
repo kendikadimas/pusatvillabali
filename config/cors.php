@@ -15,25 +15,29 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'login', 'logout', 'sanctum/csrf-cookie'],
+    'paths' => ['*'],
 
-    'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        env('FRONTEND_URL', 'http://localhost:3000'),
-        'https://pusatvillabali.com',
-        'https://www.pusatvillabali.com',
+        // Hardcoded — tidak bergantung pada env() agar tidak terdampak config cache issue
+        'https://pusatvillaid.com',
+        'https://www.pusatvillaid.com',
+        'https://api.pusatvillaid.com',
+        // Local dev
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
     ],
 
     'allowed_origins_patterns' => [
-        '#^https?://(?:.+\.)?pusatvillabali\.com$#',
+        '#^https?://(?:.+\.)?pusatvillaid\.com$#',
     ],
 
-    'allowed_headers' => ['Content-Type', 'X-Requested-With', 'Authorization', 'Accept', 'X-XSRF-TOKEN'],
+    'allowed_headers' => ['*'],
 
     'exposed_headers' => [],
 
-    'max_age' => 86400,
+    'max_age' => 86400, // Cache preflight 24 jam — kurangi intermittent CORS failures
 
     'supports_credentials' => false,
 

@@ -1,58 +1,70 @@
 import { Link } from '@inertiajs/react';
-import { KeyRound, Palette } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
+import Heading from '@/components/heading';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
-import { cn } from '@/lib/utils';
+import { cn, toUrl } from '@/lib/utils';
+import { edit } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
+import type { NavItem } from '@/types';
 
-const navItems = [
-    { title: 'Keamanan', href: editSecurity(), icon: KeyRound },
-    { title: 'Tampilan', href: '/settings/appearance', icon: Palette },
+const sidebarNavItems: NavItem[] = [
+    {
+        title: 'Profile',
+        href: edit(),
+        icon: null,
+    },
+    {
+        title: 'Security',
+        href: editSecurity(),
+        icon: null,
+    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-                {/* Page header */}
-                <div className="mb-8">
-                    <h1 className="text-2xl font-bold text-slate-800">Pengaturan Akun</h1>
-                    <p className="text-sm text-slate-500 mt-1">Kelola profil dan preferensi akun Anda</p>
-                </div>
+        <div className="px-4 py-6">
+            <Heading
+                title="Settings"
+                description="Manage your profile and account settings"
+            />
 
-                <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-                    {/* Sidebar nav */}
-                    <aside className="lg:w-52 flex-shrink-0">
-                        <nav className="flex flex-row lg:flex-col gap-1 bg-white rounded-xl border border-slate-200 p-2 overflow-x-auto">
-                            {navItems.map((item) => {
-                                const Icon = item.icon;
-                                const active = isCurrentOrParentUrl(item.href);
+            <div className="flex flex-col lg:flex-row lg:space-x-12">
+                <aside className="w-full max-w-xl lg:w-48">
+                    <nav
+                        className="flex flex-col space-y-1 space-x-0"
+                        aria-label="Settings"
+                    >
+                        {sidebarNavItems.map((item, index) => (
+                            <Button
+                                key={`${toUrl(item.href)}-${index}`}
+                                size="sm"
+                                variant="ghost"
+                                asChild
+                                className={cn('w-full justify-start', {
+                                    'bg-muted': isCurrentOrParentUrl(item.href),
+                                })}
+                            >
+                                <Link href={item.href}>
+                                    {item.icon && (
+                                        <item.icon className="h-4 w-4" />
+                                    )}
+                                    {item.title}
+                                </Link>
+                            </Button>
+                        ))}
+                    </nav>
+                </aside>
 
-                                return (
-                                    <Link
-                                        key={item.title}
-                                        href={item.href}
-                                        className={cn(
-                                            'flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex-1 lg:flex-none',
-                                            active
-                                                ? 'bg-slate-900 text-white'
-                                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800',
-                                        )}
-                                    >
-                                        <Icon className="w-4 h-4 flex-shrink-0" />
-                                        {item.title}
-                                    </Link>
-                                );
-                            })}
-                        </nav>
-                    </aside>
+                <Separator className="my-6 lg:hidden" />
 
-                    {/* Content */}
-                    <main className="flex-1 min-w-0">
+                <div className="flex-1 md:max-w-2xl">
+                    <section className="max-w-xl space-y-12">
                         {children}
-                    </main>
+                    </section>
                 </div>
             </div>
         </div>

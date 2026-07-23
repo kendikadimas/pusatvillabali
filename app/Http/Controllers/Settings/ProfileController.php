@@ -9,27 +9,16 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use Inertia\Response;
 
 class ProfileController extends Controller
 {
     /**
      * Show the user's profile settings page.
      */
-    public function edit(Request $request): Response|JsonResponse
+    public function edit(Request $request): JsonResponse
     {
-        // Return JSON for API/non-Inertia requests (Bearer token or no X-Inertia header on web)
-        if ($request->bearerToken() || ! $request->header('X-Inertia')) {
-            return response()->json([
-                'user' => $request->user(),
-                'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-                'status' => session('status'),
-            ]);
-        }
-
-        // Otherwise return Inertia response for web
-        return Inertia::render('settings/profile', [
+        return response()->json([
+            'user' => $request->user(),
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => $request->session()->get('status'),
         ]);

@@ -1,24 +1,22 @@
 import { Head } from '@inertiajs/react';
-import { Palette } from 'lucide-react';
 import AppearanceTabs from '@/components/appearance-tabs';
+import Heading from '@/components/heading';
 import { edit as editAppearance } from '@/routes/appearance';
 
 export default function Appearance() {
     return (
         <>
-            <Head title="Tampilan" />
+            <Head title="Appearance settings" />
 
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-                <div className="px-5 py-4 border-b border-slate-100">
-                    <div className="flex items-center gap-2">
-                        <Palette className="w-4 h-4 text-slate-400" />
-                        <h2 className="text-sm font-semibold text-slate-700">Tampilan</h2>
-                    </div>
-                    <p className="text-xs text-slate-400 mt-0.5">Sesuaikan tampilan antarmuka</p>
-                </div>
-                <div className="px-5 py-5">
-                    <AppearanceTabs />
-                </div>
+            <h1 className="sr-only">Appearance settings</h1>
+
+            <div className="space-y-6">
+                <Heading
+                    variant="small"
+                    title="Appearance settings"
+                    description="This application always uses light mode"
+                />
+                <AppearanceTabs />
             </div>
         </>
     );
@@ -27,7 +25,7 @@ export default function Appearance() {
 Appearance.layout = {
     breadcrumbs: [
         {
-            title: 'Tampilan',
+            title: 'Appearance settings',
             href: editAppearance(),
         },
     ],

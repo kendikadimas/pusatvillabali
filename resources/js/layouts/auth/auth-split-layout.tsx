@@ -1,17 +1,13 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
-import type { AppSettings } from '@/types';
 
 export default function AuthSplitLayout({
     children,
     title,
     description,
 }: AuthLayoutProps) {
-    const { settings } = usePage<{ settings: AppSettings }>().props;
-    const appName = settings?.settings_prop_name ?? 'PusatVillaBali';
-
     return (
         <div className="relative grid min-h-dvh flex-col lg:grid-cols-2">
             {/* ── Left Brand Panel ── */}
@@ -44,10 +40,10 @@ export default function AuthSplitLayout({
                         className="flex items-center gap-3 text-white"
                     >
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm">
-                            <AppLogoIcon className="size-6" />
+                            <AppLogoIcon className="size-6 fill-current text-white" />
                         </div>
                         <span className="text-lg font-semibold tracking-tight">
-                            {appName}
+                            PusatVilla.id
                         </span>
                     </Link>
 
@@ -114,9 +110,9 @@ export default function AuthSplitLayout({
                     href={home()}
                     className="absolute top-6 left-6 flex items-center gap-2 lg:hidden"
                 >
-                    <AppLogoIcon className="size-8" />
+                    <AppLogoIcon className="size-8 fill-current text-blue-600" />
                     <span className="text-sm font-semibold tracking-tight text-slate-900">
-                        {appName}
+                        PusatVilla.id
                     </span>
                 </Link>
 

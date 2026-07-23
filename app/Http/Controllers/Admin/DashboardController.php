@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ActivityLog;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Review;
@@ -33,19 +32,17 @@ class DashboardController extends Controller
             ->whereIn('status', ['confirmed', 'completed'])
             ->count();
 
-        // Revenue this month — gunakan satu sumber kebenaran
-        // Payment records yang sukses (booking via manual approval)
-        $revenueFromPayments = Payment::where('status', 'success')
+        // Revenue this month (from payments + bookings marked paid)
+        $paymentRevenue = Payment::where('status', 'success')
             ->whereBetween('paid_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
             ->sum('amount');
 
-        // Booking paid tanpa payment record (di-mark paid manual via status form)
-        $revenueFromBookingsOnly = Booking::where('payment_status', 'paid')
-            ->whereDoesntHave('payment')
+        // Also count bookings manually marked as paid (even without payment record)
+        $bookingRevenue = Booking::where('payment_status', 'paid')
             ->whereBetween('updated_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
             ->sum('total_amount');
 
-        $revenueThisMonth = (float) $revenueFromPayments + (float) $revenueFromBookingsOnly;
+        $revenueThisMonth = max((float) $paymentRevenue, (float) $bookingRevenue);
 
         // Pending Payment Count
         $pendingPayments = Booking::where('status', 'pending')
@@ -89,11 +86,12 @@ class DashboardController extends Controller
             $occupancyRate = 0.0;
         }
 
-        // 2. Activity Lists — filter kolom sensitif
+        // 2. Activity Lists
+        // 5 Recent Bookings
         $recentBookings = Booking::with('villa:id,name')
             ->orderBy('created_at', 'desc')
             ->limit(5)
-            ->get(['id', 'booking_code', 'guest_name', 'villa_id', 'check_in', 'check_out', 'total_amount', 'status', 'payment_status', 'created_at']);
+            ->get();
 
         // Check-in list today
         $todayCheckIns = Booking::with('villa:id,name')
@@ -119,21 +117,6 @@ class DashboardController extends Controller
             'recent_bookings' => $recentBookings,
             'today_checkins' => $todayCheckIns,
             'today_checkouts' => $todayCheckOuts,
-            'activity_logs' => ActivityLog::with('user:id,name')
-                ->latest()
-                ->limit(20)
-                ->get()
-                ->map(fn ($log) => [
-                    'id' => $log->id,
-                    'actor' => $log->actor_name ?? $log->user?->name ?? 'System',
-                    'action' => $log->action,
-                    'module' => $log->module,
-                    'subject' => $log->subject,
-                    'description' => $log->description,
-                    'created_at' => $log->created_at
-                        ->setTimezone('Asia/Jakarta')
-                        ->format('d M Y, H:i'),
-                ]),
         ]);
     }
 }

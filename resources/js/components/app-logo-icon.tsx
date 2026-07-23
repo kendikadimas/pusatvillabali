@@ -2,52 +2,12 @@ import type { SVGAttributes } from 'react';
 
 export default function AppLogoIcon(props: SVGAttributes<SVGElement>) {
     return (
-        <svg {...props} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Background circle */}
-            <circle cx="100" cy="100" r="96" fill="#15803d" />
-
-            {/* Villa roof — joglo style, 3 layered roofs */}
-            <polygon points="30,118 170,118 155,98 45,98" fill="#f0fdf4" />
-            <polygon points="52,98 148,98 136,80 64,80" fill="#dcfce7" />
-            <polygon points="72,80 128,80 120,65 80,65" fill="#f0fdf4" />
-
-            {/* Roof ridge line top */}
-            <line x1="80" y1="65" x2="120" y2="65" stroke="#15803d" strokeWidth="2.5" strokeLinecap="round" />
-
-            {/* Villa body / walls */}
-            <rect x="72" y="118" width="56" height="36" fill="#f0fdf4" />
-
-            {/* Door arch */}
-            <path d="M91,154 L91,134 Q100,126 109,134 L109,154 Z" fill="#15803d" />
-
-            {/* Window left */}
-            <rect x="77" y="123" width="10" height="10" rx="1" fill="#15803d" opacity="0.5" />
-            {/* Window right */}
-            <rect x="113" y="123" width="10" height="10" rx="1" fill="#15803d" opacity="0.5" />
-
-            {/* Ground line */}
-            <line x1="55" y1="154" x2="145" y2="154" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
-
-            {/* Palm/tropical leaf left */}
-            <path d="M55,154 Q42,130 30,120" stroke="#86efac" strokeWidth="3" strokeLinecap="round" fill="none" />
-            <path d="M55,154 Q38,138 28,138" stroke="#86efac" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-            <path d="M55,154 Q40,150 30,155" stroke="#86efac" strokeWidth="2" strokeLinecap="round" fill="none" />
-
-            {/* Palm/tropical leaf right */}
-            <path d="M145,154 Q158,130 170,120" stroke="#86efac" strokeWidth="3" strokeLinecap="round" fill="none" />
-            <path d="M145,154 Q162,138 172,138" stroke="#86efac" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-            <path d="M145,154 Q160,150 170,155" stroke="#86efac" strokeWidth="2" strokeLinecap="round" fill="none" />
-
-            {/* Stars / sparkle top — Bali sun motif */}
-            <circle cx="100" cy="44" r="5" fill="#86efac" />
-            <line x1="100" y1="34" x2="100" y2="32" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
-            <line x1="100" y1="54" x2="100" y2="56" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
-            <line x1="90" y1="44" x2="88" y2="44" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
-            <line x1="110" y1="44" x2="112" y2="44" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
-            <line x1="93" y1="37" x2="92" y2="36" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
-            <line x1="107" y1="51" x2="108" y2="52" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
-            <line x1="107" y1="37" x2="108" y2="36" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
-            <line x1="93" y1="51" x2="92" y2="52" stroke="#86efac" strokeWidth="2" strokeLinecap="round" />
+        <svg {...props} viewBox="0 0 40 42" xmlns="http://www.w3.org/2000/svg">
+            <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M17.2 5.63325L8.6 0.855469L0 5.63325V32.1434L16.2 41.1434L32.4 32.1434V23.699L40 19.4767V9.85547L31.4 5.07769L22.8 9.85547V18.2999L17.2 21.411V5.63325ZM38 18.2999L32.4 21.411V15.2545L38 12.1434V18.2999ZM36.9409 10.4439L31.4 13.5221L25.8591 10.4439L31.4 7.36561L36.9409 10.4439ZM24.8 18.2999V12.1434L30.4 15.2545V21.411L24.8 18.2999ZM23.8 20.0323L29.3409 23.1105L16.2 30.411L10.6591 27.3328L23.8 20.0323ZM7.6 27.9212L15.2 32.1434V38.2999L2 30.9666V7.92116L7.6 11.0323V27.9212ZM8.6 9.29991L3.05913 6.22165L8.6 3.14339L14.1409 6.22165L8.6 9.29991ZM30.4 24.8101L17.2 32.1434V38.2999L30.4 30.9666V24.8101ZM9.6 11.0323L15.2 7.92117V22.5221L9.6 25.6333V11.0323Z"
+            />
         </svg>
     );
 }

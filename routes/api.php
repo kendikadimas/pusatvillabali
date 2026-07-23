@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\VillaAdminController;
 use App\Http\Controllers\Admin\VoucherAdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\IcalController;
 use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
@@ -48,8 +49,8 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::get('/villas/{slug}/availability', [VillaController::class, 'availability']);
     Route::get('/destinations', [DestinationController::class, 'index']);
 
-    Route::get('/bookings/{code}', [BookingController::class, 'show'])->middleware('throttle:10,1');
-    Route::post('/bookings/{code}/confirm-manual-payment', [BookingController::class, 'confirmManualPayment'])->middleware('throttle:5,1');
+    Route::get('/bookings/{code}', [BookingController::class, 'show']);
+    Route::post('/bookings/{code}/confirm-manual-payment', [BookingController::class, 'confirmManualPayment']);
     Route::get('/payment-methods', [PaymentMethodController::class, 'indexPublic']);
     Route::get('/settings/public', [SettingController::class, 'indexPublic']);
     Route::post('/vouchers/validate', [VoucherController::class, 'validate'])->middleware('throttle:20,1');
@@ -60,6 +61,9 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::get('/review/{token}', [ReviewController::class, 'showByToken']);
     Route::post('/review/{token}', [ReviewController::class, 'storeByToken']);
 
+    // iCal Feed Export (public — OTAs subscribe to this URL)
+    Route::get('/villas/{id}/ical.ics', [IcalController::class, 'export']);
+
     // Auth Public Endpoints (rate-limited)
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
     Route::post('/login', [AuthController::class, 'userLogin'])->middleware('throttle:5,1');
@@ -67,7 +71,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:3,1');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:3,1');
     Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('api.verification.verify');
-    Route::post('/auth/exchange-code', [OAuthController::class, 'exchangeCode'])->middleware('throttle:oauth');
+    Route::post('/auth/exchange-code', [OAuthController::class, 'exchangeCode']);
 
     // ==========================================
     // Protected User/Guest Endpoints (Sanctum Token Required)
@@ -75,14 +79,13 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', [AuthController::class, 'me']);
         Route::post('/logout', [AuthController::class, 'logout']);
-        Route::post('/bookings', [BookingController::class, 'store'])->middleware('throttle:booking');
+        Route::post('/bookings', [BookingController::class, 'store']);
         Route::get('/user/bookings', [BookingController::class, 'userBookings']);
         Route::get('/bookings/{code}/ktp', [BookingController::class, 'showKtp']);
         Route::get('/bookings/{code}/payment-proof', [BookingController::class, 'showPaymentProof']);
 
         // User Settings (Profile, Security, Password)
-        // Profile edit page disabled — public profile is /profile
-        // Route::get('/settings/profile', [ProfileController::class, 'edit']);
+        Route::get('/settings/profile', [ProfileController::class, 'edit']);
         Route::patch('/settings/profile', [ProfileController::class, 'update']);
         Route::delete('/settings/profile', [ProfileController::class, 'destroy']);
         Route::get('/settings/security', [SecurityController::class, 'edit']);
@@ -137,10 +140,15 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::post('/villas/{id}/host-avatar', [VillaAdminController::class, 'uploadHostAvatar'])->middleware('permission:villas.manage');
         Route::delete('/villas/{id}/photos', [VillaAdminController::class, 'deletePhoto'])->middleware('permission:villas.manage');
 
-        // ── Blocked Dates (requires villas.manage) ──
+        // ── Blocked Dates & iCal (requires villas.manage) ──
         Route::get('/blocked-dates', [VillaAdminController::class, 'listBlockedDates'])->middleware('permission:villas.manage');
         Route::post('/blocked-dates', [VillaAdminController::class, 'blockDate'])->middleware('permission:villas.manage');
         Route::delete('/blocked-dates/{id}', [VillaAdminController::class, 'unblockDate'])->middleware('permission:villas.manage');
+        Route::get('/villas/{villaId}/ical-links', [VillaAdminController::class, 'listIcalLinks'])->middleware('permission:villas.manage');
+        Route::post('/villas/{villaId}/ical-links', [VillaAdminController::class, 'storeIcalLink'])->middleware('permission:villas.manage');
+        Route::delete('/ical-links/{id}', [VillaAdminController::class, 'destroyIcalLink'])->middleware('permission:villas.manage');
+        Route::post('/ical-links/{linkId}/sync', [VillaAdminController::class, 'syncIcalLinks'])->middleware('permission:villas.manage');
+        Route::post('/ical/verify', [VillaAdminController::class, 'verifyIcal'])->middleware('permission:villas.manage');
 
         // ── Destinations (requires destinations.view / destinations.manage) ──
         Route::get('/destinations', [DestinationAdminController::class, 'index'])->middleware('permission:destinations.view');
@@ -149,6 +157,14 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::post('/destinations/upload-image', [DestinationAdminController::class, 'uploadImage'])->middleware('permission:destinations.manage');
         Route::put('/destinations/{id}', [DestinationAdminController::class, 'update'])->middleware('permission:destinations.manage');
         Route::delete('/destinations/{id}', [DestinationAdminController::class, 'destroy'])->middleware('permission:destinations.manage');
+
+        // ── Vouchers ──
+        Route::get('/vouchers', [VoucherAdminController::class, 'index']);
+        Route::post('/vouchers', [VoucherAdminController::class, 'store']);
+        Route::get('/vouchers/{id}', [VoucherAdminController::class, 'show']);
+        Route::put('/vouchers/{id}', [VoucherAdminController::class, 'update']);
+        Route::delete('/vouchers/{id}', [VoucherAdminController::class, 'destroy']);
+        Route::patch('/vouchers/{id}/toggle-active', [VoucherAdminController::class, 'toggleActive']);
 
         // ── Reviews (requires reviews.view / reviews.manage) ──
         Route::get('/reviews', [ReviewAdminController::class, 'index'])->middleware('permission:reviews.view');
@@ -167,37 +183,8 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::get('/payment-methods/{id}', [PaymentMethodAdminController::class, 'show'])->middleware('permission:payment_methods.view');
         Route::post('/payment-methods', [PaymentMethodAdminController::class, 'store'])->middleware('permission:payment_methods.manage');
         Route::put('/payment-methods/{id}', [PaymentMethodAdminController::class, 'update'])->middleware('permission:payment_methods.manage');
-        Route::patch('/payment-methods/{id}', [PaymentMethodAdminController::class, 'update'])->middleware('permission:payment_methods.manage');
-        Route::patch('/payment-methods/{id}/toggle', [PaymentMethodAdminController::class, 'toggleStatus'])->middleware('permission:payment_methods.manage');
         Route::delete('/payment-methods/{id}', [PaymentMethodAdminController::class, 'destroy'])->middleware('permission:payment_methods.manage');
         Route::post('/payment-methods/upload-logo', [PaymentMethodAdminController::class, 'uploadLogo'])->middleware('permission:payment_methods.manage');
-
-        // ── Activity Logs ──
-        Route::get('/activity-logs', function (\Illuminate\Http\Request $request) {
-            $query = \App\Models\ActivityLog::latest();
-            if ($request->filled('module')) $query->where('module', $request->module);
-            if ($request->filled('action')) $query->where('action', $request->action);
-            if ($request->filled('actor')) $query->where('actor_name', 'like', '%' . $request->actor . '%');
-            if ($request->filled('date')) $query->whereDate('created_at', $request->date);
-            $logs = $query->paginate($request->input('per_page', 25));
-            $logs->getCollection()->transform(fn ($log) => [
-                'id'          => $log->id,
-                'actor'       => $log->actor_name ?? 'System',
-                'action'      => $log->action,
-                'module'      => $log->module,
-                'subject'     => $log->subject,
-                'description' => $log->description,
-                'created_at'  => $log->created_at->setTimezone('Asia/Jakarta')->format('d M Y, H:i'),
-            ]);
-            return response()->json($logs);
-        });
-
-        // ── Vouchers ──
-        Route::get('/vouchers', [VoucherAdminController::class, 'index']);
-        Route::post('/vouchers', [VoucherAdminController::class, 'store']);
-        Route::get('/vouchers/{id}', [VoucherAdminController::class, 'show']);
-        Route::put('/vouchers/{id}', [VoucherAdminController::class, 'update']);
-        Route::delete('/vouchers/{id}', [VoucherAdminController::class, 'destroy']);
 
         // ==========================================
         // Super Admin Only — Admin User Management

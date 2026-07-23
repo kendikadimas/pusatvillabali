@@ -42,11 +42,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'role',
         'google_id',
         'avatar',
         'password',
-        'password_set_by_user',
         'permissions',
     ];
 
@@ -72,24 +70,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'password_set_by_user' => 'boolean',
             'two_factor_confirmed_at' => 'datetime',
             'permissions' => 'array',
         ];
-    }
-
-    /**
-     * Whether the user has set a password they know (email signup or after set-password).
-     * Google-only accounts start with a random password they never chose.
-     */
-    public function hasUserPassword(): bool
-    {
-        return (bool) $this->password_set_by_user;
-    }
-
-    public function isGoogleAccount(): bool
-    {
-        return filled($this->google_id);
     }
 
     /**

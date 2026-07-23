@@ -30,8 +30,6 @@ it('requires authentication to create booking', function () {
 });
 
 it('authenticated user can create booking', function () {
-    Storage::fake('public');
-
     $user = User::factory()->create();
     Sanctum::actingAs($user);
 
@@ -45,7 +43,6 @@ it('authenticated user can create booking', function () {
         'check_in' => now()->addDays(7)->toDateString(),
         'check_out' => now()->addDays(10)->toDateString(),
         'num_guests' => 2,
-        'ktp_image' => UploadedFile::fake()->image('ktp.jpg'),
     ]);
 
     $response->assertCreated();
@@ -61,7 +58,8 @@ it('admin role is required for admin endpoints', function () {
 });
 
 it('user with admin role can access admin endpoints', function () {
-    actingAsAdmin();
+    $user = User::factory()->create(['role' => 'admin']);
+    Sanctum::actingAs($user);
 
     $response = $this->getJson('/api/v1/admin/dashboard');
 
@@ -107,7 +105,6 @@ it('sets payment_status to pending when proof is uploaded', function () {
     $booking = Booking::factory()->create([
         'booking_code' => 'VB-2026-TEST1',
         'payment_status' => 'unpaid',
-        'user_id' => null,
     ]);
 
     $method = PaymentMethod::factory()->create(['is_active' => true]);
@@ -115,7 +112,6 @@ it('sets payment_status to pending when proof is uploaded', function () {
     $response = $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
         'payment_method_id' => $method->id,
         'payment_proof' => UploadedFile::fake()->image('proof.jpg'),
-        'guest_email' => $booking->guest_email,
     ]);
 
     $response->assertOk();
@@ -125,7 +121,8 @@ it('sets payment_status to pending when proof is uploaded', function () {
 });
 
 it('admin can see pending payment status in booking list', function () {
-    actingAsAdmin();
+    $admin = User::factory()->create(['role' => 'admin']);
+    Sanctum::actingAs($admin);
 
     $booking = Booking::factory()->create([
         'payment_status' => 'pending',
@@ -139,7 +136,8 @@ it('admin can see pending payment status in booking list', function () {
 });
 
 it('admin can filter bookings by pending payment status', function () {
-    actingAsAdmin();
+    $admin = User::factory()->create(['role' => 'admin']);
+    Sanctum::actingAs($admin);
 
     Booking::factory()->create(['payment_status' => 'pending']);
     Booking::factory()->create(['payment_status' => 'unpaid']);
@@ -156,10 +154,11 @@ it('admin can filter bookings by pending payment status', function () {
 // =====================================================
 
 it('admin cannot approve their own booking via approve endpoint', function () {
-    $admin = actingAsAdmin(User::factory()->create([
-        'role' => 'super_admin',
+    $admin = User::factory()->create([
         'email' => 'admin@test.com',
-    ]));
+        'role' => 'admin',
+    ]);
+    Sanctum::actingAs($admin);
 
     $booking = Booking::factory()->create([
         'guest_email' => 'admin@test.com', // Same email as admin
@@ -179,10 +178,11 @@ it('admin cannot approve their own booking via approve endpoint', function () {
 });
 
 it('admin cannot confirm their own booking via status update', function () {
-    actingAsAdmin(User::factory()->create([
-        'role' => 'super_admin',
+    $admin = User::factory()->create([
         'email' => 'admin@test.com',
-    ]));
+        'role' => 'admin',
+    ]);
+    Sanctum::actingAs($admin);
 
     $booking = Booking::factory()->create([
         'guest_email' => 'admin@test.com', // Same email as admin
@@ -200,7 +200,11 @@ it('admin cannot confirm their own booking via status update', function () {
 });
 
 it('admin can approve booking from different guest', function () {
-    actingAsAdmin();
+    $admin = User::factory()->create([
+        'email' => 'admin@test.com',
+        'role' => 'admin',
+    ]);
+    Sanctum::actingAs($admin);
 
     $booking = Booking::factory()->create([
         'guest_email' => 'guest@test.com', // Different email
@@ -220,7 +224,11 @@ it('admin can approve booking from different guest', function () {
 });
 
 it('admin can cancel their own booking', function () {
-    actingAsAdmin();
+    $admin = User::factory()->create([
+        'email' => 'admin@test.com',
+        'role' => 'admin',
+    ]);
+    Sanctum::actingAs($admin);
 
     $booking = Booking::factory()->create([
         'guest_email' => 'admin@test.com', // Same email
@@ -238,7 +246,11 @@ it('admin can cancel their own booking', function () {
 });
 
 it('admin can reject their own booking payment', function () {
-    actingAsAdmin();
+    $admin = User::factory()->create([
+        'email' => 'admin@test.com',
+        'role' => 'admin',
+    ]);
+    Sanctum::actingAs($admin);
 
     $booking = Booking::factory()->create([
         'guest_email' => 'admin@test.com', // Same email
@@ -265,16 +277,15 @@ it('admin can reject their own booking payment', function () {
 
 it('complete booking workflow: create -> upload proof -> admin approve', function () {
     Storage::fake('public');
-    Storage::fake('private');
 
-    // 1. Guest creates booking — pass token explicitly per-request to avoid header state issues
+    // 1. Guest creates booking
     $guest = User::factory()->create();
-    $guestToken = $guest->createToken('guest-token')->plainTextToken;
+    Sanctum::actingAs($guest);
 
     $villa = Villa::factory()->create(['price_per_night' => 1000000]);
     $method = PaymentMethod::factory()->create(['is_active' => true]);
 
-    $createResponse = $this->withToken($guestToken)->postJson('/api/v1/bookings', [
+    $createResponse = $this->postJson('/api/v1/bookings', [
         'villa_id' => $villa->id,
         'guest_name' => 'Test Guest',
         'guest_email' => 'guest@test.com',
@@ -282,7 +293,6 @@ it('complete booking workflow: create -> upload proof -> admin approve', functio
         'check_in' => now()->addDays(7)->toDateString(),
         'check_out' => now()->addDays(10)->toDateString(),
         'num_guests' => 2,
-        'ktp_image' => UploadedFile::fake()->image('ktp.jpg'),
     ]);
 
     $createResponse->assertCreated();
@@ -292,22 +302,17 @@ it('complete booking workflow: create -> upload proof -> admin approve', functio
     expect($booking->status)->toBe('pending');
     expect($booking->payment_status)->toBe('unpaid');
 
-    // 2. Guest uploads payment proof — public route, pass guest_email for ownership check
-    $uploadResponse = $this->withToken($guestToken)->postJson("/api/v1/bookings/{$bookingCode}/confirm-manual-payment", [
+    // 2. Guest uploads payment proof
+    $uploadResponse = $this->postJson("/api/v1/bookings/{$bookingCode}/confirm-manual-payment", [
         'payment_method_id' => $method->id,
         'payment_proof' => UploadedFile::fake()->image('proof.jpg'),
-        'guest_email' => $booking->guest_email,
     ]);
 
     $uploadResponse->assertOk();
     expect($booking->fresh()->payment_status)->toBe('pending');
 
-    // 3. Admin approves payment — flush guard cache and set fresh admin token
-    $admin = User::factory()->create(['role' => 'super_admin', 'email' => 'different@admin.com']);
-    $adminToken = $admin->createToken('admin-token', ['admin-access'])->plainTextToken;
-    test()->flushHeaders();
-    auth()->forgetGuards();
-    test()->withToken($adminToken);
+    // 3. Admin approves payment
+    Sanctum::actingAs(User::factory()->create(['role' => 'admin', 'email' => 'different@admin.com']));
 
     $approveResponse = $this->postJson("/api/v1/admin/bookings/{$booking->id}/approve-manual-payment");
 
@@ -320,16 +325,12 @@ it('booking with rejected proof can be re-uploaded', function () {
     Storage::fake('public');
 
     $guest = User::factory()->create();
+    Sanctum::actingAs($guest);
 
     $booking = Booking::factory()->create([
         'booking_code' => 'VB-2026-REUPLOAD',
         'payment_status' => 'unpaid',
-        'user_id' => $guest->id,
-        'guest_email' => $guest->email,
     ]);
-
-    $guestToken = $guest->createToken('guest-token')->plainTextToken;
-    test()->withToken($guestToken);
 
     $method = PaymentMethod::factory()->create(['is_active' => true]);
 
@@ -421,7 +422,6 @@ it('prevents uploading proof for already paid booking', function () {
     $booking = Booking::factory()->create([
         'booking_code' => 'VB-2026-PAID',
         'payment_status' => 'paid',
-        'user_id' => null,
     ]);
 
     $method = PaymentMethod::factory()->create(['is_active' => true]);
@@ -429,7 +429,6 @@ it('prevents uploading proof for already paid booking', function () {
     $response = $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
         'payment_method_id' => $method->id,
         'payment_proof' => UploadedFile::fake()->image('proof.jpg'),
-        'guest_email' => $booking->guest_email,
     ]);
 
     $response->assertStatus(400);
@@ -441,7 +440,6 @@ it('prevents uploading proof with inactive payment method', function () {
     $booking = Booking::factory()->create([
         'booking_code' => 'VB-2026-INACTIVE',
         'payment_status' => 'unpaid',
-        'user_id' => null,
     ]);
 
     $method = PaymentMethod::factory()->create(['is_active' => false]);
@@ -449,7 +447,6 @@ it('prevents uploading proof with inactive payment method', function () {
     $response = $this->postJson("/api/v1/bookings/{$booking->booking_code}/confirm-manual-payment", [
         'payment_method_id' => $method->id,
         'payment_proof' => UploadedFile::fake()->image('proof.jpg'),
-        'guest_email' => $booking->guest_email,
     ]);
 
     $response->assertStatus(422);
@@ -478,7 +475,8 @@ it('requires valid image format for payment proof', function () {
 // =====================================================
 
 it('admin can update booking to completed status', function () {
-    actingAsAdmin();
+    $admin = User::factory()->create(['role' => 'admin']);
+    Sanctum::actingAs($admin);
 
     $booking = Booking::factory()->create([
         'status' => 'confirmed',
@@ -495,7 +493,8 @@ it('admin can update booking to completed status', function () {
 });
 
 it('admin can mark booking as refunded', function () {
-    actingAsAdmin();
+    $admin = User::factory()->create(['role' => 'admin']);
+    Sanctum::actingAs($admin);
 
     $booking = Booking::factory()->create([
         'status' => 'confirmed',
@@ -513,7 +512,8 @@ it('admin can mark booking as refunded', function () {
 });
 
 it('admin can resend confirmation email', function () {
-    actingAsAdmin();
+    $admin = User::factory()->create(['role' => 'admin']);
+    Sanctum::actingAs($admin);
 
     $booking = Booking::factory()->create([
         'status' => 'confirmed',
@@ -526,7 +526,8 @@ it('admin can resend confirmation email', function () {
 });
 
 it('admin can list bookings with date range filter', function () {
-    actingAsAdmin();
+    $admin = User::factory()->create(['role' => 'admin']);
+    Sanctum::actingAs($admin);
 
     Booking::factory()->create(['check_in' => '2026-07-01']);
     Booking::factory()->create(['check_in' => '2026-08-15']);
@@ -539,7 +540,8 @@ it('admin can list bookings with date range filter', function () {
 });
 
 it('admin can search bookings by guest name', function () {
-    actingAsAdmin();
+    $admin = User::factory()->create(['role' => 'admin']);
+    Sanctum::actingAs($admin);
 
     Booking::factory()->create(['guest_name' => 'John Doe']);
     Booking::factory()->create(['guest_name' => 'Jane Smith']);

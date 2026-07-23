@@ -1,12 +1,13 @@
 <?php
 
+namespace App\Http\Controllers;
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\BookingConfirmationMail;
 use App\Mail\ManualPaymentRejectedMail;
 use App\Models\Booking;
-use App\Services\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -20,6 +21,14 @@ class BookingAdminController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        Log::info('[BookingAdmin.index] Request received', [
+            'ip' => $request->ip(),
+            'admin_id' => $request->user()?->id,
+            'filters' => $request->only(['search', 'status', 'payment_status', 'villa_id', 'check_in_from', 'check_in_to', 'created_from', 'created_to']),
+            'sort_by' => $request->input('sort_by', 'created_at'),
+            'sort_order' => $request->input('sort_order', 'desc'),
+        ]);
+
         $query = Booking::with('villa:id,name');
 
         // Search by code, guest name, or guest email
@@ -70,8 +79,13 @@ class BookingAdminController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $perPage = min((int) $request->input('per_page', 20), 200);
-        $bookings = $query->paginate($perPage);
+        $bookings = $query->paginate(20);
+
+        Log::info('[BookingAdmin.index] Returning bookings', [
+            'admin_id' => $request->user()?->id,
+            'total' => $bookings->total(),
+            'current_page' => $bookings->currentPage(),
+        ]);
 
         return response()->json([
             'data' => $bookings->items(),
@@ -89,11 +103,26 @@ class BookingAdminController extends Controller
      */
     public function show(int $id): JsonResponse
     {
+        Log::info('[BookingAdmin.show] Request received', [
+            'booking_id' => $id,
+        ]);
+
         $booking = Booking::with(['villa', 'payment', 'review'])->find($id);
 
         if (! $booking) {
+            Log::warning('[BookingAdmin.show] Booking not found', [
+                'booking_id' => $id,
+            ]);
+
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
         }
+
+        Log::info('[BookingAdmin.show] Booking found', [
+            'booking_id' => $id,
+            'booking_code' => $booking->booking_code,
+            'status' => $booking->status,
+            'payment_status' => $booking->payment_status,
+        ]);
 
         return response()->json($booking);
     }
@@ -103,15 +132,34 @@ class BookingAdminController extends Controller
      */
     public function updateStatus(Request $request, int $id): JsonResponse
     {
+        Log::info('[BookingAdmin.updateStatus] Request received', [
+            'booking_id' => $id,
+            'admin_id' => $request->user()?->id,
+            'new_status' => $request->status,
+            'new_payment_status' => $request->payment_status,
+            'ip' => $request->ip(),
+        ]);
+
         $booking = Booking::find($id);
 
         if (! $booking) {
+            Log::warning('[BookingAdmin.updateStatus] Booking not found', [
+                'booking_id' => $id,
+                'admin_id' => $request->user()?->id,
+            ]);
+
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
         }
 
         // Prevent admin from self-confirming their own booking
         if (($request->status === 'confirmed' || $request->payment_status === 'paid')
             && $request->user()->email === $booking->guest_email) {
+            Log::warning('[BookingAdmin.updateStatus] Admin tried to confirm own booking', [
+                'booking_id' => $id,
+                'admin_id' => $request->user()?->id,
+                'booking_code' => $booking->booking_code,
+            ]);
+
             return response()->json(['message' => 'Admin tidak dapat mengkonfirmasi booking milik sendiri.'], 403);
         }
 
@@ -122,6 +170,11 @@ class BookingAdminController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::warning('[BookingAdmin.updateStatus] Validation failed', [
+                'booking_id' => $id,
+                'errors' => $validator->errors()->toArray(),
+            ]);
+
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
@@ -148,6 +201,15 @@ class BookingAdminController extends Controller
                 ->exists();
 
             if ($overlapping) {
+                Log::warning('[BookingAdmin.updateStatus] Overlapping booking detected', [
+                    'booking_id' => $id,
+                    'booking_code' => $booking->booking_code,
+                    'villa_id' => $booking->villa_id,
+                    'check_in' => $booking->check_in,
+                    'check_out' => $booking->check_out,
+                    'admin_id' => $request->user()?->id,
+                ]);
+
                 return response()->json([
                     'message' => 'Tidak bisa konfirmasi: tanggal bertabrakan dengan booking lain yang sudah dikonfirmasi.',
                 ], 422);
@@ -160,6 +222,14 @@ class BookingAdminController extends Controller
         }
 
         $booking->save();
+
+        Log::info('[BookingAdmin.updateStatus] Status updated', [
+            'booking_id' => $id,
+            'booking_code' => $booking->booking_code,
+            'status' => $booking->status,
+            'payment_status' => $booking->payment_status,
+            'admin_id' => $request->user()?->id,
+        ]);
 
         // If payment status was manually marked as paid, update the payment record as well
         if ($booking->payment) {
@@ -175,17 +245,6 @@ class BookingAdminController extends Controller
             $payment->save();
         }
 
-        // Send confirmation email when booking is confirmed and paid
-        if ($request->status === 'confirmed' && $request->payment_status === 'paid') {
-            try {
-                Mail::to($booking->guest_email)->send(new BookingConfirmationMail($booking->fresh(['villa'])));
-            } catch (\Exception $e) {
-                Log::error("Gagal mengirim email konfirmasi (updateStatus) untuk booking {$booking->booking_code}: ".$e->getMessage());
-            }
-        }
-
-        ActivityLogService::log('update', 'Booking', $booking->booking_code, 'Status booking '.$booking->booking_code.' diubah ke '.($request->status ?? '-').' / '.($request->payment_status ?? '-'));
-
         return response()->json([
             'booking' => $booking,
             'message' => 'Status booking berhasil diperbarui.',
@@ -200,24 +259,53 @@ class BookingAdminController extends Controller
      */
     public function approveManualPayment(Request $request, int $id): JsonResponse
     {
+        Log::info('[BookingAdmin.approveManualPayment] Request received', [
+            'booking_id' => $id,
+            'admin_id' => $request->user()?->id,
+            'ip' => $request->ip(),
+        ]);
+
         $booking = Booking::with(['villa', 'payment'])->find($id);
 
         if (! $booking) {
+            Log::warning('[BookingAdmin.approveManualPayment] Booking not found', [
+                'booking_id' => $id,
+                'admin_id' => $request->user()?->id,
+            ]);
+
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
         }
 
         // Prevent admin from self-approving their own booking
         if ($request->user()->email === $booking->guest_email) {
+            Log::warning('[BookingAdmin.approveManualPayment] Admin tried to approve own booking', [
+                'booking_id' => $id,
+                'admin_id' => $request->user()?->id,
+                'booking_code' => $booking->booking_code,
+            ]);
+
             return response()->json(['message' => 'Admin tidak dapat menyetujui pembayaran booking milik sendiri.'], 403);
         }
 
         $payment = $booking->payment;
 
         if (! $payment || ! $payment->payment_proof) {
+            Log::warning('[BookingAdmin.approveManualPayment] No payment proof found', [
+                'booking_id' => $id,
+                'booking_code' => $booking->booking_code,
+                'has_payment' => ! is_null($payment),
+                'has_proof' => $payment?->payment_proof ? true : false,
+            ]);
+
             return response()->json(['message' => 'Belum ada bukti pembayaran manual untuk disetujui.'], 422);
         }
 
         if ($booking->payment_status === 'paid') {
+            Log::warning('[BookingAdmin.approveManualPayment] Booking already paid', [
+                'booking_id' => $id,
+                'booking_code' => $booking->booking_code,
+            ]);
+
             return response()->json(['message' => 'Pembayaran booking ini sudah disetujui sebelumnya.'], 422);
         }
 
@@ -240,6 +328,15 @@ class BookingAdminController extends Controller
             ->exists();
 
         if ($overlapping) {
+            Log::warning('[BookingAdmin.approveManualPayment] Overlapping booking detected', [
+                'booking_id' => $id,
+                'booking_code' => $booking->booking_code,
+                'villa_id' => $booking->villa_id,
+                'check_in' => $booking->check_in,
+                'check_out' => $booking->check_out,
+                'admin_id' => $request->user()?->id,
+            ]);
+
             return response()->json([
                 'message' => 'Tidak bisa menyetujui: tanggal bertabrakan dengan booking lain yang sudah dikonfirmasi.',
             ], 422);
@@ -255,13 +352,19 @@ class BookingAdminController extends Controller
         $payment->rejected_at = null;
         $payment->save();
 
+        Log::info('[BookingAdmin.approveManualPayment] Payment approved', [
+            'booking_id' => $id,
+            'booking_code' => $booking->booking_code,
+            'payment_id' => $payment->id,
+            'admin_id' => $request->user()?->id,
+            'guest_email' => $booking->guest_email,
+        ]);
+
         try {
             Mail::to($booking->guest_email)->send(new BookingConfirmationMail($booking));
         } catch (\Exception $e) {
             Log::error("Gagal mengirim email konfirmasi (approve manual) untuk booking {$booking->booking_code}: ".$e->getMessage());
         }
-
-        ActivityLogService::log('approve', 'Booking', $booking->booking_code, 'Pembayaran manual disetujui untuk booking '.$booking->booking_code);
 
         return response()->json([
             'booking' => $booking->fresh(['villa', 'payment']),
@@ -277,9 +380,20 @@ class BookingAdminController extends Controller
      */
     public function rejectManualPayment(Request $request, int $id): JsonResponse
     {
+        Log::info('[BookingAdmin.rejectManualPayment] Request received', [
+            'booking_id' => $id,
+            'admin_id' => $request->user()?->id,
+            'ip' => $request->ip(),
+        ]);
+
         $booking = Booking::with(['villa', 'payment'])->find($id);
 
         if (! $booking) {
+            Log::warning('[BookingAdmin.rejectManualPayment] Booking not found', [
+                'booking_id' => $id,
+                'admin_id' => $request->user()?->id,
+            ]);
+
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
         }
 
@@ -288,16 +402,33 @@ class BookingAdminController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::warning('[BookingAdmin.rejectManualPayment] Validation failed', [
+                'booking_id' => $id,
+                'errors' => $validator->errors()->toArray(),
+            ]);
+
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
         $payment = $booking->payment;
 
         if (! $payment || ! $payment->payment_proof) {
+            Log::warning('[BookingAdmin.rejectManualPayment] No payment proof found', [
+                'booking_id' => $id,
+                'booking_code' => $booking->booking_code,
+                'has_payment' => ! is_null($payment),
+                'has_proof' => $payment?->payment_proof ? true : false,
+            ]);
+
             return response()->json(['message' => 'Belum ada bukti pembayaran manual untuk ditolak.'], 422);
         }
 
         if ($booking->payment_status === 'paid') {
+            Log::warning('[BookingAdmin.rejectManualPayment] Booking already paid, cannot reject', [
+                'booking_id' => $id,
+                'booking_code' => $booking->booking_code,
+            ]);
+
             return response()->json(['message' => 'Pembayaran sudah disetujui, tidak bisa ditolak.'], 422);
         }
 
@@ -311,14 +442,20 @@ class BookingAdminController extends Controller
         $booking->payment_status = 'unpaid';
         $booking->save();
 
+        Log::info('[BookingAdmin.rejectManualPayment] Payment rejected', [
+            'booking_id' => $id,
+            'booking_code' => $booking->booking_code,
+            'payment_id' => $payment->id,
+            'admin_id' => $request->user()?->id,
+            'guest_email' => $booking->guest_email,
+        ]);
+
         try {
             Mail::to($booking->guest_email)
                 ->send(new ManualPaymentRejectedMail($booking, $request->rejection_reason));
         } catch (\Exception $e) {
             Log::error("Gagal mengirim email penolakan pembayaran untuk booking {$booking->booking_code}: ".$e->getMessage());
         }
-
-        ActivityLogService::log('reject', 'Booking', $booking->booking_code, 'Pembayaran manual ditolak untuk booking '.$booking->booking_code.'. Alasan: '.$request->rejection_reason);
 
         return response()->json([
             'booking' => $booking->fresh(['villa', 'payment']),

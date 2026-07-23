@@ -15,8 +15,7 @@ class AdminMiddleware
 
     public function handle(Request $request, Closure $next): Response
     {
-        // Use sanctum guard explicitly since all admin routes use auth:sanctum
-        $user = auth('sanctum')->user() ?? $request->user();
+        $user = $request->user();
 
         // Must be authenticated and have admin or super_admin role
         if (! $user || ! $user->isAdmin()) {
@@ -29,14 +28,8 @@ class AdminMiddleware
             return response()->json(['message' => 'Token tidak valid untuk akses admin.'], 403);
         }
 
-        // Enforce 1-hour inactivity timeout.
-        // In tests, Sanctum::actingAs() uses a Mockery mock token where property access
-        // on unstubbed attributes throws or returns unexpected values, so guard defensively.
-        try {
-            $lastUsed = $token->last_used_at instanceof \DateTimeInterface ? $token->last_used_at : null;
-        } catch (\Throwable) {
-            $lastUsed = null;
-        }
+        // Enforce 1-hour inactivity timeout
+        $lastUsed = $token->last_used_at;
         if ($lastUsed !== null && now()->diffInSeconds($lastUsed) > self::INACTIVITY_TIMEOUT) {
             $token->delete();
 

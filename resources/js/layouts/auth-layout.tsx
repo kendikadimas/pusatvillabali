@@ -1,7 +1,6 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
-import type { AppSettings } from '@/types';
 
 export default function AuthSplitLayout({
     children,
@@ -12,9 +11,6 @@ export default function AuthSplitLayout({
     title?: string;
     description?: string;
 }) {
-    const { settings } = usePage<{ settings: AppSettings }>().props;
-    const appName = settings?.settings_prop_name ?? 'PusatVillaBali';
-
     return (
         <div className="flex min-h-dvh">
             {/* Left Panel */}
@@ -34,24 +30,22 @@ export default function AuthSplitLayout({
                 <div className="relative z-10">
                     <Link href={home()} className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
-                            <AppLogoIcon className="size-6" />
+                            <AppLogoIcon className="size-6 fill-current text-white" />
                         </div>
-                        <span className="text-lg font-semibold tracking-tight text-white">
-                            {appName}
-                        </span>
+                        <span className="text-lg font-semibold tracking-tight text-white">PusatVilla</span>
                     </Link>
                 </div>
 
                 <div className="relative z-10 space-y-6">
-                    <h2 className="text-4xl font-bold leading-tight tracking-tight text-white font-heading">
-                        Villa Bali terbaik,
+                    <h2 className="text-4xl font-bold leading-tight tracking-tight text-white">
+                        Temukan villa
                         <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-300">
-                            kami kurasi untukmu.
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-sky-200">
+                            impianmu
                         </span>
                     </h2>
                     <p className="max-w-md text-base leading-relaxed text-blue-200/70">
-                        Dari villa tepi sawah Ubud hingga kolam infinity Seminyak — agen kami pilihkan yang terbaik sesuai kebutuhan Anda.
+                        Nikmati pengalaman menginap terbaik dengan pilihan villa eksklusif di destinasi wisata favorit Indonesia.
                     </p>
                     <div className="flex items-center gap-6 pt-4">
                         <div className="flex -space-x-2">
@@ -69,7 +63,7 @@ export default function AuthSplitLayout({
                 </div>
 
                 <div className="relative z-10 text-sm text-blue-200/40">
-                    &copy; {new Date().getFullYear()} PusatVillaBali. All rights reserved.
+                    &copy; {new Date().getFullYear()} PusatVilla. All rights reserved.
                 </div>
             </div>
 
@@ -79,13 +73,13 @@ export default function AuthSplitLayout({
                     <div className="mb-8 flex flex-col items-center gap-4 lg:hidden">
                         <Link href={home()} className="flex flex-col items-center gap-2 font-medium">
                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 shadow-sm">
-                                <AppLogoIcon className="size-7" />
+                                <AppLogoIcon className="size-7 fill-current text-white" />
                             </div>
                         </Link>
                     </div>
 
                     <div className="mb-8 space-y-2">
-                        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 font-heading">
+                        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
                             {title}
                         </h1>
                         <p className="text-balance text-sm text-slate-500">

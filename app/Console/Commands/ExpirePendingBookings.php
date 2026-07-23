@@ -53,9 +53,7 @@ class ExpirePendingBookings extends Command
             return self::SUCCESS;
         }
 
-        // Capture IDs BEFORE the bulk update to avoid fragile post-hoc lookup
-        $expiredIds = $query->pluck('id');
-
+        // Expire in bulk within a transaction
         DB::transaction(function () use ($query) {
             $query->update([
                 'status' => 'cancelled',
@@ -65,10 +63,15 @@ class ExpirePendingBookings extends Command
             ]);
         });
 
-        // Expire related payment records using the captured IDs
-        if ($expiredIds->isNotEmpty()) {
+        // Also expire related payment records
+        $expiredBookingIds = Booking::where('status', 'cancelled')
+            ->where('cancel_reason', 'like', '%auto-expire%')
+            ->where('cancelled_at', '>=', now()->subMinutes(1))
+            ->pluck('id');
+
+        if ($expiredBookingIds->isNotEmpty()) {
             DB::table('payments')
-                ->whereIn('booking_id', $expiredIds)
+                ->whereIn('booking_id', $expiredBookingIds)
                 ->where('status', 'pending')
                 ->update(['status' => 'expire']);
         }

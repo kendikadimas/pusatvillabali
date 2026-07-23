@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Admin\AuthController::verify
- * @see app/Http/Controllers/Admin/AuthController.php:357
+ * @see app/Http/Controllers/Admin/AuthController.php:310
  * @route '/api/v1/email/verify/{id}/{hash}'
  */
 export const verify = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ verify.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AuthController::verify
- * @see app/Http/Controllers/Admin/AuthController.php:357
+ * @see app/Http/Controllers/Admin/AuthController.php:310
  * @route '/api/v1/email/verify/{id}/{hash}'
  */
 verify.url = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions) => {
@@ -42,7 +42,7 @@ verify.url = (args: { id: string | number, hash: string | number } | [id: string
 
 /**
 * @see \App\Http\Controllers\Admin\AuthController::verify
- * @see app/Http/Controllers/Admin/AuthController.php:357
+ * @see app/Http/Controllers/Admin/AuthController.php:310
  * @route '/api/v1/email/verify/{id}/{hash}'
  */
 verify.get = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -51,7 +51,7 @@ verify.get = (args: { id: string | number, hash: string | number } | [id: string
 })
 /**
 * @see \App\Http\Controllers\Admin\AuthController::verify
- * @see app/Http/Controllers/Admin/AuthController.php:357
+ * @see app/Http/Controllers/Admin/AuthController.php:310
  * @route '/api/v1/email/verify/{id}/{hash}'
  */
 verify.head = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -61,7 +61,7 @@ verify.head = (args: { id: string | number, hash: string | number } | [id: strin
 
     /**
 * @see \App\Http\Controllers\Admin\AuthController::verify
- * @see app/Http/Controllers/Admin/AuthController.php:357
+ * @see app/Http/Controllers/Admin/AuthController.php:310
  * @route '/api/v1/email/verify/{id}/{hash}'
  */
     const verifyForm = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -71,7 +71,7 @@ verify.head = (args: { id: string | number, hash: string | number } | [id: strin
 
             /**
 * @see \App\Http\Controllers\Admin\AuthController::verify
- * @see app/Http/Controllers/Admin/AuthController.php:357
+ * @see app/Http/Controllers/Admin/AuthController.php:310
  * @route '/api/v1/email/verify/{id}/{hash}'
  */
         verifyForm.get = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -80,7 +80,7 @@ verify.head = (args: { id: string | number, hash: string | number } | [id: strin
         })
             /**
 * @see \App\Http\Controllers\Admin\AuthController::verify
- * @see app/Http/Controllers/Admin/AuthController.php:357
+ * @see app/Http/Controllers/Admin/AuthController.php:310
  * @route '/api/v1/email/verify/{id}/{hash}'
  */
         verifyForm.head = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

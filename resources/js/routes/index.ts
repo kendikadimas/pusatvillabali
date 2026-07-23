@@ -289,86 +289,8 @@ home.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     home.form = homeForm
 /**
-* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
- * @see app/Http/Controllers/Web/ProfileWebController.php:46
- * @route '/wishlist'
- */
-export const wishlist = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: wishlist.url(options),
-    method: 'get',
-})
-
-wishlist.definition = {
-    methods: ["get","head"],
-    url: '/wishlist',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
- * @see app/Http/Controllers/Web/ProfileWebController.php:46
- * @route '/wishlist'
- */
-wishlist.url = (options?: RouteQueryOptions) => {
-    return wishlist.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
- * @see app/Http/Controllers/Web/ProfileWebController.php:46
- * @route '/wishlist'
- */
-wishlist.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: wishlist.url(options),
-    method: 'get',
-})
-/**
-* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
- * @see app/Http/Controllers/Web/ProfileWebController.php:46
- * @route '/wishlist'
- */
-wishlist.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: wishlist.url(options),
-    method: 'head',
-})
-
-    /**
-* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
- * @see app/Http/Controllers/Web/ProfileWebController.php:46
- * @route '/wishlist'
- */
-    const wishlistForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: wishlist.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
- * @see app/Http/Controllers/Web/ProfileWebController.php:46
- * @route '/wishlist'
- */
-        wishlistForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: wishlist.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
- * @see app/Http/Controllers/Web/ProfileWebController.php:46
- * @route '/wishlist'
- */
-        wishlistForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: wishlist.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    wishlist.form = wishlistForm
-/**
-* @see \App\Http\Controllers\Web\ProfileWebController::dashboard
- * @see app/Http/Controllers/Web/ProfileWebController.php:15
+* @see \Inertia\Controller::__invoke
+ * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
  * @route '/dashboard'
  */
 export const dashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -382,8 +304,8 @@ dashboard.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\Web\ProfileWebController::dashboard
- * @see app/Http/Controllers/Web/ProfileWebController.php:15
+* @see \Inertia\Controller::__invoke
+ * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
  * @route '/dashboard'
  */
 dashboard.url = (options?: RouteQueryOptions) => {
@@ -391,8 +313,8 @@ dashboard.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \App\Http\Controllers\Web\ProfileWebController::dashboard
- * @see app/Http/Controllers/Web/ProfileWebController.php:15
+* @see \Inertia\Controller::__invoke
+ * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
  * @route '/dashboard'
  */
 dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -400,8 +322,8 @@ dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
-* @see \App\Http\Controllers\Web\ProfileWebController::dashboard
- * @see app/Http/Controllers/Web/ProfileWebController.php:15
+* @see \Inertia\Controller::__invoke
+ * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
  * @route '/dashboard'
  */
 dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -410,8 +332,8 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
-* @see \App\Http\Controllers\Web\ProfileWebController::dashboard
- * @see app/Http/Controllers/Web/ProfileWebController.php:15
+* @see \Inertia\Controller::__invoke
+ * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
  * @route '/dashboard'
  */
     const dashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -420,8 +342,8 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
-* @see \App\Http\Controllers\Web\ProfileWebController::dashboard
- * @see app/Http/Controllers/Web/ProfileWebController.php:15
+* @see \Inertia\Controller::__invoke
+ * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
  * @route '/dashboard'
  */
         dashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -429,8 +351,8 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
-* @see \App\Http\Controllers\Web\ProfileWebController::dashboard
- * @see app/Http/Controllers/Web/ProfileWebController.php:15
+* @see \Inertia\Controller::__invoke
+ * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
  * @route '/dashboard'
  */
         dashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -522,3 +444,81 @@ profile.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     profile.form = profileForm
+/**
+* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
+ * @see app/Http/Controllers/Web/ProfileWebController.php:46
+ * @route '/wishlist'
+ */
+export const wishlist = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: wishlist.url(options),
+    method: 'get',
+})
+
+wishlist.definition = {
+    methods: ["get","head"],
+    url: '/wishlist',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
+ * @see app/Http/Controllers/Web/ProfileWebController.php:46
+ * @route '/wishlist'
+ */
+wishlist.url = (options?: RouteQueryOptions) => {
+    return wishlist.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
+ * @see app/Http/Controllers/Web/ProfileWebController.php:46
+ * @route '/wishlist'
+ */
+wishlist.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: wishlist.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
+ * @see app/Http/Controllers/Web/ProfileWebController.php:46
+ * @route '/wishlist'
+ */
+wishlist.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: wishlist.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
+ * @see app/Http/Controllers/Web/ProfileWebController.php:46
+ * @route '/wishlist'
+ */
+    const wishlistForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: wishlist.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
+ * @see app/Http/Controllers/Web/ProfileWebController.php:46
+ * @route '/wishlist'
+ */
+        wishlistForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: wishlist.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Web\ProfileWebController::wishlist
+ * @see app/Http/Controllers/Web/ProfileWebController.php:46
+ * @route '/wishlist'
+ */
+        wishlistForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: wishlist.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    wishlist.form = wishlistForm

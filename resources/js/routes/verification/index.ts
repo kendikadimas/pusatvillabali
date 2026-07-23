@@ -1,5 +1,6 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
+ * @see routes/web.php:25
  * @route '/email/verification-notification'
  */
 export const send = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -13,6 +14,7 @@ send.definition = {
 } satisfies RouteDefinition<["post"]>
 
 /**
+ * @see routes/web.php:25
  * @route '/email/verification-notification'
  */
 send.url = (options?: RouteQueryOptions) => {
@@ -20,6 +22,7 @@ send.url = (options?: RouteQueryOptions) => {
 }
 
 /**
+ * @see routes/web.php:25
  * @route '/email/verification-notification'
  */
 send.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -28,6 +31,7 @@ send.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 })
 
     /**
+ * @see routes/web.php:25
  * @route '/email/verification-notification'
  */
     const sendForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -36,6 +40,7 @@ send.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     })
 
             /**
+ * @see routes/web.php:25
  * @route '/email/verification-notification'
  */
         sendForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

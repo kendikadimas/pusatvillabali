@@ -14,8 +14,10 @@ class VoucherFactory extends Factory
         return [
             'code' => strtoupper(fake()->unique()->bothify('VOUCHER-####')),
             'description' => fake()->sentence(),
-            'discount_type' => fake()->randomElement(['percentage', 'fixed']),
-            'discount_value' => fake()->randomElement([10, 15, 20, 50000, 100000]),
+            'discount_type' => $type = fake()->randomElement(['percentage', 'fixed']),
+            'discount_value' => $type === 'percentage'
+                ? fake()->randomElement([10, 15, 20, 25, 50])
+                : fake()->randomElement([50000, 75000, 100000]),
             'min_booking_amount' => 500000,
             'max_discount' => null,
             'usage_limit' => null,

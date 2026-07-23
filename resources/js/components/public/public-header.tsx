@@ -5,7 +5,6 @@ import { ChevronLeft, X, Search, User, LogOut } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import type { DateRange } from 'react-day-picker';
-import AppLogoIcon from '@/components/app-logo-icon';
 import { normaliseStorageUrl } from '@/lib/villaUtils';
 import { logout } from '@/routes';
 import type { AppSettings } from '@/types';
@@ -286,7 +285,7 @@ parts.push(`${searchPets} hewan`);
                             </button>
                         )}
                         <Link href="/" className="flex items-center gap-2 group">
-                            <AppLogoIcon className="w-7 h-7" />
+                            <img src="/favicon.svg" alt="Logo" className="w-7 h-7" />
                             <span className="font-heading font-bold text-slate-900 text-[16px] leading-tight hidden sm:block">
                                 {appName}
                             </span>

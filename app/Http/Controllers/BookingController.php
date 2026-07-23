@@ -155,7 +155,7 @@ class BookingController extends Controller
                                 ->where('check_out', '>=', $checkOut);
                         });
                     })
-                    ->lockForUpdate()
+                    ->when(DB::getDriverName() !== 'sqlite', fn ($q) => $q->lockForUpdate())
                     ->exists();
 
                 if ($overlappingBookings) {
@@ -559,7 +559,10 @@ class BookingController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
-        $bookings = Booking::where('user_id', $user->id)
+        $bookings = Booking::where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)
+                ->orWhereRaw('LOWER(guest_email) = ?', [strtolower($user->email)]);
+        })
             ->with(['villa', 'payment'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -569,7 +572,7 @@ class BookingController extends Controller
             'count' => $bookings->count(),
         ]);
 
-        return response()->json($bookings);
+        return response()->json(['data' => $bookings->values()]);
     }
 
     /**

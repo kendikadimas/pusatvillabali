@@ -6,7 +6,7 @@ use App\Models\VillaIcalLink;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
-    $this->user = User::factory()->create(['role' => 'admin']);
+    $this->user = User::factory()->create(['role' => 'super_admin']);
     $this->villa = Villa::create([
         'name' => 'Cozy Test Villa',
         'slug' => 'cozy-test-villa',

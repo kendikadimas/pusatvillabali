@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Settings;
 
 use App\Concerns\PasswordValidationRules;
+use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -17,9 +18,16 @@ class PasswordUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'current_password' => $this->currentPasswordRules(),
+        /** @var User $user */
+        $user = $this->user();
+
+        // Google-only users (no user-set password yet) skip current_password check
+        $currentPasswordRules = ($user && $user->isGoogleAccount())
+            ? []
+            : ['current_password' => $this->currentPasswordRules()];
+
+        return array_merge($currentPasswordRules, [
             'password' => $this->passwordRules(),
-        ];
+        ]);
     }
 }

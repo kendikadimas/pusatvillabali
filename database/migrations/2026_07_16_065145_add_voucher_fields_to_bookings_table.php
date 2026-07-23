@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::table('bookings', function (Blueprint $table) {
             $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->nullOnDelete();
+            $table->string('voucher_code')->nullable();
             $table->decimal('discount_amount', 12, 2)->default(0);
         });
     }
@@ -18,7 +19,7 @@ return new class extends Migration
     {
         Schema::table('bookings', function (Blueprint $table) {
             $table->dropForeign(['voucher_id']);
-            $table->dropColumn(['voucher_id', 'discount_amount']);
+            $table->dropColumn(['voucher_id', 'voucher_code', 'discount_amount']);
         });
     }
 };

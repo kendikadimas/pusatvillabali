@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -27,6 +29,14 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
+     * Handle the incoming request — ensure session token is created before share() runs.
+     */
+    public function handle(Request $request, Closure $next): mixed
+    {
+        return parent::handle($request, $next);
+    }
+
+    /**
      * Define the props that are shared by default.
      *
      * @see https://inertiajs.com/shared-data
@@ -35,13 +45,31 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        $sanctumToken = $request->session()->get('sanctum_token');
+
+        if ($user && ! $sanctumToken) {
+            try {
+                $sanctumToken = $user->createToken('session-token')->plainTextToken;
+                $request->session()->put('sanctum_token', $sanctumToken);
+            } catch (\Throwable $e) {
+                Log::error('HandleInertiaRequests createToken failed', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                $sanctumToken = null;
+            }
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'sanctum_token' => $sanctumToken,
         ];
     }
 }

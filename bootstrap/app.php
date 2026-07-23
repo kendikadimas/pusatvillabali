@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PermissionMiddleware;
 use App\Http\Middleware\RequirePasswordCustom;
 use App\Http\Middleware\SuperAdminMiddleware;
@@ -17,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            HandleInertiaRequests::class,
+        ]);
+
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'super_admin' => SuperAdminMiddleware::class,

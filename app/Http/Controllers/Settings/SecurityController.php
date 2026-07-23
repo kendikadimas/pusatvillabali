@@ -36,12 +36,18 @@ class SecurityController extends Controller
      */
     public function update(PasswordUpdateRequest $request): JsonResponse
     {
-        $request->user()->update([
-            'password' => $request->password,
+        $user = $request->user();
+        $isFirstTimePassword = $user->isGoogleAccount();
+
+        $user->update([
+            'password' => bcrypt($request->input('password')),
+            'password_set_by_user' => true,
         ]);
 
-        return response()->json([
-            'message' => __('Password updated.'),
-        ]);
+        $message = $isFirstTimePassword
+            ? 'Password berhasil dibuat. Anda sekarang bisa login dengan email dan password.'
+            : __('Password updated.');
+
+        return response()->json(['message' => $message]);
     }
 }

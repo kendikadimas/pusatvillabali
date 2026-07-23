@@ -14,8 +14,8 @@ use Laravel\Sanctum\Sanctum;
 // =====================================================
 
 it('can list payment methods grouped by type', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    $admin = User::factory()->create(['role' => 'super_admin']);
+    Sanctum::actingAs($admin, ['*']);
 
     // Create QRIS method
     PaymentMethod::factory()->create([
@@ -75,8 +75,8 @@ it('public payment methods endpoint returns only active methods', function () {
 it('can upload QR code image for QRIS payment method', function () {
     Storage::fake('public');
 
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    $admin = User::factory()->create(['role' => 'super_admin']);
+    Sanctum::actingAs($admin, ['*']);
 
     $qris = PaymentMethod::factory()->create([
         'name' => 'QRIS',
@@ -96,8 +96,8 @@ it('can upload QR code image for QRIS payment method', function () {
 it('can update payment method with QR code', function () {
     Storage::fake('public');
 
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    $admin = User::factory()->create(['role' => 'super_admin']);
+    Sanctum::actingAs($admin, ['*']);
 
     $qris = PaymentMethod::factory()->create([
         'name' => 'QRIS',
@@ -151,6 +151,7 @@ it('can select specific payment method when creating booking', function () {
         'check_in' => now()->addDays(7)->toDateString(),
         'check_out' => now()->addDays(10)->toDateString(),
         'num_guests' => 2,
+        'ktp_image' => UploadedFile::fake()->image('ktp.jpg'),
     ]);
 
     $response->assertCreated();
@@ -217,8 +218,8 @@ it('user with google_id can login via sanctum', function () {
 // =====================================================
 
 it('analytics endpoint returns daily revenue data for charts', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    $admin = User::factory()->create(['role' => 'super_admin']);
+    Sanctum::actingAs($admin, ['*']);
 
     $villa = Villa::factory()->create();
 
@@ -255,8 +256,8 @@ it('analytics endpoint returns daily revenue data for charts', function () {
 });
 
 it('analytics export endpoint works', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    $admin = User::factory()->create(['role' => 'super_admin']);
+    Sanctum::actingAs($admin, ['*']);
 
     $response = $this->get('/api/v1/admin/analytics/export?from='.now()->subMonth()->toDateString().'&to='.now()->toDateString());
 
@@ -287,8 +288,8 @@ it('payment status transitions correctly: unpaid -> pending -> paid', function (
     expect($booking->fresh()->payment_status)->toBe('pending');
 
     // Admin approves -> paid
-    $admin = User::factory()->create(['role' => 'admin', 'email' => 'different@admin.com']);
-    Sanctum::actingAs($admin);
+    $admin = User::factory()->create(['role' => 'super_admin', 'email' => 'different@admin.com']);
+    Sanctum::actingAs($admin, ['*']);
 
     $this->postJson("/api/v1/admin/bookings/{$booking->id}/approve-manual-payment");
 
@@ -309,8 +310,8 @@ it('payment status can go from pending to unpaid after rejection', function () {
         'payment_proof' => 'https://example.test/proof.jpg',
     ]);
 
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    $admin = User::factory()->create(['role' => 'super_admin']);
+    Sanctum::actingAs($admin, ['*']);
 
     $this->postJson("/api/v1/admin/bookings/{$booking->id}/reject-manual-payment", [
         'rejection_reason' => 'Invalid proof',
@@ -321,8 +322,8 @@ it('payment status can go from pending to unpaid after rejection', function () {
 });
 
 it('cannot approve booking that is already paid', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    $admin = User::factory()->create(['role' => 'super_admin']);
+    Sanctum::actingAs($admin, ['*']);
 
     $booking = Booking::factory()->create([
         'status' => 'confirmed',
@@ -345,8 +346,8 @@ it('cannot approve booking that is already paid', function () {
 // =====================================================
 
 it('dashboard shows correct revenue calculation', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    $admin = User::factory()->create(['role' => 'super_admin']);
+    Sanctum::actingAs($admin, ['*']);
 
     $villa = Villa::factory()->create();
 
@@ -390,8 +391,8 @@ it('dashboard shows correct revenue calculation', function () {
 });
 
 it('dashboard shows correct booking counts', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
-    Sanctum::actingAs($admin);
+    $admin = User::factory()->create(['role' => 'super_admin']);
+    Sanctum::actingAs($admin, ['*']);
 
     $villa = Villa::factory()->create();
 
@@ -400,21 +401,21 @@ it('dashboard shows correct booking counts', function () {
         'villa_id' => $villa->id,
         'status' => 'pending',
         'payment_status' => 'unpaid',
-        'check_in' => now()->addDays(5),
+        'check_in' => now()->startOfMonth()->addDays(1)->toDateString(),
     ]);
 
     Booking::factory()->create([
         'villa_id' => $villa->id,
         'status' => 'confirmed',
         'payment_status' => 'paid',
-        'check_in' => now()->addDays(10),
+        'check_in' => now()->startOfMonth()->addDays(2)->toDateString(),
     ]);
 
     Booking::factory()->create([
         'villa_id' => $villa->id,
         'status' => 'cancelled',
         'payment_status' => 'unpaid',
-        'check_in' => now()->addDays(15),
+        'check_in' => now()->startOfMonth()->addDays(3)->toDateString(),
     ]);
 
     $response = $this->getJson('/api/v1/admin/dashboard');
@@ -490,7 +491,7 @@ it('user can only see their own bookings', function () {
 
     $response->assertOk();
 
-    $bookings = $response->json();
+    $bookings = $response->json('data');
     // User should only see their own bookings
     $bookingIds = collect($bookings)->pluck('id')->toArray();
     expect($bookingIds)->toContain($booking1->id);

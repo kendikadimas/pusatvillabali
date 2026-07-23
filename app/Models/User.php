@@ -46,6 +46,8 @@ class User extends Authenticatable
         'avatar',
         'password',
         'permissions',
+        'password_set_by_user',
+        'role',
     ];
 
     /**
@@ -72,7 +74,24 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'permissions' => 'array',
+            'password_set_by_user' => 'boolean',
         ];
+    }
+
+    /**
+     * Check if the user has a password set by themselves (not auto-generated).
+     */
+    public function hasUserPassword(): bool
+    {
+        return (bool) ($this->password_set_by_user ?? false);
+    }
+
+    /**
+     * Check if this is a Google OAuth account (no user-set password).
+     */
+    public function isGoogleAccount(): bool
+    {
+        return ! empty($this->google_id) && ! $this->hasUserPassword();
     }
 
     /**

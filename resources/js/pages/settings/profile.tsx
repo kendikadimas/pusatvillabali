@@ -1,6 +1,5 @@
 import { Form, Head, usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
@@ -10,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification/index';
 import type { Auth } from '@/types';
+import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 
 type PageProps = {
     auth: Auth;

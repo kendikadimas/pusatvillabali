@@ -32,6 +32,12 @@ jobs:
       - name: Install PHP dependencies
         run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
 
+      - name: Generate app key and Wayfinder types
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan wayfinder:generate
+
       - name: Install Node dependencies
         run: npm ci
 

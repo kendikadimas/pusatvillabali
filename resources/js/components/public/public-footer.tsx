@@ -165,9 +165,7 @@ export default function PublicFooter() {
                         <Link href="/wishlist" className="text-blue-400/60 hover:text-blue-300 transition-colors">Wishlist</Link>
                         <Link href="/login" className="text-blue-400/60 hover:text-blue-300 transition-colors">Masuk</Link>
                     </div>
-                    <p className="text-blue-500/50 flex items-center gap-1">
-                        Dibuat dengan <Heart className="w-3 h-3 fill-rose-400/60 text-rose-400/60" /> oleh KalanaLabs
-                    </p>
+
                 </div>
             </div>
         </footer>

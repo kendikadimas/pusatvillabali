@@ -2,7 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { Home, MapPin, Search, SlidersHorizontal, X } from 'lucide-react';
 import React, { useState } from 'react';
 import VillaCarousel from '@/components/public/villa-carousel';
-import type { Villa, AppSettings } from '@/types';
+import type { Villa } from '@/types';
 
 interface Filters {
     location?: string;
@@ -15,11 +15,9 @@ interface Filters {
 interface Props {
     villasByDestination: Record<string, Villa[]>;
     filters: Filters;
-    settings: AppSettings;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function VillasByDestinationPage({ villasByDestination, filters, settings: _settings }: Props) {
+export default function VillasByDestinationPage({ villasByDestination, filters }: Props) {
     const [showFilters, setShowFilters] = useState(false);
     const [wishlist, setWishlist] = useState<number[]>(() => {
         try {

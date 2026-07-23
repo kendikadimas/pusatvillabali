@@ -4,14 +4,9 @@ import { Heart, ArrowLeft } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import VillaCard from '@/components/public/villa-card';
-import type { Villa, AppSettings } from '@/types';
+import type { Villa } from '@/types';
 
-interface Props {
-    settings: AppSettings;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function WishlistPage({ settings: _settings }: Props) {
+export default function WishlistPage() {
     const [wishlist, setWishlist] = useState<number[]>([]);
     const [villas, setVillas] = useState<Villa[]>([]);
     const [loading, setLoading] = useState(true);

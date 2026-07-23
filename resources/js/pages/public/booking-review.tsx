@@ -3,17 +3,15 @@ import axios from 'axios';
 import { Search, Star } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import type { Booking, Review, AppSettings } from '@/types';
+import type { Booking, Review } from '@/types';
 
 interface Props {
     booking: Booking | null;
     existingReview: Review | null;
     token?: string;
-    settings: AppSettings;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function BookingReviewPage({ booking, existingReview, token, settings: _settings }: Props) {
+export default function BookingReviewPage({ booking, existingReview, token }: Props) {
     const [rating, setRating] = useState(existingReview?.rating ?? 5);
     const [hovered, setHovered] = useState(0);
     const [comment, setComment] = useState(existingReview?.comment ?? '');

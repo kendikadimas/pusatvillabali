@@ -2,7 +2,7 @@ import { Head, router } from '@inertiajs/react';
 import { Home, SlidersHorizontal, X } from 'lucide-react';
 import React, { useState } from 'react';
 import VillaCard from '@/components/public/villa-card';
-import type { Villa, AppSettings, PaginatedData } from '@/types';
+import type { Villa, PaginatedData } from '@/types';
 
 interface Filters {
     location?: string;
@@ -21,12 +21,10 @@ interface Filters {
 interface Props {
     villas: PaginatedData<Villa>;
     filters: Filters;
-    settings: AppSettings;
     destination_name?: string | null;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function VillasPage({ villas, filters, settings: _settings, destination_name }: Props) {
+export default function VillasPage({ villas, filters, destination_name }: Props) {
     const [showFilters, setShowFilters] = useState(false);
     const [wishlist, setWishlist] = useState<number[]>(() => {
         try {

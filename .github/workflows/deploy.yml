@@ -29,13 +29,13 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install PHP dependencies
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+
       - name: Setup environment
         run: |
           cp .env.example .env
           php artisan key:generate
-
-      - name: Install PHP dependencies
-        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
 
       - name: Install Node dependencies
         run: npm ci

@@ -29,7 +29,7 @@ class AdminMiddleware
         }
 
         // Enforce 1-hour inactivity timeout
-        $lastUsed = $token->last_used_at;
+        $lastUsed = $token->last_used_at ?: null;
         if ($lastUsed !== null && now()->diffInSeconds($lastUsed) > self::INACTIVITY_TIMEOUT) {
             $token->delete();
 

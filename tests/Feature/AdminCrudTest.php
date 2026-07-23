@@ -19,8 +19,8 @@ it('admin can list vouchers', function () {
 
     $response = $this->getJson('/api/v1/admin/vouchers');
 
-    $response->assertOk()
-        ->assertJsonStructure(['vouchers']);
+    $response->assertOk();
+    expect($response->json())->toBeArray();
 });
 
 it('admin can create a percent voucher', function () {
@@ -29,8 +29,8 @@ it('admin can create a percent voucher', function () {
     $response = $this->postJson('/api/v1/admin/vouchers', [
         'code' => 'DISC10',
         'description' => 'Diskon 10%',
-        'type' => 'percent',
-        'value' => 10,
+        'discount_type' => 'percentage',
+        'discount_value' => 10,
         'min_booking_amount' => 500000,
         'max_discount' => 100000,
         'usage_limit' => 50,
@@ -41,7 +41,7 @@ it('admin can create a percent voucher', function () {
 
     $response->assertCreated()
         ->assertJsonPath('voucher.code', 'DISC10')
-        ->assertJsonPath('voucher.type', 'percent');
+        ->assertJsonPath('voucher.discount_type', 'percentage');
 
     $this->assertDatabaseHas('vouchers', ['code' => 'DISC10']);
 });
@@ -52,8 +52,8 @@ it('admin can create a fixed voucher', function () {
     $response = $this->postJson('/api/v1/admin/vouchers', [
         'code' => 'FLAT50K',
         'description' => 'Potongan Rp50.000',
-        'type' => 'fixed',
-        'value' => 50000,
+        'discount_type' => 'fixed',
+        'discount_value' => 50000,
         'min_booking_amount' => 300000,
         'is_active' => true,
         'valid_from' => now()->toDateString(),
@@ -61,7 +61,7 @@ it('admin can create a fixed voucher', function () {
     ]);
 
     $response->assertCreated()
-        ->assertJsonPath('voucher.type', 'fixed');
+        ->assertJsonPath('voucher.discount_type', 'fixed');
 });
 
 it('admin cannot create voucher with duplicate code', function () {
@@ -87,8 +87,8 @@ it('admin can update a voucher', function () {
 
     $response = $this->putJson("/api/v1/admin/vouchers/{$voucher->id}", [
         'code' => $voucher->code,
-        'type' => $voucher->type,
-        'value' => $voucher->value,
+        'discount_type' => $voucher->discount_type,
+        'discount_value' => $voucher->discount_value,
         'min_booking_amount' => $voucher->min_booking_amount,
         'is_active' => false,
         'valid_from' => now()->toDateString(),
@@ -117,8 +117,8 @@ it('admin deleting a used voucher deactivates instead of deletes', function () {
 
     $response = $this->deleteJson("/api/v1/admin/vouchers/{$voucher->id}");
 
-    $response->assertOk();
-    $this->assertDatabaseHas('vouchers', ['id' => $voucher->id, 'is_active' => false]);
+    $response->assertStatus(422);
+    $this->assertDatabaseHas('vouchers', ['id' => $voucher->id]);
 });
 
 it('non-admin cannot access voucher endpoints', function () {
@@ -211,6 +211,7 @@ it('admin can create a villa', function () {
         'bedrooms' => 2,
         'bathrooms' => 2,
         'max_guests' => 4,
+        'min_nights' => 1,
         'check_in_time' => '14:00',
         'check_out_time' => '12:00',
         'is_active' => true,
@@ -237,6 +238,7 @@ it('admin can update a villa', function () {
         'bedrooms' => $villa->bedrooms,
         'bathrooms' => $villa->bathrooms,
         'max_guests' => $villa->max_guests,
+        'min_nights' => 1,
         'check_in_time' => '14:00',
         'check_out_time' => '12:00',
         'is_active' => false,

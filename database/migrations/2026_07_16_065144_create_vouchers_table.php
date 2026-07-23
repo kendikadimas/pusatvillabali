@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique();
             $table->string('description')->nullable();
-            $table->enum('type', ['percent', 'fixed'])->default('fixed');
-            $table->decimal('value', 12, 2);                        // percent 0-100 or fixed IDR amount
+            $table->enum('discount_type', ['percentage', 'fixed'])->default('fixed');
+            $table->decimal('discount_value', 12, 2);               // percent 0-100 or fixed IDR amount
             $table->decimal('min_booking_amount', 12, 2)->default(0); // minimum order to apply
             $table->decimal('max_discount', 12, 2)->nullable();     // cap for percent type
             $table->integer('usage_limit')->nullable();             // null = unlimited

@@ -53,6 +53,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
+
         try {
             await axios.post('/api/v1/admin/settings', form);
             toast.success('Pengaturan berhasil disimpan');
@@ -65,6 +66,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
 
     const handleToggleActive = async (pm: PaymentMethod) => {
         setTogglingId(pm.id);
+
         try {
             await axios.patch(`/api/v1/admin/payment-methods/${pm.id}/toggle`);
             setPaymentMethods((prev) => prev.map((p) => (p.id === pm.id ? { ...p, is_active: !p.is_active } : p)));
@@ -108,6 +110,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
 
     const handleLogoUpload = async (file: File) => {
         setUploadingLogo(true);
+
         try {
             const fd = new FormData();
             fd.append('logo', file);
@@ -137,6 +140,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
             admin_fee: parseInt(pmForm.admin_fee) || 0,
             is_active: pmForm.is_active,
         };
+
         try {
             if (editingPm) {
                 const res = await axios.put(`/api/v1/admin/payment-methods/${editingPm.id}`, payload);
@@ -148,6 +152,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
                 setPaymentMethods((prev) => [...prev, res.data.payment_method]);
                 toast.success('Metode pembayaran ditambahkan');
             }
+
             closePmModal();
         } catch (err: any) {
             if (err.response?.data?.errors) {
@@ -162,7 +167,10 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
     };
 
     const handlePmDelete = async (pm: PaymentMethod) => {
-        if (!confirm(`Hapus metode pembayaran "${pm.name}"?`)) return;
+        if (!confirm(`Hapus metode pembayaran "${pm.name}"?`)) {
+return;
+}
+
         try {
             await axios.delete(`/api/v1/admin/payment-methods/${pm.id}`);
             setPaymentMethods((prev) => prev.filter((p) => p.id !== pm.id));
@@ -252,6 +260,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
                         <div className="space-y-3">
                             {paymentMethods.map((pm) => {
                                 const isToggling = togglingId === pm.id;
+
                                 return (
                                     <div key={pm.id} className="bg-white border border-slate-200 rounded-2xl p-5 flex items-center justify-between gap-4 hover:border-slate-300 transition-colors">
                                         <div className="flex items-center gap-3 min-w-0">
@@ -341,7 +350,13 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
                                         accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
                                         className="hidden"
                                         disabled={uploadingLogo}
-                                        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleLogoUpload(f); }}
+                                        onChange={(e) => {
+ const f = e.target.files?.[0];
+
+ if (f) {
+handleLogoUpload(f);
+} 
+}}
                                     />
                                 </label>
                                 {pmForm.logo_url && (

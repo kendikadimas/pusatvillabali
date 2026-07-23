@@ -49,14 +49,17 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
                 const params = JSON.parse(intent) as Record<string, string>;
 
                 if (params.checkIn && !query.checkIn) {
+                    // eslint-disable-next-line react-hooks/set-state-in-effect
                     setCheckIn(params.checkIn);
                 }
 
                 if (params.checkOut && !query.checkOut) {
+                     
                     setCheckOut(params.checkOut);
                 }
 
                 if (params.guests && !query.guests) {
+                     
                     setGuests(Number(params.guests));
                 }
             } catch {
@@ -65,7 +68,7 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
 
             sessionStorage.removeItem('booking_intent');
         }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const nights = checkIn && checkOut ? differenceInDays(parseISO(checkOut), parseISO(checkIn)) : 0;
 
@@ -108,9 +111,13 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
     const [voucherError, setVoucherError] = useState('');
 
     const handleApplyVoucher = async () => {
-        if (!voucherCode.trim()) return;
+        if (!voucherCode.trim()) {
+return;
+}
+
         setVoucherLoading(true);
         setVoucherError('');
+
         try {
             const res = await axios.post('/api/v1/vouchers/validate', {
                 code: voucherCode.trim(),
@@ -497,7 +504,9 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
                                                         <input
                                                             type="text"
                                                             value={voucherCode}
-                                                            onChange={e => { setVoucherCode(e.target.value.toUpperCase()); setVoucherError(''); }}
+                                                            onChange={e => {
+ setVoucherCode(e.target.value.toUpperCase()); setVoucherError(''); 
+}}
                                                             onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleApplyVoucher())}
                                                             placeholder="Masukkan kode voucher"
                                                             className="flex-1 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-mono font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
@@ -646,6 +655,7 @@ export default function BookingConfirmPage({ villa: initialVilla, paymentMethods
                                         onChange={(e) => {
                                             const file = e.target.files?.[0] ?? null;
                                             setProofFile(file);
+
                                             if (file) {
                                                 const reader = new FileReader();
                                                 reader.onload = (ev) => setProofPreview(ev.target?.result as string);

@@ -16,6 +16,7 @@ export function normaliseStorageUrl(url: string | null | undefined): string {
     // Legacy absolute URL stored in DB (e.g. http://localhost/storage/villas/abc.jpg)
     // Extract the /storage/... portion so it works on any domain
     const storageIndex = url.indexOf('/storage/');
+
     if (storageIndex !== -1) {
         return url.slice(storageIndex);
     }

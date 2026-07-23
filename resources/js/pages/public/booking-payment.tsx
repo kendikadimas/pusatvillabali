@@ -15,7 +15,7 @@ interface Props {
     code?: string;
 }
 
-export default function BookingPaymentPage({ booking, paymentMethods, settings, code: _code }: Props) {
+export default function BookingPaymentPage({ booking, paymentMethods, settings }: Props) {
     const [proofFile, setProofFile] = useState<File | null>(null);
     const [proofPreview, setProofPreview] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
@@ -24,7 +24,10 @@ export default function BookingPaymentPage({ booking, paymentMethods, settings, 
     const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
     const copyAccountNumber = () => {
-        if (!pm?.account_number) return;
+        if (!pm?.account_number) {
+return;
+}
+
         navigator.clipboard.writeText(pm.account_number);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);

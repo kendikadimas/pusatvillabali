@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
-import { Plus, Edit, Trash2, Search, Star, Eye, EyeOff, Home, TrendingUp, ArrowUpRight } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Star, Eye, EyeOff, ArrowUpRight } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/format';
@@ -121,7 +121,9 @@ return;
                         </div>
                         <select
                             value={destinationId}
-                            onChange={(e) => { setDestinationId(e.target.value); applyFilters({ dest: e.target.value }); }}
+                            onChange={(e) => {
+ setDestinationId(e.target.value); applyFilters({ dest: e.target.value }); 
+}}
                             className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="">Semua Lokasi</option>
@@ -131,7 +133,9 @@ return;
                         </select>
                         <select
                             value={status}
-                            onChange={(e) => { setStatus(e.target.value); applyFilters({ status: e.target.value }); }}
+                            onChange={(e) => {
+ setStatus(e.target.value); applyFilters({ status: e.target.value }); 
+}}
                             className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="">Semua Status</option>
@@ -140,7 +144,9 @@ return;
                         </select>
                         <select
                             value={sort}
-                            onChange={(e) => { setSort(e.target.value); applyFilters({ sort: e.target.value }); }}
+                            onChange={(e) => {
+ setSort(e.target.value); applyFilters({ sort: e.target.value }); 
+}}
                             className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="newest">Terbaru</option>

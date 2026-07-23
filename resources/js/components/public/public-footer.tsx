@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Mail, Heart, MapPin } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
 import React from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import type { AppSettings } from '@/types';

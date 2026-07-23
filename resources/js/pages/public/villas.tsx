@@ -25,6 +25,7 @@ interface Props {
     destination_name?: string | null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function VillasPage({ villas, filters, settings: _settings, destination_name }: Props) {
     const [showFilters, setShowFilters] = useState(false);
     const [wishlist, setWishlist] = useState<number[]>(() => {
@@ -36,7 +37,7 @@ export default function VillasPage({ villas, filters, settings: _settings, desti
     });
 
     // Local filter state
-    const [locationInput, setLocationInput] = useState(filters.location ?? '');
+    const [locationInput] = useState(filters.location ?? '');
     const [bedrooms, setBedrooms] = useState(filters.bedrooms ?? '');
     const [guests, setGuests] = useState(filters.guests ?? '');
     const [minPrice, setMinPrice] = useState(filters.min_price ?? '');

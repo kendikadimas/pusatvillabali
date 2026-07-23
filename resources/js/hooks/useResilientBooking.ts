@@ -144,12 +144,14 @@ export function useResilientBooking(codeFromUrl?: string, emailFromUrl?: string)
     }, [fetchBooking]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchBooking();
     }, [fetchBooking]);
 
     useEffect(() => {
         const handleVisibility = () => {
             if (document.visibilityState === 'visible' && status === 'error') {
+                 
                 fetchBooking();
             }
         };

@@ -5,10 +5,10 @@ import { ChevronLeft, X, Search, User, LogOut } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import type { DateRange } from 'react-day-picker';
-import type { AppSettings } from '@/types';
-import { normaliseStorageUrl } from '@/lib/villaUtils';
 import AppLogoIcon from '@/components/app-logo-icon';
+import { normaliseStorageUrl } from '@/lib/villaUtils';
 import { logout } from '@/routes';
+import type { AppSettings } from '@/types';
 import 'react-day-picker/style.css';
 
 interface PublicHeaderProps {
@@ -105,13 +105,16 @@ export default function PublicHeader({
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             const target = e.target as Node;
+
             if (pillRef.current?.contains(target)) {
                 return;
             }
+
             // DayPicker portals / popover still under pillRef; also ignore if inside rdp
             if (target instanceof Element && target.closest('.rdp-root, .search-date-picker, [class*="rdp"]')) {
                 return;
             }
+
             setSearchExpanded(false);
             setActiveSegment(null);
         };
@@ -142,7 +145,10 @@ export default function PublicHeader({
 
     // Close villa search on outside click
     useEffect(() => {
-        if (!villaSearchOpen) return;
+        if (!villaSearchOpen) {
+return;
+}
+
         const handler = (e: MouseEvent) => {
             if (villaSearchRef.current && !villaSearchRef.current.contains(e.target as Node)) {
                 setVillaSearchOpen(false);
@@ -150,6 +156,7 @@ export default function PublicHeader({
             }
         };
         document.addEventListener('mousedown', handler);
+
         return () => document.removeEventListener('mousedown', handler);
     }, [villaSearchOpen]);
 
@@ -158,6 +165,7 @@ export default function PublicHeader({
         if (!mobileSearchOpen) {
             return;
         }
+
         const prev = document.body.style.overflow;
         document.body.style.overflow = 'hidden';
 
@@ -168,7 +176,11 @@ export default function PublicHeader({
 
     const handleVillaSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!villaSearchQuery.trim()) return;
+
+        if (!villaSearchQuery.trim()) {
+return;
+}
+
         router.get('/villas', { search: villaSearchQuery.trim() });
         setVillaSearchOpen(false);
         setVillaSearchQuery('');
@@ -178,11 +190,25 @@ export default function PublicHeader({
         e.preventDefault();
         const params: Record<string, string> = {};
 
-        if (searchWhere.trim()) params.search = searchWhere.trim();
-        if (searchCheckIn) params.checkIn = searchCheckIn;
-        if (searchCheckOut) params.checkOut = searchCheckOut;
-        if (searchBedrooms > 0) params.bedrooms = String(searchBedrooms);
-        if (searchGuests > 0) params.guests = String(searchGuests);
+        if (searchWhere.trim()) {
+params.search = searchWhere.trim();
+}
+
+        if (searchCheckIn) {
+params.checkIn = searchCheckIn;
+}
+
+        if (searchCheckOut) {
+params.checkOut = searchCheckOut;
+}
+
+        if (searchBedrooms > 0) {
+params.bedrooms = String(searchBedrooms);
+}
+
+        if (searchGuests > 0) {
+params.guests = String(searchGuests);
+}
 
         router.get('/villas', params);
         setSearchExpanded(false);
@@ -199,17 +225,31 @@ export default function PublicHeader({
         : 'Kapan saja';
     const bedroomsLabel = searchBedrooms > 0 ? `${searchBedrooms}+ kamar` : 'Kamar tidur';
     const guestsLabel = (() => {
-        if (searchGuests <= 0 && searchInfants <= 0 && searchPets <= 0) return 'Tambahkan tamu';
+        if (searchGuests <= 0 && searchInfants <= 0 && searchPets <= 0) {
+return 'Tambahkan tamu';
+}
+
         const parts: string[] = [];
-        if (searchGuests > 0) parts.push(`${searchGuests} tamu`);
-        if (searchInfants > 0) parts.push(`${searchInfants} bayi`);
-        if (searchPets > 0) parts.push(`${searchPets} hewan`);
+
+        if (searchGuests > 0) {
+parts.push(`${searchGuests} tamu`);
+}
+
+        if (searchInfants > 0) {
+parts.push(`${searchInfants} bayi`);
+}
+
+        if (searchPets > 0) {
+parts.push(`${searchPets} hewan`);
+}
+
         return parts.join(', ');
     })();
 
     const filteredSuggestions = searchWhere.trim()
         ? destinations.filter(d => {
             const q = searchWhere.toLowerCase();
+
             return d.name?.toLowerCase().includes(q) || d.city?.toLowerCase().includes(q);
         })
         : destinations.slice(0, 8);
@@ -312,7 +352,11 @@ export default function PublicHeader({
                                         type="text"
                                         value={searchWhere}
                                         onChange={e => setSearchWhere(e.target.value)}
-                                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); setActiveSegment('dates'); } }}
+                                        onKeyDown={e => {
+ if (e.key === 'Enter') {
+ e.preventDefault(); setActiveSegment('dates'); 
+} 
+}}
                                         placeholder="Cari destinasi"
                                         className="text-sm text-slate-700 outline-none bg-transparent w-full placeholder:text-slate-400 font-medium"
                                     />
@@ -389,9 +433,12 @@ export default function PublicHeader({
                                                     // Keep the panel open until a real check-out day is chosen.
                                                     if (range?.from && range?.to && isSameDay(range.from, range.to)) {
                                                         setDateRange({ from: range.from, to: undefined });
+
                                                         return;
                                                     }
+
                                                     setDateRange(range);
+
                                                     if (range?.from && range?.to) {
                                                         setActiveSegment('bedrooms');
                                                     }
@@ -709,7 +756,9 @@ export default function PublicHeader({
                                 </button>
                             </div>
                             <form
-                                onSubmit={(e) => { handleSearch(e); setMobileSearchOpen(false); }}
+                                onSubmit={(e) => {
+ handleSearch(e); setMobileSearchOpen(false); 
+}}
                                 className="flex flex-col flex-1 min-h-0"
                             >
                                 <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-4 pb-3 space-y-4">

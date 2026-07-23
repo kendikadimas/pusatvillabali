@@ -48,7 +48,10 @@ function StatCard({ label, value, icon, color = 'blue', href }: { label: string;
         </div>
     );
 
-    if (href) return <Link href={href}>{inner}</Link>;
+    if (href) {
+return <Link href={href}>{inner}</Link>;
+}
+
     return inner;
 }
 

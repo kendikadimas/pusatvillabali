@@ -33,6 +33,7 @@ export default function AdminDestinationsPage({ destinations }: Props) {
 
     const handleImageUpload = async (file: File) => {
         setUploadingImage(true);
+
         try {
             const fd = new FormData();
             fd.append('image', file);
@@ -52,11 +53,15 @@ export default function AdminDestinationsPage({ destinations }: Props) {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (!form.image) {
             toast.error('Foto destinasi wajib diunggah.');
+
             return;
         }
+
         setSaving(true);
+
         try {
             if (editing) {
                 await axios.put(`/api/v1/admin/destinations/${editing.id}`, form);
@@ -65,6 +70,7 @@ export default function AdminDestinationsPage({ destinations }: Props) {
                 await axios.post('/api/v1/admin/destinations', form);
                 toast.success('Destinasi ditambahkan');
             }
+
             setShowForm(false);
             router.reload();
         } catch (err: any) {
@@ -75,7 +81,10 @@ export default function AdminDestinationsPage({ destinations }: Props) {
     };
 
     const handleDelete = async (id: number, name: string) => {
-        if (!confirm(`Hapus destinasi "${name}"?`)) return;
+        if (!confirm(`Hapus destinasi "${name}"?`)) {
+return;
+}
+
         try {
             await axios.delete(`/api/v1/admin/destinations/${id}`);
             toast.success('Destinasi dihapus');
@@ -134,14 +143,19 @@ export default function AdminDestinationsPage({ destinations }: Props) {
                                             disabled={uploadingImage}
                                             onChange={(e) => {
                                                 const file = e.target.files?.[0];
-                                                if (file) handleImageUpload(file);
+
+                                                if (file) {
+handleImageUpload(file);
+}
                                             }}
                                         />
                                     </label>
                                     {imagePreview && (
                                         <button
                                             type="button"
-                                            onClick={() => { setImagePreview(''); setForm((f) => ({ ...f, image: '' })); }}
+                                            onClick={() => {
+ setImagePreview(''); setForm((f) => ({ ...f, image: '' })); 
+}}
                                             className="mt-1 text-xs text-red-500 hover:text-red-700 cursor-pointer"
                                         >
                                             Hapus foto
@@ -188,7 +202,9 @@ export default function AdminDestinationsPage({ destinations }: Props) {
                                     src={d.image}
                                     alt={d.name}
                                     className="w-full h-full object-cover"
-                                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&q=80'; }}
+                                    onError={(e) => {
+ (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&q=80'; 
+}}
                                 />
                             </div>
                             <div className="p-4">

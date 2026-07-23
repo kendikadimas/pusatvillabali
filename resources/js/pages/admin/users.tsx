@@ -1,7 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { Plus, Trash2, RefreshCw, ShieldCheck, Edit } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 
 interface AdminUser {
@@ -66,7 +66,7 @@ export default function AdminUsersPage() {
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
 
-    const fetchAdmins = async () => {
+    const fetchAdmins = useCallback(async () => {
         setLoading(true);
 
         try {
@@ -77,7 +77,7 @@ export default function AdminUsersPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     const fetchedRef = React.useRef(false);
 
@@ -133,7 +133,11 @@ export default function AdminUsersPage() {
 
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!editingAdmin) return;
+
+        if (!editingAdmin) {
+return;
+}
+
         setSubmitting(true);
         setErrors({});
 
@@ -142,6 +146,7 @@ export default function AdminUsersPage() {
             email: form.email,
             permissions: form.permissions,
         };
+
         if (form.password) {
             payload.password = form.password;
             payload.password_confirmation = form.password_confirmation;
@@ -408,7 +413,9 @@ return;
                             <div className="flex gap-3 pt-2">
                                 <button
                                     type="button"
-                                    onClick={() => { setEditingAdmin(null); setForm({ ...emptyForm }); setErrors({}); }}
+                                    onClick={() => {
+ setEditingAdmin(null); setForm({ ...emptyForm }); setErrors({}); 
+}}
                                     className="flex-1 border border-slate-200 text-slate-700 text-sm font-semibold py-2.5 rounded-xl hover:bg-slate-50 transition-colors"
                                 >
                                     Batal

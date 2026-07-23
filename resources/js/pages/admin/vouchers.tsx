@@ -45,8 +45,15 @@ function authHeaders() {
 }
 
 function fmtDate(d: string | null) {
-    if (!d) return '—';
-    try { return format(parseISO(d), 'd MMM yyyy', { locale: localeID }); } catch { return d; }
+    if (!d) {
+return '—';
+}
+
+    try {
+ return format(parseISO(d), 'd MMM yyyy', { locale: localeID }); 
+} catch {
+ return d; 
+}
 }
 
 function StatusBadge({ active }: { active: boolean }) {
@@ -73,7 +80,10 @@ export default function VouchersPage() {
             .finally(() => setLoading(false));
     };
 
-    useEffect(() => { fetchVouchers(); }, []);
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchVouchers();
+    }, []);
 
     const openCreate = () => {
         setEditingId(null);
@@ -112,6 +122,7 @@ export default function VouchersPage() {
             valid_from: form.valid_from || null,
             valid_until: form.valid_until || null,
         };
+
         try {
             if (editingId) {
                 await axios.put(`/api/v1/admin/vouchers/${editingId}`, payload, { headers: authHeaders() });
@@ -120,6 +131,7 @@ export default function VouchersPage() {
                 await axios.post('/api/v1/admin/vouchers', payload, { headers: authHeaders() });
                 toast.success('Voucher berhasil dibuat.');
             }
+
             setShowModal(false);
             fetchVouchers();
         } catch (e: unknown) {
@@ -134,8 +146,12 @@ export default function VouchersPage() {
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm('Yakin ingin menghapus/menonaktifkan voucher ini?')) return;
+        if (!confirm('Yakin ingin menghapus/menonaktifkan voucher ini?')) {
+return;
+}
+
         setDeletingId(id);
+
         try {
             await axios.delete(`/api/v1/admin/vouchers/${id}`, { headers: authHeaders() });
             toast.success('Voucher dihapus.');

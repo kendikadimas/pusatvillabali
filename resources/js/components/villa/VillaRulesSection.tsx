@@ -8,7 +8,7 @@ interface VillaRulesSectionProps {
     maxGuests: number;
 }
 
-export default function VillaRulesSection({ rules, safetyList, cancellationPolicy, maxGuests: _maxGuests }: VillaRulesSectionProps) {
+export default function VillaRulesSection({ rules, safetyList, cancellationPolicy }: VillaRulesSectionProps) {
     const rulesList = rules ? rules.split('\n').filter(r => r.trim()) : [];
     const visibleColumns = [
         { show: rulesList.length > 0, key: 'rules' },

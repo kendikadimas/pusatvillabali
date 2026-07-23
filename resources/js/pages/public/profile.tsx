@@ -64,8 +64,12 @@ export default function ProfilePage({
     const [sendingReset, setSendingReset] = useState(false);
 
     const handleSendResetLink = async () => {
-        if (!auth?.user?.email || sendingReset) return;
+        if (!auth?.user?.email || sendingReset) {
+return;
+}
+
         setSendingReset(true);
+
         try {
             await axios.post('/api/v1/forgot-password', { email: auth.user.email });
             setResetLinkSent(true);

@@ -12,8 +12,8 @@ interface VillaPageSkeletonProps {
 }
 
 export default function VillaPageSkeleton({
-    villa, isSaved, activeSection: _activeSection,
-    onShare, onToggleWishlist, onScrollToSection: _onScrollToSection, children
+    villa, isSaved,
+    onShare, onToggleWishlist, children
 }: VillaPageSkeletonProps) {
     return (
         <div className="flex-1 flex flex-col bg-white text-slate-900 font-sans antialiased pt-5">

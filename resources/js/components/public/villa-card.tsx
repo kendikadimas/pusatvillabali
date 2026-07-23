@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Star, Heart, ChevronLeft, ChevronRight, ImageOff, Users, BedDouble } from 'lucide-react';
+import { Star, Heart, ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
 import React, { useState, useRef } from 'react';
 import { formatPrice } from '@/lib/format';
 import { getPhotoUrl } from '@/lib/villaUtils';
@@ -24,6 +24,7 @@ export default function VillaCard({
     wishlist = [],
     toggleWishlist,
     searchParams = {},
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     variant: _variant = 'home',
     onMouseEnter,
     onMouseLeave,
@@ -46,7 +47,6 @@ export default function VillaCard({
         ? parseFloat(villa.reviews_avg_rating.toString())
         : null;
     const ratingText = ratingVal !== null ? ratingVal.toFixed(1).replace('.', ',') : null;
-    const reviewCount = villa.reviews_count ?? 0;
 
     const allPhotos =
         villa.photos && villa.photos.length > 0

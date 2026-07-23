@@ -2,9 +2,9 @@
 import { eachDayOfInterval, format, parseISO } from 'date-fns';
 import { MapPin, BedDouble, Bath, Users, Star, Calendar, ChevronLeft, ChevronRight, Check, X, Grid3X3, Minus, Plus, LayoutGrid, SlidersHorizontal } from 'lucide-react';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import VillaCalendarSection from '@/components/villa/VillaCalendarSection';
 import { formatPrice } from '@/lib/format';
 import { getPhotoUrl, getPhotoCategory, getPhotoDesc } from '@/lib/villaUtils';
-import VillaCalendarSection from '@/components/villa/VillaCalendarSection';
 import type { Villa, AppSettings } from '@/types';
 
 // ─── Mobile Booking Bar ───────────────────────────────────────────────────────
@@ -285,6 +285,7 @@ return;
 
     // Reset current index when category changes
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCurrent(0);
     }, [activeCategory]);
 
@@ -402,6 +403,7 @@ export default function VillaDetailPage({ villa, settings }: Props) {
     useEffect(() => {
         const handler = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handler);
+
         return () => window.removeEventListener('resize', handler);
     }, []);
 
@@ -417,6 +419,7 @@ export default function VillaDetailPage({ villa, settings }: Props) {
                 // Parse as local midnight to avoid UTC offset mismatches with DayPicker
                 setDisabledDays(data.disabled_dates.map(d => {
                     const [year, month, day] = d.split('-').map(Number);
+
                     return new Date(year, month - 1, day);
                 }));
             })

@@ -10,6 +10,7 @@ interface Props {
     settings: AppSettings;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function WishlistPage({ settings: _settings }: Props) {
     const [wishlist, setWishlist] = useState<number[]>([]);
     const [villas, setVillas] = useState<Villa[]>([]);
@@ -18,9 +19,11 @@ export default function WishlistPage({ settings: _settings }: Props) {
     useEffect(() => {
         try {
             const stored = JSON.parse(localStorage.getItem('wishlist') ?? '[]') as number[];
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setWishlist(stored);
 
             if (stored.length === 0) {
+                 
                 setLoading(false);
 
                 return;

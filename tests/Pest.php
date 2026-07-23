@@ -44,6 +44,14 @@ expect()->extend('toBeOne', function () {
 |
 */
 
+function actingAsAdmin(): void
+{
+    $admin = \App\Models\User::factory()->create([
+        'role' => 'super_admin',
+    ]);
+    \Laravel\Sanctum\Sanctum::actingAs($admin, ['*']);
+}
+
 function something()
 {
     // ..

@@ -8,7 +8,7 @@ import type { Auth } from '@/types/auth';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     useAuthTokenSync();
-    const { auth, flash } = usePage<{ auth: Auth; flash?: { success?: string; error?: string } }>().props;
+    const { auth } = usePage<{ auth: Auth; flash?: { success?: string; error?: string } }>().props;
     const { url: currentUrl } = usePage();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -96,6 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <div className="space-y-0.5 px-2">
                             {group.items.map((item) => {
                                 const isActive = currentUrl.startsWith(item.href);
+
                                 return (
                                     <Link
                                         key={item.href}

@@ -96,12 +96,8 @@ return null;
 
 export default function Home({ villas, villasByDestination, destinations, settings }: Props) {
     const destList = destinations && destinations.length > 0 ? destinations : DEFAULT_DESTINATIONS;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const destScrollRef = useRef<HTMLDivElement>(null);
-
-    const scrollDest = (dir: 'left' | 'right') => {
-        if (!destScrollRef.current) return;
-        destScrollRef.current.scrollBy({ left: dir === 'right' ? 240 : -240, behavior: 'smooth' });
-    };
 
     // Use villasByDestination from controller if available, otherwise fallback to client-side grouping
     const hasGroupedData = villasByDestination && Object.keys(villasByDestination).length > 0;
@@ -128,7 +124,9 @@ export default function Home({ villas, villasByDestination, destinations, settin
                                         src={dest.image}
                                         alt={dest.name}
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                        onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&q=80'; }}
+                                        onError={(e) => {
+ (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&q=80'; 
+}}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                                     <div className="absolute bottom-0 left-0 right-0 p-3">

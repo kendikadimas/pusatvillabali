@@ -44,6 +44,7 @@ function formatDate(y: number, m: number, d: number): string {
 
 function today(): string {
     const t = new Date();
+
     return formatDate(t.getFullYear(), t.getMonth(), t.getDate());
 }
 
@@ -57,10 +58,12 @@ function expandStayDates(checkIn: string, checkOut: string): string[] {
     const start = new Date(toDateOnly(checkIn) + 'T00:00:00');
     const end = new Date(toDateOnly(checkOut) + 'T00:00:00');
     const cursor = new Date(start);
+
     while (cursor < end) {
         dates.push(formatDate(cursor.getFullYear(), cursor.getMonth(), cursor.getDate()));
         cursor.setDate(cursor.getDate() + 1);
     }
+
     return dates;
 }
 
@@ -95,9 +98,12 @@ export default function AdminCalendarPage({ villas }: Props) {
         if (!villaId) {
             setBlockedDates([]);
             setBookings([]);
+
             return;
         }
+
         setLoading(true);
+
         try {
             const [blockedRes, bookingsRes] = await Promise.all([
                 axios.get('/api/v1/admin/blocked-dates', { params: { villa_id: villaId } }),
@@ -120,6 +126,7 @@ export default function AdminCalendarPage({ villas }: Props) {
     }, []);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchData(selectedId);
     }, [selectedId, fetchData]);
 
@@ -131,32 +138,47 @@ export default function AdminCalendarPage({ villas }: Props) {
     /** date → list of bookings covering that night */
     const bookedMap = useMemo(() => {
         const map = new Map<string, BookingSummary[]>();
+
         for (const booking of bookings) {
             const nights = expandStayDates(booking.check_in, booking.check_out);
+
             for (const d of nights) {
                 const existing = map.get(d) ?? [];
                 existing.push(booking);
                 map.set(d, existing);
             }
         }
+
         return map;
     }, [bookings]);
 
     const handleDayClick = (dateStr: string) => {
-        if (!selectedId) return;
-        if (dateStr < todayStr) return;
+        if (!selectedId) {
+return;
+}
+
+        if (dateStr < todayStr) {
+return;
+}
+
         const blocked = blockedMap.get(dateStr);
+
         if (blocked) {
             handleUnblock(blocked);
+
             return;
         }
+
         // Allow opening modal even if booked — show warning, block API will reject if needed
         setPendingDate(dateStr);
         setReason('');
     };
 
     const handleUnblock = async (blocked: BlockedDate) => {
-        if (!confirm(`Batalkan blokir tanggal ${toDateOnly(blocked.date)}?`)) return;
+        if (!confirm(`Batalkan blokir tanggal ${toDateOnly(blocked.date)}?`)) {
+return;
+}
+
         try {
             await axios.delete(`/api/v1/admin/blocked-dates/${blocked.id}`);
             toast.success('Blokir dibatalkan');
@@ -167,8 +189,12 @@ export default function AdminCalendarPage({ villas }: Props) {
     };
 
     const confirmBlock = async () => {
-        if (!pendingDate || !selectedId) return;
+        if (!pendingDate || !selectedId) {
+return;
+}
+
         setSaving(true);
+
         try {
             const res = await axios.post('/api/v1/admin/blocked-dates', {
                 villa_id: Number(selectedId),
@@ -189,12 +215,18 @@ export default function AdminCalendarPage({ villas }: Props) {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     const prevMonth = () => {
-        if (month === 0) { setMonth(11); setYear((y) => y - 1); }
-        else setMonth((m) => m - 1);
+        if (month === 0) {
+ setMonth(11); setYear((y) => y - 1); 
+} else {
+setMonth((m) => m - 1);
+}
     };
     const nextMonth = () => {
-        if (month === 11) { setMonth(0); setYear((y) => y + 1); }
-        else setMonth((m) => m + 1);
+        if (month === 11) {
+ setMonth(0); setYear((y) => y + 1); 
+} else {
+setMonth((m) => m + 1);
+}
     };
 
     const selectedVilla = villas.find((v) => String(v.id) === selectedId);
@@ -205,11 +237,13 @@ export default function AdminCalendarPage({ villas }: Props) {
 
     const upcomingBooked: BookedDateInfo[] = useMemo(() => {
         const entries: BookedDateInfo[] = [];
+
         for (const [date, bks] of bookedMap.entries()) {
             if (date >= todayStr) {
                 entries.push({ date, bookings: bks });
             }
         }
+
         return entries.sort((a, b) => a.date.localeCompare(b.date));
     }, [bookedMap, todayStr]);
 
@@ -248,7 +282,9 @@ export default function AdminCalendarPage({ villas }: Props) {
                                     <button
                                         key={v.id}
                                         type="button"
-                                        onClick={() => { setSelectedId(String(v.id)); setVillaSearch(''); }}
+                                        onClick={() => {
+ setSelectedId(String(v.id)); setVillaSearch(''); 
+}}
                                         className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors ${String(v.id) === selectedId ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-700'}`}
                                     >
                                         {v.name}
@@ -345,6 +381,7 @@ export default function AdminCalendarPage({ villas }: Props) {
                                             const blockedEntry = blockedMap.get(dateStr);
 
                                             let cellClass = 'relative flex flex-col items-center justify-center rounded-lg py-1.5 text-sm font-medium transition-colors min-h-[44px] ';
+
                                             if (isPast) {
                                                 cellClass += 'text-slate-300 bg-slate-50 cursor-default';
                                             } else if (isBlocked && isBooked) {
@@ -355,16 +392,26 @@ export default function AdminCalendarPage({ villas }: Props) {
                                                 cellClass += 'bg-amber-100 text-amber-800 border border-amber-400 hover:bg-amber-200 cursor-pointer';
                                             } else {
                                                 cellClass += 'text-slate-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer';
-                                                if (isToday) cellClass += ' ring-2 ring-blue-400 ring-offset-1';
+
+                                                if (isToday) {
+cellClass += ' ring-2 ring-blue-400 ring-offset-1';
+}
                                             }
 
                                             const guestNames = dayBookings.map((b) => b.guest_name).join(', ');
                                             let title = '';
-                                            if (isPast) title = '';
-                                            else if (isBlocked && isBooked) title = `Diblokir + ada booking: ${guestNames}`;
-                                            else if (isBlocked) title = `Diblokir${blockedEntry?.reason ? ': ' + blockedEntry.reason : ''}`;
-                                            else if (isBooked) title = `Ada booking: ${guestNames} — klik untuk coba blokir`;
-                                            else title = 'Klik untuk blokir';
+
+                                            if (isPast) {
+title = '';
+} else if (isBlocked && isBooked) {
+title = `Diblokir + ada booking: ${guestNames}`;
+} else if (isBlocked) {
+title = `Diblokir${blockedEntry?.reason ? ': ' + blockedEntry.reason : ''}`;
+} else if (isBooked) {
+title = `Ada booking: ${guestNames} — klik untuk coba blokir`;
+} else {
+title = 'Klik untuk blokir';
+}
 
                                             return (
                                                 <div

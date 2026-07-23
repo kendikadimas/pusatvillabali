@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 import { id as localeID } from 'date-fns/locale';
-import { Search, ExternalLink, Eye, CalendarCheck, CalendarX, Clock, CreditCard, ArrowUpRight } from 'lucide-react';
+import { Search, ExternalLink, Eye, CalendarCheck, CalendarX, ArrowUpRight } from 'lucide-react';
 import React, { useState } from 'react';
 import { formatPrice } from '@/lib/format';
 import type { Booking, PaginatedData } from '@/types';
@@ -52,7 +52,7 @@ const paymentLabels: Record<string, string> = {
     expired: 'Kadaluarsa',
 };
 
-export default function AdminBookingsPage({ bookings, villas: _villas, filters, stats }: Props) {
+export default function AdminBookingsPage({ bookings, filters, stats }: Props) {
     const [search, setSearch] = useState(filters.search ?? '');
     const [statusFilter, setStatusFilter] = useState(filters.status ?? '');
 

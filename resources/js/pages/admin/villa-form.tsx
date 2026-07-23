@@ -101,7 +101,7 @@ export default function AdminVillaFormPage({ villa, destinations }: Props) {
     const [savingPhotos, setSavingPhotos] = useState(false);
 
     // Blocked Dates states
-    const [blockedDates, _setBlockedDates] = useState<BlockedDate[]>(villa?.blocked_dates || []);
+    const [blockedDates] = useState<BlockedDate[]>(villa?.blocked_dates || []);
     const [blockDateInput, setBlockDateInput] = useState('');
     const [blockReasonInput, setBlockReasonInput] = useState('');
     const [blockingDate, setBlockingDate] = useState(false);
@@ -884,7 +884,12 @@ return;
                                                     // Extract src from iframe embed code
                                                     if (val.includes('<iframe')) {
                                                         const match = val.match(/src=["']([^"']+)["']/);
-                                                        if (match?.[1]) { setMapsUrl(match[1]); return; }
+
+                                                        if (match?.[1]) {
+ setMapsUrl(match[1]);
+
+ return; 
+}
                                                     }
 
                                                     // Convert short share links (maps.app.goo.gl or goo.gl)

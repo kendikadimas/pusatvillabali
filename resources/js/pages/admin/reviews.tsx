@@ -37,6 +37,7 @@ const emptyForm: ReviewForm = {
 
 function StarPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
     const [hovered, setHovered] = useState(0);
+
     return (
         <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((n) => (
@@ -69,6 +70,7 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
 
     const handleAvatarUpload = async (file: File) => {
         setUploadingAvatar(true);
+
         try {
             const fd = new FormData();
             fd.append('avatar', file);
@@ -118,6 +120,7 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
         e.preventDefault();
         setSaving(true);
         setErrors({});
+
         try {
             const payload = {
                 villa_id: form.villa_id,
@@ -129,6 +132,7 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
                 is_approved: form.is_approved,
                 created_at: form.created_at || null,
             };
+
             if (editingReview) {
                 await axios.put(`/api/v1/admin/reviews/${editingReview.id}`, payload);
                 toast.success('Ulasan diperbarui');
@@ -136,6 +140,7 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
                 await axios.post('/api/v1/admin/reviews', payload);
                 toast.success('Ulasan ditambahkan');
             }
+
             closeModal();
             router.reload();
         } catch (err: any) {
@@ -161,7 +166,10 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm('Hapus ulasan ini?')) return;
+        if (!confirm('Hapus ulasan ini?')) {
+return;
+}
+
         try {
             await axios.delete(`/api/v1/admin/reviews/${id}`);
             toast.success('Ulasan dihapus');
@@ -320,7 +328,13 @@ export default function AdminReviewsPage({ reviews, filters, villas }: Props) {
                                                 accept="image/jpeg,image/png,image/webp"
                                                 className="hidden"
                                                 disabled={uploadingAvatar}
-                                                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAvatarUpload(f); }}
+                                                onChange={(e) => {
+ const f = e.target.files?.[0];
+
+ if (f) {
+handleAvatarUpload(f);
+} 
+}}
                                             />
                                         </label>
                                         {form.guest_avatar && (

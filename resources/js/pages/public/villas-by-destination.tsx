@@ -18,6 +18,7 @@ interface Props {
     settings: AppSettings;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function VillasByDestinationPage({ villasByDestination, filters, settings: _settings }: Props) {
     const [showFilters, setShowFilters] = useState(false);
     const [wishlist, setWishlist] = useState<number[]>(() => {

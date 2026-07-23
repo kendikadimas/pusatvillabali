@@ -25,10 +25,15 @@ export default function VillaReviewsSection({ reviews, avgRating }: VillaReviews
         { label: 'Keramahtamahan', keywords: ['ramah', 'host', 'pelayanan'] },
     ];
 
-    const tagMap: Record<string, string[]> = {};
-    TAGS.forEach(t => {
- tagMap[t.label] = t.keywords; 
+    const tagMap = React.useMemo(() => {
+        const map: Record<string, string[]> = {};
+        TAGS.forEach(t => {
+ map[t.label] = t.keywords; 
 });
+
+        return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const keywordTagCounts = TAGS.map(tag => ({
         label: tag.label,
@@ -57,7 +62,8 @@ export default function VillaReviewsSection({ reviews, avgRating }: VillaReviews
         }
 
         return list;
-    }, [reviews, selectedTag, searchQuery, sortOrder]);
+         
+    }, [reviews, selectedTag, searchQuery, sortOrder, tagMap]);
 
     const previewReviews = filteredReviews.slice(0, 6);
 

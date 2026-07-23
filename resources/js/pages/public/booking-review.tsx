@@ -12,6 +12,7 @@ interface Props {
     settings: AppSettings;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function BookingReviewPage({ booking, existingReview, token, settings: _settings }: Props) {
     const [rating, setRating] = useState(existingReview?.rating ?? 5);
     const [hovered, setHovered] = useState(0);

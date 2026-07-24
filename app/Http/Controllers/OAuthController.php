@@ -55,6 +55,40 @@ class OAuthController extends Controller
     }
 
     /**
+     * Legacy SPA landing: /auth/callback?code=... (one-time app code, not Google's code).
+     * Completes login via session so Inertia works even if old OAuth still redirects here.
+     */
+    public function handleAuthCallback(Request $request): RedirectResponse
+    {
+        if ($request->filled('error')) {
+            return redirect()->route('login')->with('error', (string) $request->query('error'));
+        }
+
+        $code = $request->query('code');
+
+        if (! is_string($code) || $code === '') {
+            return redirect()->route('login')->with('error', 'Kode otorisasi tidak ditemukan. Silakan coba lagi.');
+        }
+
+        $userId = Cache::pull('oauth_code:'.$code);
+
+        if (! $userId) {
+            return redirect()->route('login')->with('error', 'Kode otorisasi tidak valid atau kedaluwarsa. Silakan coba login kembali.');
+        }
+
+        $user = User::find($userId);
+
+        if (! $user) {
+            return redirect()->route('login')->with('error', 'User tidak ditemukan.');
+        }
+
+        Auth::login($user, true);
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('home'));
+    }
+
+    /**
      * Exchange a one-time OAuth authorization code for a Sanctum token.
      */
     public function exchangeCode(Request $request): JsonResponse

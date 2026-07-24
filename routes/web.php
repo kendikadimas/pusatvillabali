@@ -37,8 +37,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::prefix('auth')->group(function () {
     Route::get('/google/redirect', [OAuthController::class, 'redirectToGoogle']);
     Route::get('/google/callback', [OAuthController::class, 'handleGoogleCallback']);
-    // Legacy SPA callback page (kept for old links); primary Google flow logs in via session
-    Route::inertia('/callback', 'auth/callback')->name('auth.callback');
+    // Handles legacy SPA redirects: /auth/callback?code=... (session login)
+    Route::get('/callback', [OAuthController::class, 'handleAuthCallback'])->name('auth.callback');
 });
 
 Route::post('/auth/exchange-code', [OAuthController::class, 'exchangeCode']);

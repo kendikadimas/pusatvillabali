@@ -51,9 +51,9 @@ class SettingAdminController extends Controller
     public function update(Request $request): JsonResponse
     {
         $rules = [
-            'settings_prop_name' => 'required|string|max:255',
-            'settings_whatsapp' => 'required|string|max:50',
-            'settings_email' => 'required|email|max:255',
+            'settings_prop_name' => 'nullable|string|max:255',
+            'settings_whatsapp' => 'nullable|string|max:50',
+            'settings_email' => 'nullable|email|max:255',
             'settings_address' => 'nullable|string|max:1000',
             'settings_meta_title' => 'nullable|string|max:255',
             'settings_meta_description' => 'nullable|string|max:1000',

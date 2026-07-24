@@ -59,19 +59,20 @@ it('settings update rejects invalid email', function () {
         ->assertJsonValidationErrors(['settings_email']);
 });
 
-it('settings update fails when required fields missing', function () {
+it('settings update allows empty optional fields', function () {
     actingAsAdmin();
 
     $response = $this->postJson('/api/v1/admin/settings', [
-        'settings_meta_title' => 'Only SEO',
+        'settings_prop_name' => '',
+        'settings_whatsapp' => '',
+        'settings_email' => '',
+        'settings_address' => '',
+        'settings_meta_title' => '',
+        'settings_meta_description' => '',
     ]);
 
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors([
-            'settings_prop_name',
-            'settings_whatsapp',
-            'settings_email',
-        ]);
+    $response->assertOk()
+        ->assertJsonPath('message', 'Pengaturan berhasil disimpan.');
 });
 
 // =====================================================

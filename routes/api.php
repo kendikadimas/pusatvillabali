@@ -183,6 +183,7 @@ Route::prefix('v1')->withoutMiddleware([ValidateCsrfToken::class])->group(functi
         Route::get('/payment-methods/{id}', [PaymentMethodAdminController::class, 'show'])->middleware('permission:payment_methods.view');
         Route::post('/payment-methods', [PaymentMethodAdminController::class, 'store'])->middleware('permission:payment_methods.manage');
         Route::put('/payment-methods/{id}', [PaymentMethodAdminController::class, 'update'])->middleware('permission:payment_methods.manage');
+        Route::patch('/payment-methods/{id}/toggle', [PaymentMethodAdminController::class, 'toggle'])->middleware('permission:payment_methods.manage');
         Route::delete('/payment-methods/{id}', [PaymentMethodAdminController::class, 'destroy'])->middleware('permission:payment_methods.manage');
         Route::post('/payment-methods/upload-logo', [PaymentMethodAdminController::class, 'uploadLogo'])->middleware('permission:payment_methods.manage');
 

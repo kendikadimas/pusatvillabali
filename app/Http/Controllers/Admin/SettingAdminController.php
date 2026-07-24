@@ -11,20 +11,35 @@ use Illuminate\Support\Facades\Validator;
 class SettingAdminController extends Controller
 {
     /**
+     * Keys managed by the admin settings form (and used by public pages).
+     *
+     * @var list<string>
+     */
+    private const KEYS = [
+        'settings_prop_name',
+        'settings_whatsapp',
+        'settings_email',
+        'settings_address',
+        'settings_meta_title',
+        'settings_meta_description',
+    ];
+
+    /**
      * Get all settings.
      */
     public function index(): JsonResponse
     {
+        // Prefer settings_whatsapp; fall back to legacy settings_wa if present.
+        $whatsapp = Setting::getValue('settings_whatsapp')
+            ?? Setting::getValue('settings_wa', '6281234567890');
+
         $settings = [
-            'settings_prop_name' => Setting::getValue('settings_prop_name', 'PusatVilla.id'),
-            'settings_website' => Setting::getValue('settings_website', 'https://pusatvillaid.com'),
-            'settings_wa' => Setting::getValue('settings_wa', '081234567890'),
+            'settings_prop_name' => Setting::getValue('settings_prop_name', 'PusatVillaBali'),
+            'settings_whatsapp' => $whatsapp,
             'settings_email' => Setting::getValue('settings_email', 'noreply@pusatvilla.id'),
-            'settings_address' => Setting::getValue('settings_address', 'Cisarua, Puncak, Bogor, Jawa Barat'),
-            'settings_checkin' => Setting::getValue('settings_checkin', '14:00'),
-            'settings_checkout' => Setting::getValue('settings_checkout', '12:00'),
-            'settings_midtrans' => Setting::getValue('settings_midtrans', 'sandbox'),
-            'tax_percentage' => (int) Setting::getValue('tax_percentage', 0),
+            'settings_address' => Setting::getValue('settings_address', ''),
+            'settings_meta_title' => Setting::getValue('settings_meta_title', ''),
+            'settings_meta_description' => Setting::getValue('settings_meta_description', ''),
         ];
 
         return response()->json($settings);
@@ -37,14 +52,11 @@ class SettingAdminController extends Controller
     {
         $rules = [
             'settings_prop_name' => 'required|string|max:255',
-            'settings_website' => 'required|string|max:255',
-            'settings_wa' => 'required|string|max:50',
+            'settings_whatsapp' => 'required|string|max:50',
             'settings_email' => 'required|email|max:255',
-            'settings_address' => 'required|string|max:1000',
-            'settings_checkin' => 'required|string|max:5',
-            'settings_checkout' => 'required|string|max:5',
-            'settings_midtrans' => 'sometimes|string|in:sandbox,production',
-            'tax_percentage' => 'required|integer|min:0|max:100',
+            'settings_address' => 'nullable|string|max:1000',
+            'settings_meta_title' => 'nullable|string|max:255',
+            'settings_meta_description' => 'nullable|string|max:1000',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -53,10 +65,15 @@ class SettingAdminController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        foreach ($rules as $key => $rule) {
+        foreach (self::KEYS as $key) {
             if ($request->has($key)) {
                 Setting::setValue($key, $request->input($key));
             }
+        }
+
+        // Keep legacy key in sync for any code still reading settings_wa.
+        if ($request->has('settings_whatsapp')) {
+            Setting::setValue('settings_wa', $request->input('settings_whatsapp'));
         }
 
         return response()->json(['message' => 'Pengaturan berhasil disimpan.']);

@@ -58,7 +58,13 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
             await axios.post('/api/v1/admin/settings', form);
             toast.success('Pengaturan berhasil disimpan');
         } catch (err: any) {
-            toast.error(err.response?.data?.message ?? 'Gagal menyimpan pengaturan');
+            const apiErrors = err.response?.data?.errors;
+            if (apiErrors) {
+                const first = Object.values(apiErrors).flat()[0];
+                toast.error(typeof first === 'string' ? first : 'Gagal menyimpan pengaturan');
+            } else {
+                toast.error(err.response?.data?.message ?? 'Gagal menyimpan pengaturan');
+            }
         } finally {
             setSaving(false);
         }
@@ -93,7 +99,7 @@ export default function AdminSettingsPage({ settings, paymentMethods: initialPay
             type: pm.type,
             account_number: pm.account_number ?? '',
             account_name: pm.account_name ?? '',
-            logo_url: pm.logo ?? '',
+            logo_url: pm.logo_url ?? pm.logo ?? '',
             admin_fee: String(pm.admin_fee ?? 0),
             is_active: pm.is_active,
         });

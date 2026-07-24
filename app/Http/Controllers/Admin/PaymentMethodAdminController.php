@@ -143,6 +143,27 @@ class PaymentMethodAdminController extends Controller
     }
 
     /**
+     * Toggle is_active for a payment method.
+     */
+    public function toggle(int $id): JsonResponse
+    {
+        $method = PaymentMethod::find($id);
+
+        if (! $method) {
+            return response()->json(['message' => 'Metode pembayaran tidak ditemukan.'], 404);
+        }
+
+        $method->update(['is_active' => ! $method->is_active]);
+
+        return response()->json([
+            'payment_method' => $method->fresh(),
+            'message' => $method->is_active
+                ? 'Metode pembayaran diaktifkan.'
+                : 'Metode pembayaran dinonaktifkan.',
+        ]);
+    }
+
+    /**
      * Upload logo for a payment method.
      */
     public function uploadLogo(Request $request): JsonResponse

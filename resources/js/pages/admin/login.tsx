@@ -226,4 +226,4 @@ export default function AdminLoginPage() {
     );
 }
 
-AdminLoginPage.layout = null;
+AdminLoginPage.layout = false;

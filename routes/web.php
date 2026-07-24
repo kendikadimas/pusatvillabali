@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\Web\AdminWebController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\Web\BookingWebController;
 use App\Http\Controllers\Web\HomeController;
@@ -49,6 +51,31 @@ Route::middleware('auth')->group(function () {
 
         return back()->with('status', 'verification-link-sent');
     })->middleware('throttle:6,1')->name('verification.send');
+});
+
+// Admin (web / Inertia)
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [AdminWebController::class, 'login'])->name('login');
+    Route::post('/login', [AdminWebController::class, 'handleLogin'])->name('login.submit');
+    Route::post('/logout', [AdminWebController::class, 'handleLogout'])->name('logout');
+
+    Route::middleware(['web_admin'])->group(function () {
+        Route::get('/dashboard', [AdminWebController::class, 'dashboard'])->name('dashboard');
+        Route::get('/analytics', [AdminWebController::class, 'analytics'])->name('analytics');
+        Route::get('/villas', [AdminWebController::class, 'villas'])->name('villas');
+        Route::get('/villas/new', [AdminWebController::class, 'villaNew'])->name('villas.new');
+        Route::get('/villas/{id}/edit', [AdminWebController::class, 'villaEdit'])->name('villas.edit');
+        Route::get('/bookings', [AdminWebController::class, 'bookings'])->name('bookings');
+        Route::get('/bookings/{id}', [AdminWebController::class, 'bookingDetail'])->name('bookings.detail');
+        Route::get('/bookings/{code}/ktp', [BookingController::class, 'showKtp'])->name('bookings.ktp');
+        Route::get('/bookings/{code}/payment-proof', [BookingController::class, 'showPaymentProof'])->name('bookings.payment-proof');
+        Route::get('/reviews', [AdminWebController::class, 'reviews'])->name('reviews');
+        Route::get('/destinations', [AdminWebController::class, 'destinations'])->name('destinations');
+        Route::get('/calendar', [AdminWebController::class, 'calendar'])->name('calendar');
+        Route::get('/settings', [AdminWebController::class, 'settings'])->name('settings');
+        Route::get('/users', [AdminWebController::class, 'users'])->name('users');
+        Route::get('/vouchers', [AdminWebController::class, 'vouchers'])->name('vouchers');
+    });
 });
 
 require __DIR__.'/settings.php';

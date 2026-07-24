@@ -5,6 +5,7 @@ use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PermissionMiddleware;
 use App\Http\Middleware\RequirePasswordCustom;
 use App\Http\Middleware\SuperAdminMiddleware;
+use App\Http\Middleware\WebAdminMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'super_admin' => SuperAdminMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'password.confirm' => RequirePasswordCustom::class,
+            'web_admin' => WebAdminMiddleware::class,
         ]);
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);

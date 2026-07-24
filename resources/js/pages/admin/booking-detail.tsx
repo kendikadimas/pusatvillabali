@@ -24,6 +24,8 @@ const statusColors: Record<string, string> = {
     confirmed: 'bg-green-100 text-green-700',
     cancelled: 'bg-red-100 text-red-700',
     completed: 'bg-emerald-100 text-emerald-700',
+    refunded: 'bg-blue-100 text-blue-700',
+    rescheduled: 'bg-purple-100 text-purple-700',
 };
 
 const paymentColors: Record<string, string> = {
@@ -39,6 +41,8 @@ const statusLabels: Record<string, string> = {
     confirmed: 'Dikonfirmasi',
     cancelled: 'Dibatalkan',
     completed: 'Selesai',
+    refunded: 'Direfund',
+    rescheduled: 'Dijadwal Ulang',
 };
 
 const paymentLabels: Record<string, string> = {
@@ -52,25 +56,36 @@ const paymentLabels: Record<string, string> = {
 export default function AdminBookingDetailPage({ booking, settings }: Props) {
     const [updatingStatus, setUpdatingStatus] = useState(false);
     const [updatingPayment, setUpdatingPayment] = useState(false);
+    // ponytail: inline reschedule state, no separate component needed
+    const [rescheduleIn, setRescheduleIn] = useState(booking.reschedule_check_in ?? '');
+    const [rescheduleOut, setRescheduleOut] = useState(booking.reschedule_check_out ?? '');
 
     const villaPhoto = booking.villa ? getMainPhoto(booking.villa) : null;
 
     const handleStatusChange = async (status: string) => {
-        if (!confirm(`Ubah status menjadi "${statusLabels[status] ?? status}"?`)) {
-return;
-}
+        if (!confirm(`Ubah status menjadi "${statusLabels[status] ?? status}"?`)) return;
+
+        // ponytail: reschedule dates required when setting rescheduled status
+        if (status === 'rescheduled' && (!rescheduleIn || !rescheduleOut)) {
+            toast.error('Isi tanggal reschedule check-in dan check-out terlebih dahulu.');
+            return;
+        }
 
         setUpdatingStatus(true);
-
         try {
             await axios.patch(`/api/v1/admin/bookings/${booking.id}/status`, {
                 status,
                 payment_status: booking.payment_status,
+                ...(status === 'rescheduled' && { reschedule_check_in: rescheduleIn, reschedule_check_out: rescheduleOut }),
             });
             toast.success('Status pemesanan diperbarui');
             router.reload();
         } catch (err: any) {
-            toast.error(err.response?.data?.message ?? 'Gagal mengubah status');
+            toast.error(err.response?.data?.message ?? 'Gagal memperbarui status');
+        } finally {
+            setUpdatingStatus(false);
+        }
+    };ponse?.data?.message ?? 'Gagal mengubah status');
         } finally {
             setUpdatingStatus(false);
         }
@@ -303,7 +318,7 @@ return;
                                 </span>
                             </div>
                             <div className="space-y-2">
-                                {['pending', 'confirmed', 'completed', 'cancelled'].map((s) => (
+                                {['pending', 'confirmed', 'completed', 'cancelled', 'refunded', 'rescheduled'].map((s) => (
                                     <button
                                         key={s}
                                         onClick={() => handleStatusChange(s)}
@@ -318,6 +333,25 @@ return;
                                         {booking.status === s && ' (sekarang)'}
                                     </button>
                                 ))}
+                                {/* ponytail: inline reschedule date inputs, only shown when needed */}
+                                <div className="pt-2 space-y-2">
+                                    <p className="text-xs text-slate-400">Tanggal reschedule (wajib jika ubah ke Dijadwal Ulang)</p>
+                                    <input
+                                        type="date"
+                                        value={rescheduleIn}
+                                        onChange={e => setRescheduleIn(e.target.value)}
+                                        className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-purple-400"
+                                        placeholder="Check-in baru"
+                                    />
+                                    <input
+                                        type="date"
+                                        value={rescheduleOut}
+                                        min={rescheduleIn}
+                                        onChange={e => setRescheduleOut(e.target.value)}
+                                        className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-purple-400"
+                                        placeholder="Check-out baru"
+                                    />
+                                </div>
                             </div>
                         </div>
 

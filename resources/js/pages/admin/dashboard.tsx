@@ -60,10 +60,13 @@ const statusColors: Record<string, string> = {
     confirmed: 'bg-green-100 text-green-700',
     cancelled: 'bg-red-100 text-red-700',
     completed: 'bg-emerald-100 text-emerald-700',
+    refunded: 'bg-blue-100 text-blue-700',
+    rescheduled: 'bg-purple-100 text-purple-700',
 };
 
 const statusLabels: Record<string, string> = {
     pending: 'Menunggu', confirmed: 'Konfirmasi', cancelled: 'Batal', completed: 'Selesai',
+    refunded: 'Direfund', rescheduled: 'Dijadwal Ulang',
 };
 
 export default function AdminDashboardPage({ stats, recentBookings, todayCheckins, todayCheckouts, activityLogs }: Props) {

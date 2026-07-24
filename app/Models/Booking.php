@@ -39,6 +39,9 @@ class Booking extends Model
         'cancel_reason',
         'cancelled_at',
         'ktp_image',
+        'is_refundable',
+        'reschedule_check_in',
+        'reschedule_check_out',
     ];
 
     protected $casts = [
@@ -54,6 +57,9 @@ class Booking extends Model
         'admin_fee' => 'integer',
         'total_amount' => 'decimal:2',
         'cancelled_at' => 'datetime',
+        'is_refundable' => 'boolean',
+        'reschedule_check_in' => 'date:Y-m-d',
+        'reschedule_check_out' => 'date:Y-m-d',
     ];
 
     public function villa(): BelongsTo

@@ -41,6 +41,18 @@ const statusMap: Record<string, { label: string; color: string; bg: string; icon
         bg: 'bg-emerald-50 border-emerald-200',
         icon: <CheckCircle className="w-5 h-5 text-emerald-600" />,
     },
+    refunded: {
+        label: 'Direfund',
+        color: 'text-blue-700',
+        bg: 'bg-blue-50 border-blue-200',
+        icon: <XCircle className="w-5 h-5 text-blue-600" />,
+    },
+    rescheduled: {
+        label: 'Dijadwal Ulang',
+        color: 'text-purple-700',
+        bg: 'bg-purple-50 border-purple-200',
+        icon: <Calendar className="w-5 h-5 text-purple-600" />,
+    },
 };
 
 const paymentStatusMap: Record<string, { label: string; color: string }> = {
@@ -54,6 +66,11 @@ const paymentStatusMap: Record<string, { label: string; color: string }> = {
 export default function BookingStatusPage({ booking, settings, code }: Props) {
     const [searchCode, setSearchCode] = useState(code ?? '');
     const [searching, setSearching] = useState(false);
+    // ponytail: inline reschedule state, no modal/component needed
+    const [showReschedule, setShowReschedule] = useState(false);
+    const [rescheduleIn, setRescheduleIn] = useState('');
+    const [rescheduleOut, setRescheduleOut] = useState('');
+    const [rescheduleReason, setRescheduleReason] = useState('');
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -154,14 +171,23 @@ return;
                         {booking.status === 'confirmed' && (
                             <p className="text-xs text-green-600 mt-0.5">Pemesanan Anda telah dikonfirmasi. Sampai jumpa saat check-in!</p>
                         )}
-                        {booking.status === 'cancelled' && (
-                            <p className="text-xs text-red-600 mt-0.5">
-                                {booking.cancel_reason ? `Alasan: ${booking.cancel_reason}` : 'Pemesanan ini telah dibatalkan.'}
-                            </p>
-                        )}
-                        {booking.status === 'completed' && (
-                            <p className="text-xs text-emerald-600 mt-0.5">Terima kasih telah menginap bersama kami!</p>
-                        )}
+                    {booking.status === 'cancelled' && (
+                        <p className="text-xs text-red-600 mt-0.5">
+                            {booking.cancel_reason ? `Alasan: ${booking.cancel_reason}` : 'Pemesanan ini telah dibatalkan.'}
+                        </p>
+                    )}
+                    {booking.status === 'completed' && (
+                        <p className="text-xs text-emerald-600 mt-0.5">Terima kasih telah menginap bersama kami!</p>
+                    )}
+                    {booking.status === 'refunded' && (
+                        <p className="text-xs text-blue-600 mt-0.5">Pembayaran Anda sedang dalam proses pengembalian.</p>
+                    )}
+                    {booking.status === 'rescheduled' && booking.reschedule_check_in && (
+                        <p className="text-xs text-purple-600 mt-0.5">
+                            Dijadwalkan ulang ke: {format(parseISO(booking.reschedule_check_in), 'dd MMM yyyy', { locale: localeID })}
+                            {booking.reschedule_check_out ? ` – ${format(parseISO(booking.reschedule_check_out), 'dd MMM yyyy', { locale: localeID })}` : ''}
+                        </p>
+                    )}
                     </div>
                 </div>
 
@@ -303,6 +329,81 @@ return;
                         >
                             <MessageCircle className="w-4 h-4" /> Hubungi via WhatsApp
                         </a>
+                    )}
+
+                    {/* Refund: only for refundable + confirmed/completed + paid */}
+                    {booking.is_refundable
+                        && ['confirmed', 'completed'].includes(booking.status)
+                        && booking.payment_status === 'paid'
+                        && settings?.settings_whatsapp && (
+                        <a
+                            href={`https://wa.me/${settings.settings_whatsapp}?text=Halo%2C saya ingin mengajukan refund untuk pemesanan %23${booking.booking_code}.%0ANama: ${encodeURIComponent(booking.guest_name)}%0AVilla: ${encodeURIComponent(booking.villa?.name ?? '')}%0ACheck-in: ${booking.check_in}%0AAlasan refund: `}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full flex items-center justify-center gap-2 border border-blue-300 text-blue-700 font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm text-center"
+                        >
+                            <XCircle className="w-4 h-4" /> Ajukan Refund via WhatsApp
+                        </a>
+                    )}
+
+                    {/* Reschedule: only for confirmed + paid */}
+                    {['confirmed'].includes(booking.status) && booking.payment_status === 'paid' && settings?.settings_whatsapp && (
+                        <div className="border border-purple-200 rounded-2xl p-4 space-y-3">
+                            <button
+                                type="button"
+                                onClick={() => setShowReschedule(v => !v)}
+                                className="w-full flex items-center justify-center gap-2 border border-purple-300 text-purple-700 font-semibold px-6 py-3 rounded-xl hover:bg-purple-50 transition-colors text-sm"
+                            >
+                                <Calendar className="w-4 h-4" /> {showReschedule ? 'Tutup Form Reschedule' : 'Reschedule Pemesanan'}
+                            </button>
+                            {showReschedule && (
+                                <div className="space-y-3 pt-1">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label className="text-xs text-slate-500 mb-1 block">Check-in baru</label>
+                                            <input
+                                                type="date"
+                                                value={rescheduleIn}
+                                                min={new Date().toISOString().split('T')[0]}
+                                                onChange={e => setRescheduleIn(e.target.value)}
+                                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-400"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-slate-500 mb-1 block">Check-out baru</label>
+                                            <input
+                                                type="date"
+                                                value={rescheduleOut}
+                                                min={rescheduleIn || new Date().toISOString().split('T')[0]}
+                                                onChange={e => setRescheduleOut(e.target.value)}
+                                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-400"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-slate-500 mb-1 block">Alasan reschedule</label>
+                                        <input
+                                            type="text"
+                                            value={rescheduleReason}
+                                            onChange={e => setRescheduleReason(e.target.value)}
+                                            placeholder="Contoh: ada urusan mendadak"
+                                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-400"
+                                        />
+                                    </div>
+                                    <a
+                                        href={rescheduleIn && rescheduleOut && rescheduleReason
+                                            ? `https://wa.me/${settings.settings_whatsapp}?text=Halo%2C saya ingin reschedule pemesanan %23${booking.booking_code}.%0ANama: ${encodeURIComponent(booking.guest_name)}%0ACheck-in baru: ${rescheduleIn}%0ACheck-out baru: ${rescheduleOut}%0AAlasan: ${encodeURIComponent(rescheduleReason)}`
+                                            : '#'}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={e => { if (!rescheduleIn || !rescheduleOut || !rescheduleReason) e.preventDefault(); }}
+                                        className={`w-full flex items-center justify-center gap-2 font-semibold px-6 py-3 rounded-xl transition-colors text-sm text-center ${rescheduleIn && rescheduleOut && rescheduleReason ? 'bg-purple-600 text-white hover:bg-purple-700' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}
+                                    >
+                                        <MessageCircle className="w-4 h-4" /> Kirim Request Reschedule via WA
+                                    </a>
+                                </div>
+                            )}
+                        </div>
                     )}
                     <Link
                         href="/"

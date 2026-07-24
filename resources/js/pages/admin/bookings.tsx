@@ -43,6 +43,8 @@ const statusLabels: Record<string, string> = {
     confirmed: 'Dikonfirmasi',
     cancelled: 'Dibatalkan',
     completed: 'Selesai',
+    refunded: 'Direfund',
+    rescheduled: 'Dijadwal Ulang',
 };
 const paymentLabels: Record<string, string> = {
     unpaid: 'Belum Dibayar',

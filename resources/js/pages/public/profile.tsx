@@ -41,6 +41,16 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
         color: 'bg-emerald-100 text-emerald-700',
         icon: <CheckCircle className="w-3.5 h-3.5" />,
     },
+    refunded: {
+        label: 'Direfund',
+        color: 'bg-blue-100 text-blue-700',
+        icon: <XCircle className="w-3.5 h-3.5" />,
+    },
+    rescheduled: {
+        label: 'Dijadwal Ulang',
+        color: 'bg-purple-100 text-purple-700',
+        icon: <CheckCircle className="w-3.5 h-3.5" />,
+    },
 };
 
 export default function ProfilePage({

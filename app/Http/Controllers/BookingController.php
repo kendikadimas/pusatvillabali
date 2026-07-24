@@ -288,6 +288,7 @@ class BookingController extends Controller
                     'utm_medium' => $request->utm_medium,
                     'utm_campaign' => $request->utm_campaign,
                     'ktp_image' => $ktpImagePath,
+                    'is_refundable' => (bool) $request->input('is_refundable'),
                 ]);
 
                 return $booking;

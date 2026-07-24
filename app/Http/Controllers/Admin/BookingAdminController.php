@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\BookingConfirmationMail;
 use App\Mail\ManualPaymentRejectedMail;
 use App\Models\Booking;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -164,9 +165,11 @@ class BookingAdminController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'status' => 'required|in:pending,confirmed,cancelled,completed',
+            'status' => 'required|in:pending,confirmed,cancelled,completed,refunded,rescheduled',
             'payment_status' => 'required|in:unpaid,pending,paid,refunded,expired',
             'cancel_reason' => 'required_if:status,cancelled|nullable|string',
+            'reschedule_check_in' => 'required_if:status,rescheduled|nullable|date',
+            'reschedule_check_out' => 'required_if:status,rescheduled|nullable|date|after:reschedule_check_in',
         ]);
 
         if ($validator->fails()) {
@@ -219,6 +222,16 @@ class BookingAdminController extends Controller
         if ($request->status === 'cancelled') {
             $booking->cancel_reason = $request->cancel_reason;
             $booking->cancelled_at = now();
+        }
+
+        if ($request->status === 'rescheduled') {
+            $booking->reschedule_check_in = $request->reschedule_check_in;
+            $booking->reschedule_check_out = $request->reschedule_check_out;
+            // Update actual dates so availability calendar reflects the new dates
+            $booking->check_in = $request->reschedule_check_in;
+            $booking->check_out = $request->reschedule_check_out;
+            $booking->total_nights = Carbon::parse($request->reschedule_check_in)
+                ->diffInDays(Carbon::parse($request->reschedule_check_out));
         }
 
         $booking->save();

@@ -38,7 +38,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                     name="email"
                                     autoComplete="email"
                                     value={email}
-                                    className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                                     readOnly
                                 />
                             <InputError message={errors.email} />
@@ -58,7 +58,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                 autoFocus
                                 placeholder="Create a new password"
                                 passwordrules={passwordRules}
-                                    inputClassName="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    inputClassName="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                             />
                             <InputError message={errors.password} />
                         </div>
@@ -76,7 +76,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                 autoComplete="new-password"
                                 placeholder="Repeat your new password"
                                 passwordrules={passwordRules}
-                                    inputClassName="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    inputClassName="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                             />
                             <InputError
                                 message={errors.password_confirmation}
@@ -85,7 +85,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
 
                         <Button
                             type="submit"
-                            className="mt-2 h-11 w-full rounded-lg bg-blue-600 text-base font-semibold text-white transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
+                            className="mt-2 h-11 w-full rounded-lg bg-emerald-600 text-base font-semibold text-white transition-all duration-200 hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60"
                             disabled={processing}
                             data-test="reset-password-button"
                         >

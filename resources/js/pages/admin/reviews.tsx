@@ -192,7 +192,7 @@ return;
                     <button
                         type="button"
                         onClick={openCreate}
-                        className="flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                        className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors cursor-pointer"
                     >
                         <Plus className="w-4 h-4" />
                         <span className="hidden sm:inline">Tambah Ulasan</span>
@@ -205,7 +205,7 @@ return;
                         <button
                             key={f}
                             onClick={() => router.get('/admin/reviews', { filter: f }, { preserveScroll: true })}
-                            className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors ${filter === f ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                            className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors ${filter === f ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                         >
                             {f === 'all' ? 'Semua' : f === 'pending' ? 'Menunggu' : 'Disetujui'}
                         </button>
@@ -285,7 +285,7 @@ return;
                                 <button
                                     key={page}
                                     onClick={() => router.get('/admin/reviews', { page: String(page), filter }, { preserveScroll: true })}
-                                    className={`w-7 h-7 rounded text-xs font-medium ${page === reviews.current_page ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-200'}`}
+                                    className={`w-7 h-7 rounded text-xs font-medium ${page === reviews.current_page ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-200'}`}
                                 >
                                     {page}
                                 </button>
@@ -321,7 +321,7 @@ return;
                                         </div>
                                     )}
                                     <div className="flex flex-col gap-1">
-                                        <label className="cursor-pointer inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700">
+                                        <label className="cursor-pointer inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 hover:text-emerald-700">
                                             {uploadingAvatar ? 'Mengunggah...' : form.guest_avatar ? 'Ganti foto' : 'Pilih foto'}
                                             <input
                                                 type="file"
@@ -353,7 +353,7 @@ handleAvatarUpload(f);
                                     required
                                     value={form.villa_id}
                                     onChange={(e) => setForm((f) => ({ ...f, villa_id: Number(e.target.value) }))}
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                 >
                                     <option value="">Pilih villa</option>
                                     {villas.map((v) => (
@@ -372,7 +372,7 @@ handleAvatarUpload(f);
                                     value={form.guest_name}
                                     onChange={(e) => setForm((f) => ({ ...f, guest_name: e.target.value }))}
                                     placeholder="Nama tamu"
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                 />
                                 {errors.guest_name && <p className="text-xs text-red-500 mt-1">{errors.guest_name}</p>}
                             </div>
@@ -385,7 +385,7 @@ handleAvatarUpload(f);
                                     value={form.guest_subtitle}
                                     onChange={(e) => setForm((f) => ({ ...f, guest_subtitle: e.target.value }))}
                                     placeholder="Contoh: Tamu dari Jakarta"
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                 />
                                 {errors.guest_subtitle && <p className="text-xs text-red-500 mt-1">{errors.guest_subtitle}</p>}
                             </div>
@@ -406,7 +406,7 @@ handleAvatarUpload(f);
                                     value={form.comment}
                                     onChange={(e) => setForm((f) => ({ ...f, comment: e.target.value }))}
                                     placeholder="Tulis ulasan tamu..."
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
                                 />
                                 {errors.comment && <p className="text-xs text-red-500 mt-1">{errors.comment}</p>}
                             </div>
@@ -432,7 +432,7 @@ handleAvatarUpload(f);
                                     type="date"
                                     value={form.created_at}
                                     onChange={(e) => setForm((f) => ({ ...f, created_at: e.target.value }))}
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                 />
                                 {errors.created_at && <p className="text-xs text-red-500 mt-1">{errors.created_at}</p>}
                             </div>
@@ -448,7 +448,7 @@ handleAvatarUpload(f);
                                 <button
                                     type="submit"
                                     disabled={saving}
-                                    className="flex-1 bg-blue-600 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 text-sm"
+                                    className="flex-1 bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-60 text-sm"
                                 >
                                     {saving ? 'Menyimpan...' : editingReview ? 'Simpan Perubahan' : 'Tambah Ulasan'}
                                 </button>

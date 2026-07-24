@@ -28,9 +28,9 @@ export default function AuthSplitLayout({
                 />
 
                 {/* Floating decorative circles */}
-                <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
-                <div className="absolute -bottom-20 -left-20 h-60 w-60 rounded-full from-blue-400/10 blur-3xl" />
-                <div className="absolute top-1/3 right-1/4 h-40 w-40 rounded-full bg-blue-400/5 blur-2xl" />
+                <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl" />
+                <div className="absolute -bottom-20 -left-20 h-60 w-60 rounded-full from-emerald-400/10 blur-3xl" />
+                <div className="absolute top-1/3 right-1/4 h-40 w-40 rounded-full bg-emerald-400/5 blur-2xl" />
 
                 {/* Content */}
                 <div className="relative z-10 flex h-full flex-col p-10">
@@ -53,7 +53,7 @@ export default function AuthSplitLayout({
                             <h2 className="text-4xl font-bold leading-tight tracking-tight text-white">
                                 Experience the
                                 <br />
-                                <span className="bg-gradient-to-r from-blue-300 to-blue-200 bg-clip-text text-transparent">
+                                <span className="bg-gradient-to-r from-emerald-300 to-emerald-200 bg-clip-text text-transparent">
                                     finest villas
                                 </span>
                                 <br />
@@ -110,7 +110,7 @@ export default function AuthSplitLayout({
                     href={home()}
                     className="absolute top-6 left-6 flex items-center gap-2 lg:hidden"
                 >
-                    <AppLogoIcon className="size-8 fill-current text-blue-600" />
+                    <AppLogoIcon className="size-8 fill-current text-emerald-600" />
                     <span className="text-sm font-semibold tracking-tight text-slate-900">
                         PusatVilla.id
                     </span>

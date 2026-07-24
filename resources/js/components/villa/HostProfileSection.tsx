@@ -33,7 +33,7 @@ export default function HostProfileSection({
                         Dipandu oleh {hostName}
                     </h2>
                     <div className="flex items-center space-x-1.5 text-slate-500 text-xs font-semibold mt-1">
-                        {hostIsVerified && <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />}
+                        {hostIsVerified && <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />}
                         <span>{hostJoinedLabel}</span>
                     </div>
                 </div>
@@ -48,14 +48,14 @@ export default function HostProfileSection({
                             className="w-28 h-28 rounded-full object-cover shadow-sm border border-slate-100"
                         />
                         {hostIsVerified && (
-                            <div className="absolute bottom-0 right-0 bg-blue-500 text-white p-1.5 rounded-full border-2 border-white shadow-md flex items-center justify-center">
+                            <div className="absolute bottom-0 right-0 bg-emerald-500 text-white p-1.5 rounded-full border-2 border-white shadow-md flex items-center justify-center">
                                 <Check className="w-4 h-4 stroke-[3]" />
                             </div>
                         )}
                     </div>
                     <h3 className="text-lg font-bold text-slate-900">{hostName}</h3>
                     {hostIsVerified && (
-                        <div className="text-[11px] text-blue-500 font-bold mt-1">Superhost</div>
+                        <div className="text-[11px] text-emerald-500 font-bold mt-1">Superhost</div>
                     )}
                     <div className="text-[12px] text-slate-500 mt-2 space-y-0.5">
                         {reviewsCount > 0 && <p>{reviewsCount} ulasan</p>}
@@ -103,7 +103,7 @@ export default function HostProfileSection({
                             Kirimkan pesan kepada tuan rumah
                         </button>
                         <div className="flex items-start space-x-2.5 max-w-xl">
-                            <Shield className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                            <Shield className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                             <p className="text-[11px] text-slate-500 leading-normal">
                                 Untuk melindungi pembayaran Anda, jangan pernah mentransfer uang atau berkomunikasi di luar situs web atau aplikasi PusatVillaBali.
                             </p>

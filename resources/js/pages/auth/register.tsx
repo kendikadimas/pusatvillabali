@@ -59,7 +59,7 @@ export default function Register({ passwordRules }: Props) {
                                     autoComplete="name"
                                     name="name"
                                     placeholder="John Doe"
-                                    className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                                 />
                                 <InputError
                                     message={errors.name}
@@ -82,7 +82,7 @@ export default function Register({ passwordRules }: Props) {
                                     autoComplete="email"
                                     name="email"
                                     placeholder="email@example.com"
-                                    className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -102,7 +102,7 @@ export default function Register({ passwordRules }: Props) {
                                     name="password"
                                     placeholder="Create a password"
                                     passwordrules={passwordRules}
-                                    inputClassName="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    inputClassName="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -122,7 +122,7 @@ export default function Register({ passwordRules }: Props) {
                                     name="password_confirmation"
                                     placeholder="Repeat your password"
                                     passwordrules={passwordRules}
-                                    inputClassName="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    inputClassName="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                                 />
                                 <InputError
                                     message={errors.password_confirmation}
@@ -131,7 +131,7 @@ export default function Register({ passwordRules }: Props) {
 
                             <Button
                                 type="submit"
-                                className="mt-2 h-11 w-full rounded-lg bg-blue-600 text-base font-semibold text-white transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
+                                className="mt-2 h-11 w-full rounded-lg bg-emerald-600 text-base font-semibold text-white transition-all duration-200 hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60"
                                 tabIndex={5}
                                 data-test="register-user-button"
                             >
@@ -147,7 +147,7 @@ export default function Register({ passwordRules }: Props) {
                             <TextLink
                                 href={login()}
                                 tabIndex={6}
-                                className="font-semibold text-blue-600 hover:text-blue-700"
+                                className="font-semibold text-emerald-600 hover:text-emerald-700"
                             >
                                 Log in
                             </TextLink>

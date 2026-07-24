@@ -62,7 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex flex-col h-full">
             {/* Logo */}
             <div className={`flex items-center gap-3 px-4 py-4 border-b border-white/10 flex-shrink-0 ${sidebarOpen ? '' : 'justify-center'}`}>
-                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center flex-shrink-0">
                     <AppLogoIcon className="size-5 text-white" />
                 </div>
                 {sidebarOpen && (
@@ -105,13 +105,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                         title={!sidebarOpen ? item.label : undefined}
                                         className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-sm group relative ${
                                             isActive
-                                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
+                                                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/30'
                                                 : 'text-slate-400 hover:bg-white/10 hover:text-white'
                                         } ${!sidebarOpen ? 'justify-center' : ''}`}
                                     >
                                         {/* Active indicator bar */}
                                         {isActive && sidebarOpen && (
-                                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-blue-300 rounded-full" />
+                                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-emerald-300 rounded-full" />
                                         )}
                                         <span className="flex-shrink-0">{item.icon}</span>
                                         {sidebarOpen && <span className="truncate font-medium">{item.label}</span>}
@@ -188,7 +188,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <span className="text-sm font-semibold text-slate-800 leading-tight">{auth?.user?.name ?? 'Admin'}</span>
                             <span className="text-xs text-slate-400 capitalize leading-tight">{auth?.user?.role ?? 'admin'}</span>
                         </div>
-                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                             {(auth?.user?.name ?? 'A').charAt(0).toUpperCase()}
                         </div>
                         <button

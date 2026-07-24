@@ -28,13 +28,13 @@ export default function ConfirmPassword() {
                                     placeholder="Enter your password"
                                     autoComplete="current-password"
                                     autoFocus
-                                    inputClassName="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    inputClassName="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                                 />
                                 <InputError message={errors.password} />
                             </div>
 
                             <Button
-                                className="mt-2 h-11 w-full rounded-lg bg-blue-600 text-base font-semibold text-white transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
+                                className="mt-2 h-11 w-full rounded-lg bg-emerald-600 text-base font-semibold text-white transition-all duration-200 hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60"
                                 disabled={processing}
                                 data-test="confirm-password-button"
                             >

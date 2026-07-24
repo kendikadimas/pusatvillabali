@@ -195,7 +195,7 @@ return;
                             key={t}
                             onClick={() => setTab(t)}
                             className={`px-4 py-2.5 text-sm font-medium transition-colors ${
-                                tab === t ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 hover:text-slate-700'
+                                tab === t ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-slate-500 hover:text-slate-700'
                             }`}
                         >
                             {t === 'general' ? 'Umum' : 'Metode Pembayaran'}
@@ -221,7 +221,7 @@ return;
                                         onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                                         placeholder={placeholder}
                                         rows={3}
-                                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
                                     />
                                 ) : (
                                     <input
@@ -229,7 +229,7 @@ return;
                                         value={(form as any)[key]}
                                         onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                                         placeholder={placeholder}
-                                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                     />
                                 )}
                             </div>
@@ -237,7 +237,7 @@ return;
                         <button
                             type="submit"
                             disabled={saving}
-                            className="bg-blue-600 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60"
+                            className="bg-emerald-600 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-60"
                         >
                             {saving ? 'Menyimpan...' : 'Simpan Pengaturan'}
                         </button>
@@ -250,7 +250,7 @@ return;
                             <p className="text-sm text-slate-500">{paymentMethods.length} metode pembayaran</p>
                             <button
                                 onClick={openPmCreate}
-                                className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-3 sm:px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer"
+                                className="inline-flex items-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-3 sm:px-4 py-2 rounded-xl hover:bg-emerald-700 transition-colors cursor-pointer"
                             >
                                 <Plus className="w-4 h-4" />
                                 <span className="hidden sm:inline">Tambah Metode</span>
@@ -291,7 +291,7 @@ return;
                                             </button>
                                             <button
                                                 onClick={() => openPmEdit(pm)}
-                                                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
+                                                className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg cursor-pointer transition-colors"
                                                 title="Edit"
                                             >
                                                 <Edit className="w-4 h-4" />
@@ -334,7 +334,7 @@ return;
                             {/* Logo upload */}
                             <div>
                                 <label className="block text-xs font-medium text-slate-600 mb-1">Logo</label>
-                                <label className="flex items-center gap-3 border border-dashed border-slate-300 rounded-xl p-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors">
+                                <label className="flex items-center gap-3 border border-dashed border-slate-300 rounded-xl p-3 cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-colors">
                                     {pmForm.logo_url ? (
                                         <img src={pmForm.logo_url} alt="Logo" className="w-10 h-10 object-contain rounded" />
                                     ) : (
@@ -370,7 +370,7 @@ handleLogoUpload(f);
                             <div>
                                 <label className="block text-xs font-medium text-slate-600 mb-1">Nama *</label>
                                 <input type="text" required value={pmForm.name} onChange={(e) => setPmForm((f) => ({ ...f, name: e.target.value }))}
-                                    placeholder="BCA Transfer" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                    placeholder="BCA Transfer" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
                                 {pmErrors.name && <p className="text-xs text-red-500 mt-1">{pmErrors.name}</p>}
                             </div>
 
@@ -379,7 +379,7 @@ handleLogoUpload(f);
                                 <label className="block text-xs font-medium text-slate-600 mb-1">Kode *</label>
                                 <input type="text" required value={pmForm.code} onChange={(e) => setPmForm((f) => ({ ...f, code: e.target.value }))}
                                     placeholder="bca" disabled={!!editingPm}
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400" />
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-50 disabled:text-slate-400" />
                                 {pmErrors.code && <p className="text-xs text-red-500 mt-1">{pmErrors.code}</p>}
                             </div>
 
@@ -387,7 +387,7 @@ handleLogoUpload(f);
                             <div>
                                 <label className="block text-xs font-medium text-slate-600 mb-1">Tipe *</label>
                                 <select value={pmForm.type} onChange={(e) => setPmForm((f) => ({ ...f, type: e.target.value as PaymentMethod['type'] }))}
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
                                     {PM_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                                 </select>
                             </div>
@@ -398,7 +398,7 @@ handleLogoUpload(f);
                                     No. Rekening {pmForm.type !== 'cash' && pmForm.code !== 'qris' ? '*' : ''}
                                 </label>
                                 <input type="text" value={pmForm.account_number} onChange={(e) => setPmForm((f) => ({ ...f, account_number: e.target.value }))}
-                                    placeholder="1234567890" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                    placeholder="1234567890" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
                                 {pmErrors.account_number && <p className="text-xs text-red-500 mt-1">{pmErrors.account_number}</p>}
                             </div>
 
@@ -406,7 +406,7 @@ handleLogoUpload(f);
                             <div>
                                 <label className="block text-xs font-medium text-slate-600 mb-1">Nama Pemilik *</label>
                                 <input type="text" required value={pmForm.account_name} onChange={(e) => setPmForm((f) => ({ ...f, account_name: e.target.value }))}
-                                    placeholder="PT. Pusat Villa" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                    placeholder="PT. Pusat Villa" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
                                 {pmErrors.account_name && <p className="text-xs text-red-500 mt-1">{pmErrors.account_name}</p>}
                             </div>
 
@@ -414,7 +414,7 @@ handleLogoUpload(f);
                             <div>
                                 <label className="block text-xs font-medium text-slate-600 mb-1">Biaya Admin (Rp)</label>
                                 <input type="number" min="0" value={pmForm.admin_fee} onChange={(e) => setPmForm((f) => ({ ...f, admin_fee: e.target.value }))}
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
                             </div>
 
                             {/* Active toggle */}
@@ -431,7 +431,7 @@ handleLogoUpload(f);
                                 <button type="button" onClick={closePmModal} className="flex-1 border border-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl hover:bg-slate-50 text-sm cursor-pointer">
                                     Batal
                                 </button>
-                                <button type="submit" disabled={pmSaving || uploadingLogo} className="flex-1 bg-blue-600 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-700 disabled:opacity-60 text-sm cursor-pointer">
+                                <button type="submit" disabled={pmSaving || uploadingLogo} className="flex-1 bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 disabled:opacity-60 text-sm cursor-pointer">
                                     {pmSaving ? 'Menyimpan...' : editingPm ? 'Simpan' : 'Tambah'}
                                 </button>
                             </div>

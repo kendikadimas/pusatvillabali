@@ -30,7 +30,7 @@ return null;
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                 <div className="space-y-4">
                     <h4 className="text-base font-bold text-slate-800 flex items-center gap-2">
-                        <MapPin className="w-5 h-5 text-blue-500" />
+                        <MapPin className="w-5 h-5 text-emerald-500" />
                         <span>{location}</span>
                     </h4>
                     {neighborhoodDesc && (
@@ -39,7 +39,7 @@ return null;
                             {neighborhoodDesc.length > 180 && (
                                 <button
                                     onClick={() => setIsExpanded(!isExpanded)}
-                                    className="text-slate-900 hover:text-blue-500 font-bold underline mt-2 flex items-center gap-1 cursor-pointer active:scale-95 transition-all text-xs"
+                                    className="text-slate-900 hover:text-emerald-500 font-bold underline mt-2 flex items-center gap-1 cursor-pointer active:scale-95 transition-all text-xs"
                                 >
                                     <span>{isExpanded ? 'Sembunyikan' : 'Baca selengkapnya'}</span>
                                     <ArrowRight className={`w-3.5 h-3.5 transform transition-transform ${isExpanded ? '-rotate-90' : ''}`} />

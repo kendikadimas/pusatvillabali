@@ -103,7 +103,7 @@ return;
                         <h1 className="text-2xl font-black text-slate-800">Destinasi</h1>
                         <p className="text-sm text-slate-500">{destinations.length} destinasi</p>
                     </div>
-                    <button onClick={openNew} className="flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer">
+                    <button onClick={openNew} className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors cursor-pointer">
                         <Plus className="w-4 h-4" /> Tambah Destinasi
                     </button>
                 </div>
@@ -121,7 +121,7 @@ return;
                                 {/* Foto upload */}
                                 <div>
                                     <label className="block text-xs font-medium text-slate-600 mb-1">Foto Destinasi *</label>
-                                    <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 rounded-xl p-5 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors">
+                                    <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 rounded-xl p-5 cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-colors">
                                         {imagePreview ? (
                                             <img
                                                 src={imagePreview}
@@ -176,13 +176,13 @@ handleImageUpload(file);
                                             onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                                             placeholder={placeholder}
                                             required={key === 'name'}
-                                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                         />
                                     </div>
                                 ))}
 
                                 <div className="flex gap-3 pt-2">
-                                    <button type="submit" disabled={saving || uploadingImage} className="flex-1 bg-blue-600 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-700 disabled:opacity-60 text-sm cursor-pointer">
+                                    <button type="submit" disabled={saving || uploadingImage} className="flex-1 bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 disabled:opacity-60 text-sm cursor-pointer">
                                         {saving ? 'Menyimpan...' : editing ? 'Simpan' : 'Tambah'}
                                     </button>
                                     <button type="button" onClick={() => setShowForm(false)} className="flex-1 border border-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl hover:bg-slate-50 text-sm cursor-pointer">
@@ -211,7 +211,7 @@ handleImageUpload(file);
                                 <p className="font-bold text-slate-800">{d.name}</p>
                                 <p className="text-xs text-slate-500 mt-0.5">{d.city}</p>
                                 <div className="flex items-center justify-end gap-1 mt-3">
-                                    <button onClick={() => openEdit(d)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg cursor-pointer">
+                                    <button onClick={() => openEdit(d)} className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg cursor-pointer">
                                         <Edit className="w-4 h-4" />
                                     </button>
                                     <button onClick={() => handleDelete(d.id, d.name)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg cursor-pointer">

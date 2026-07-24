@@ -215,7 +215,7 @@ return;
                         onClick={() => {
  setShowModal(true); setForm({ ...emptyForm }); setErrors({}); 
 }}
-                        className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors"
+                        className="inline-flex items-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors"
                     >
                         <Plus className="w-4 h-4" />
                         Tambah Admin
@@ -241,7 +241,7 @@ return;
                                 <div>
                                     <p className="font-semibold text-sm text-slate-800">{u.name}</p>
                                     <p className="text-xs text-slate-500">{u.email}</p>
-                                    <span className={`text-xs px-2 py-0.5 rounded-full mt-1 inline-block ${u.role === 'super_admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                                    <span className={`text-xs px-2 py-0.5 rounded-full mt-1 inline-block ${u.role === 'super_admin' ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'}`}>
                                         {u.role === 'super_admin' ? 'Super Admin' : 'Admin'}
                                     </span>
                                 </div>
@@ -299,7 +299,7 @@ return;
                                             <div className="flex items-center justify-center gap-1">
                                                 <button
                                                     onClick={() => handleOpenEdit(admin)}
-                                                    className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-flex"
+                                                    className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors inline-flex"
                                                     title="Edit Admin"
                                                 >
                                                     <Edit className="w-4 h-4" />
@@ -338,7 +338,7 @@ return;
                                     value={form.name}
                                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                                     placeholder="Nama lengkap"
-                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                     required
                                 />
                                 {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name[0]}</p>}
@@ -351,7 +351,7 @@ return;
                                     value={form.email}
                                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                                     placeholder="admin@example.com"
-                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                     required
                                 />
                                 {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email[0]}</p>}
@@ -364,7 +364,7 @@ return;
                                     value={form.password}
                                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                                     placeholder="Password baru"
-                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                 />
                                 {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password[0]}</p>}
                             </div>
@@ -376,7 +376,7 @@ return;
                                         value={form.password_confirmation}
                                         onChange={(e) => setForm({ ...form, password_confirmation: e.target.value })}
                                         placeholder="Ulangi password baru"
-                                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                     />
                                 </div>
                             )}
@@ -386,7 +386,7 @@ return;
                                     <label className="block text-sm font-medium text-slate-700">Izin Akses</label>
                                     <div className="flex gap-2">
                                         <button type="button" onClick={() => setForm(f => ({ ...f, permissions: [...ALL_PERMISSIONS] }))}
-                                            className="text-xs text-blue-600 hover:underline">Pilih semua</button>
+                                            className="text-xs text-emerald-600 hover:underline">Pilih semua</button>
                                         <button type="button" onClick={() => setForm(f => ({ ...f, permissions: [] }))}
                                             className="text-xs text-slate-400 hover:underline">Hapus semua</button>
                                     </div>
@@ -403,7 +403,7 @@ return;
                                                         ? f.permissions.filter(p => p !== perm)
                                                         : [...f.permissions, perm],
                                                 }))}
-                                                className="rounded border-slate-300 text-blue-600"
+                                                className="rounded border-slate-300 text-emerald-600"
                                             />
                                             <span className="text-sm text-slate-700">{PERMISSION_LABELS[perm]}</span>
                                         </label>
@@ -423,7 +423,7 @@ return;
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="flex-1 bg-blue-600 text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60"
+                                    className="flex-1 bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-60"
                                 >
                                     {submitting ? 'Menyimpan...' : 'Simpan Perubahan'}
                                 </button>
@@ -450,7 +450,7 @@ return;
                                     value={form.name}
                                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                                     placeholder="Nama lengkap"
-                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                     required
                                 />
                                 {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name[0]}</p>}
@@ -464,7 +464,7 @@ return;
                                     value={form.email}
                                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                                     placeholder="admin@example.com"
-                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                     required
                                 />
                                 {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email[0]}</p>}
@@ -478,7 +478,7 @@ return;
                                     value={form.password}
                                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                                     placeholder="Min. 8 karakter"
-                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                     required
                                 />
                                 {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password[0]}</p>}
@@ -492,7 +492,7 @@ return;
                                     value={form.password_confirmation}
                                     onChange={(e) => setForm({ ...form, password_confirmation: e.target.value })}
                                     placeholder="Ulangi password"
-                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                     required
                                 />
                             </div>
@@ -507,7 +507,7 @@ return;
                                                 type="checkbox"
                                                 checked={form.permissions.includes(perm)}
                                                 onChange={() => togglePermission(perm)}
-                                                className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                                             />
                                             <span className="text-xs text-slate-700 group-hover:text-slate-900">
                                                 {PERMISSION_LABELS[perm] ?? perm}
@@ -520,7 +520,7 @@ return;
                                     <button
                                         type="button"
                                         onClick={() => setForm({ ...form, permissions: [...ALL_PERMISSIONS] })}
-                                        className="text-xs text-blue-600 hover:underline"
+                                        className="text-xs text-emerald-600 hover:underline"
                                     >
                                         Pilih semua
                                     </button>
@@ -546,7 +546,7 @@ return;
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="flex-1 bg-blue-600 text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60"
+                                    className="flex-1 bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-60"
                                 >
                                     {submitting ? 'Menyimpan...' : 'Buat Admin'}
                                 </button>

@@ -47,7 +47,7 @@ export default function PasskeyVerify({
                 <Button
                     type="button"
                     variant="outline"
-                    className="h-11 w-full rounded-lg border-blue-600 bg-white text-blue-600 shadow-sm transition-all duration-200 hover:bg-blue-50 hover:text-blue-700 active:scale-[0.98]"
+                    className="h-11 w-full rounded-lg border-emerald-600 bg-white text-emerald-600 shadow-sm transition-all duration-200 hover:bg-emerald-50 hover:text-emerald-700 active:scale-[0.98]"
                     onClick={verify}
                     disabled={isLoading}
                 >

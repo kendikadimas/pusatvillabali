@@ -688,7 +688,7 @@ return;
                         type="button"
                         onClick={() => setActiveTab('info')}
                         className={`pb-3 border-b-2 cursor-pointer transition-colors ${
-                            activeTab === 'info' ? 'border-blue-600 text-blue-600 font-bold border-blue-600' : 'border-transparent text-slate-400 hover:text-slate-700'
+                            activeTab === 'info' ? 'border-emerald-600 text-emerald-600 font-bold border-emerald-600' : 'border-transparent text-slate-400 hover:text-slate-700'
                         }`}
                     >
                         1. Info Detail
@@ -708,7 +708,7 @@ return;
                             !isEdit 
                                 ? 'text-slate-300 cursor-not-allowed border-transparent' 
                                 : activeTab === 'photos' 
-                                    ? 'border-blue-600 text-blue-600 font-bold cursor-pointer border-blue-600' 
+                                    ? 'border-emerald-600 text-emerald-600 font-bold cursor-pointer border-emerald-600' 
                                     : 'border-transparent text-slate-400 hover:text-slate-700 cursor-pointer'
                         }`}
                     >
@@ -731,7 +731,7 @@ return;
                             !isEdit 
                                 ? 'text-slate-300 cursor-not-allowed border-transparent' 
                                 : activeTab === 'blocked_dates' 
-                                    ? 'border-blue-600 text-blue-600 font-bold cursor-pointer border-blue-600' 
+                                    ? 'border-emerald-600 text-emerald-600 font-bold cursor-pointer border-emerald-600' 
                                     : 'border-transparent text-slate-400 hover:text-slate-700 cursor-pointer'
                         }`}
                     >
@@ -761,7 +761,7 @@ return;
                                                 placeholder="Contoh: Villa Kencana Cilember"
                                                 value={name}
                                                 onChange={(e) => setName(e.target.value)}
-                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold transition-all duration-200 ${
                                                     formErrors.name ? 'border-red-500' : 'border-slate-200 hover:border-slate-300'
                                                  }`}
                                             />
@@ -776,7 +776,7 @@ return;
                                                 value={shortDesc}
                                                 onChange={(e) => setShortDesc(e.target.value)}
                                                 maxLength={150}
-                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold transition-all duration-200 ${
                                                     formErrors.short_desc ? 'border-red-500' : 'border-slate-200 hover:border-slate-300'
                                                  }`}
                                             />
@@ -794,7 +794,7 @@ return;
                                                 placeholder="Contoh: Cilember, Cisarua, Bogor"
                                                 value={location}
                                                 onChange={(e) => setLocation(e.target.value)}
-                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold transition-all duration-200 ${
                                                     formErrors.location ? 'border-red-500' : 'border-slate-200 hover:border-slate-300'
                                                  }`}
                                             />
@@ -810,7 +810,7 @@ return;
                                                     <select 
                                                         value={destinationId}
                                                         onChange={(e) => setDestinationId(e.target.value)}
-                                                        className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold transition-all duration-200 cursor-pointer ${
+                                                        className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold transition-all duration-200 cursor-pointer ${
                                                             formErrors.destination_id ? 'border-red-500' : 'border-slate-200 hover:border-slate-300'
                                                         }`}
                                                     >
@@ -822,16 +822,16 @@ return;
                                                     <button
                                                         type="button"
                                                         onClick={() => setShowNewDestination(true)}
-                                                        className="text-[10px] font-bold text-blue-600 hover:text-blue-700 underline transition-colors"
+                                                        className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 underline transition-colors"
                                                     >
                                                         + Tambah destinasi baru
                                                     </button>
                                                     {formErrors.destination_id && <p className="text-red-500 text-[10px] mt-1 font-semibold">{formErrors.destination_id}</p>}
                                                 </div>
                                             ) : (
-                                                <div className="space-y-2 p-3 border border-blue-200 bg-blue-50/30 rounded-lg">
+                                                <div className="space-y-2 p-3 border border-emerald-200 bg-emerald-50/30 rounded-lg">
                                                     <div className="flex items-center justify-between">
-                                                        <span className="text-[10px] font-bold text-blue-700">Tambah Destinasi Baru</span>
+                                                        <span className="text-[10px] font-bold text-emerald-700">Tambah Destinasi Baru</span>
                                                         <button
                                                             type="button"
                                                             onClick={() => setShowNewDestination(false)}
@@ -845,20 +845,20 @@ return;
                                                         placeholder="Nama destinasi (misal: Cisarua, Bogor) *"
                                                         value={newDestName}
                                                         onChange={(e) => setNewDestName(e.target.value)}
-                                                 className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                                                 className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold"
                                                      />
                                                      <input
                                                          type="text"
                                                          placeholder="Kota/kabupaten *"
                                                          value={newDestCity}
                                                          onChange={(e) => setNewDestCity(e.target.value)}
-                                                         className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                                                         className="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold"
                                                     />
                                                     <button
                                                         type="button"
                                                         onClick={handleCreateDestination}
                                                         disabled={savingDestination}
-                                                        className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-[10px] py-2 rounded-lg transition-all flex items-center justify-center space-x-1.5"
+                                                        className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-[10px] py-2 rounded-lg transition-all flex items-center justify-center space-x-1.5"
                                                     >
                                                         {savingDestination ? (
                                                             <>
@@ -898,7 +898,7 @@ return;
                                                     setMapsUrl(val);
                                                 }}
                                                 placeholder="Tempel iframe embed, link Google Maps, atau URL embed"
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold"
                                              />
                                          </div>
                                      </div>
@@ -909,7 +909,7 @@ return;
                                              rows={6}
                                              value={description}
                                              onChange={(e) => setDescription(e.target.value)}
-                                             className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
+                                             className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold ${
                                                 formErrors.description ? 'border-red-500' : 'border-slate-200 hover:border-slate-300'
                                             }`}
                                         />
@@ -928,7 +928,7 @@ return;
                                                 type="number" 
                                                 value={pricePerNight}
                                                 onChange={(e) => setPricePerNight(e.target.value)}
-                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold ${
                                                     formErrors.price_per_night ? 'border-red-500' : 'border-slate-200'
                                                  }`}
                                             />
@@ -940,7 +940,7 @@ return;
                                                 type="number" 
                                                 value={weekendPrice}
                                                 onChange={(e) => setWeekendPrice(e.target.value)}
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold"
                                              />
                                          </div>
                                          <div>
@@ -950,7 +950,7 @@ return;
                                                 min="1"
                                                 value={bedrooms}
                                                 onChange={(e) => setBedrooms(e.target.value)}
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold"
                                              />
                                          </div>
                                          <div>
@@ -960,7 +960,7 @@ return;
                                                 min="1"
                                                 value={bathrooms}
                                                 onChange={(e) => setBathrooms(e.target.value)}
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold"
                                              />
                                          </div>
                                          <div>
@@ -970,7 +970,7 @@ return;
                                                 min="1"
                                                 value={maxGuests}
                                                 onChange={(e) => setMaxGuests(e.target.value)}
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold"
                                              />
                                          </div>
                                          <div>
@@ -980,7 +980,7 @@ return;
                                                 min="1"
                                                 value={beds}
                                                 onChange={(e) => setBeds(e.target.value)}
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold"
                                              />
                                          </div>
                                          <div>
@@ -989,7 +989,7 @@ return;
                                                 type="number" 
                                                 value={cleaningFee}
                                                 onChange={(e) => setCleaningFee(e.target.value)}
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold"
                                              />
                                          </div>
                                          <div>
@@ -999,7 +999,7 @@ return;
                                                  min="1"
                                                  value={minNights}
                                                  onChange={(e) => setMinNights(e.target.value)}
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold"
                                             />
                                         </div>
                                     </div>
@@ -1017,7 +1017,7 @@ return;
                                                 value={checkInTime}
                                                 onChange={(e) => setCheckInTime(e.target.value)}
                                                 placeholder="Misal: 14:00"
-                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold ${
                                                     formErrors.check_in_time ? 'border-red-500' : 'border-slate-200'
                                                  }`}
                                             />
@@ -1029,7 +1029,7 @@ return;
                                                 value={checkOutTime}
                                                 onChange={(e) => setCheckOutTime(e.target.value)}
                                                 placeholder="Misal: 12:00"
-                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold ${
+                                                 className={`w-full bg-slate-50 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold ${
                                                     formErrors.check_out_time ? 'border-red-500' : 'border-slate-200'
                                                  }`}
                                             />
@@ -1040,7 +1040,7 @@ return;
                                                 rows={3}
                                                 value={rules}
                                                 onChange={(e) => setRules(e.target.value)}
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold"
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold"
                                              />
                                          </div>
                                          <div className="sm:col-span-2 flex items-center space-x-3 pt-2">
@@ -1049,7 +1049,7 @@ return;
                                                 id="isActive"
                                                 checked={isActive}
                                                 onChange={(e) => setIsActive(e.target.checked)}
-                                                className="rounded border-slate-300 text-blue-600 focus:ring-blue-605 w-4 h-4 cursor-pointer"
+                                                className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-605 w-4 h-4 cursor-pointer"
                                             />
                                             <label htmlFor="isActive" className="text-xs font-bold text-slate-700 cursor-pointer">
                                                 Aktifkan Villa (Tampilkan langsung di katalog website)
@@ -1088,7 +1088,7 @@ return;
                                                 placeholder="Misal: WiFi 100Mbps"
                                                 value={newAmenityName}
                                                 onChange={(e) => setNewAmenityName(e.target.value)}
-                                                 className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-505 font-semibold"
+                                                 className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-505 font-semibold"
                                                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addAmenity())}
                                             />
                                         </div>
@@ -1097,7 +1097,7 @@ return;
                                             <button
                                                 type="button"
                                                 onClick={() => setIsIconPickerOpen(!isIconPickerOpen)}
-                                                className="bg-white border border-slate-200 hover:border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold cursor-pointer min-w-[150px] flex items-center justify-between"
+                                                className="bg-white border border-slate-200 hover:border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold cursor-pointer min-w-[150px] flex items-center justify-between"
                                             >
                                                 {(() => {
                                                     const CurrentIcon = getIconComponentByKey(newAmenityIcon);
@@ -1124,7 +1124,7 @@ return;
                                                             value={iconSearch}
                                                             onChange={(e) => setIconSearch(e.target.value)}
                                                             placeholder="Cari ikon..."
-                                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-505 font-semibold"
+                                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-emerald-505 font-semibold"
                                                             autoFocus
                                                         />
                                                         <div className="grid grid-cols-4 gap-1 max-h-[160px] overflow-y-auto">
@@ -1146,7 +1146,7 @@ return;
                                                                             }}
                                                                             className={`flex flex-col items-center justify-center p-2 rounded-lg border transition-all cursor-pointer ${
                                                                                 isSelected 
-                                                                                    ? 'border-blue-500 bg-blue-50 text-blue-650' 
+                                                                                    ? 'border-emerald-500 bg-emerald-50 text-emerald-650' 
                                                                                     : 'border-transparent hover:border-slate-200 hover:bg-slate-50 text-slate-600'
                                                                             }`}
                                                                         >
@@ -1163,7 +1163,7 @@ return;
                                         <button 
                                             type="button"
                                             onClick={addAmenity}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-colors cursor-pointer"
+                                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-colors cursor-pointer"
                                         >
                                             Tambah
                                         </button>
@@ -1181,7 +1181,7 @@ return;
                                                  type="text" 
                                                  value={hostName} 
                                                  onChange={(e) => setHostName(e.target.value)} 
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold" 
                                              />
                                          </div>
                                          <div>
@@ -1191,7 +1191,7 @@ return;
                                                  placeholder="081234567890" 
                                                  value={hostPhone} 
                                                  onChange={(e) => setHostPhone(e.target.value)} 
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold" 
                                              />
                                          </div>
                                          <div>
@@ -1201,7 +1201,7 @@ return;
                                                  min="0" 
                                                  value={hostYears} 
                                                  onChange={(e) => setHostYears(Number(e.target.value))} 
-                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-semibold" 
+                                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-semibold" 
                                              />
                                          </div>
 
@@ -1324,11 +1324,11 @@ return;
                                         </div>
                                         <div>
                                             <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Kamar</label>
-                                             <input type="text" placeholder="Misal: Kamar utama" value={brTitle} onChange={(e) => setBrTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                             <input type="text" placeholder="Misal: Kamar utama" value={brTitle} onChange={(e) => setBrTitle(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold" />
                                          </div>
                                          <div className="sm:col-span-2">
                                              <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Keterangan Tempat Tidur</label>
-                                             <input type="text" placeholder="Misal: 1 tempat tidur king size" value={brSubtext} onChange={(e) => setBrSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" />
+                                             <input type="text" placeholder="Misal: 1 tempat tidur king size" value={brSubtext} onChange={(e) => setBrSubtext(e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold" />
                                         </div>
                                         <div className="sm:col-span-3 flex justify-end">
                                             <button 
@@ -1365,7 +1365,7 @@ return;
                                     <button
                                         type="submit"
                                         disabled={submitting}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
                                     >
                                         {submitting ? (
                                             <>
@@ -1398,7 +1398,7 @@ return;
                                             type="button"
                                             onClick={savePhotoGallery}
                                             disabled={savingPhotos}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-xs transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
+                                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-xs transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer"
                                         >
                                             {savingPhotos ? (
                                                 <><Loader2 className="w-3.5 h-3.5 animate-spin" /><span>Menyimpan...</span></>
@@ -1431,7 +1431,7 @@ return;
                                                     <ChevronRight className={`w-4 h-4 text-slate-405 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
                                                     <span>{cat}</span>
                                                     {catPhotos.length > 0 && (
-                                                        <span className="text-[9px] font-bold text-blue-650 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full lowercase">
+                                                        <span className="text-[9px] font-bold text-emerald-650 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full lowercase">
                                                             {catPhotos.length} foto
                                                         </span>
                                                     )}
@@ -1439,7 +1439,7 @@ return;
 
                                                 <label className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition-all active:scale-95 ${
                                                     isActiveUpload && uploadingPhotos
-                                                        ? 'bg-blue-600 text-white shadow-xs'
+                                                        ? 'bg-emerald-600 text-white shadow-xs'
                                                         : 'bg-white border border-slate-200 text-slate-655 hover:bg-slate-50'
                                                 }`}>
                                                     <input
@@ -1479,7 +1479,7 @@ return;
                                                                         <div className="relative aspect-video bg-slate-50 overflow-hidden">
                                                                             <img src={photoUrl} alt={`Foto ${index}`} className="w-full h-full object-cover" />
                                                                             {isMainPhoto && (
-                                                                                <span className="absolute top-2.5 left-2.5 bg-blue-650 text-white text-[8px] font-black px-2 py-0.5 rounded-md shadow-xs">
+                                                                                <span className="absolute top-2.5 left-2.5 bg-emerald-650 text-white text-[8px] font-black px-2 py-0.5 rounded-md shadow-xs">
                                                                                     UTAMA
                                                                                 </span>
                                                                             )}
@@ -1497,7 +1497,7 @@ return;
                                                                                 <select 
                                                                                     value={category} 
                                                                                     onChange={(e) => handlePhotoCategoryChange(index, e.target.value)}
-                                                                                    className="w-full bg-white border border-slate-200 focus:border-blue-500 rounded-lg px-2.5 py-1 text-xs focus:outline-none cursor-pointer font-semibold"
+                                                                                    className="w-full bg-white border border-slate-200 focus:border-emerald-500 rounded-lg px-2.5 py-1 text-xs focus:outline-none cursor-pointer font-semibold"
                                                                                 >
                                                                                     {PHOTO_CATEGORIES.map(c => (
                                                                                         <option key={c} value={c}>{c}</option>
@@ -1522,7 +1522,7 @@ return;
                                             type="button"
                                             onClick={savePhotoGallery}
                                             disabled={savingPhotos}
-                                            className="bg-blue-650 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-xs transition-colors cursor-pointer flex items-center space-x-1.5"
+                                            className="bg-emerald-650 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-xs transition-colors cursor-pointer flex items-center space-x-1.5"
                                         >
                                             {savingPhotos ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                             <span>Simpan Galeri</span>
@@ -1538,7 +1538,7 @@ return;
                                 {/* Calendar Nav */}
                                 <div className="flex items-center justify-between flex-wrap gap-3">
                                     <div className="flex items-center space-x-2">
-                                        <CalendarIcon className="w-5 h-5 text-blue-600" />
+                                        <CalendarIcon className="w-5 h-5 text-emerald-600" />
                                         <h3 className="text-sm font-bold text-slate-800 capitalize font-black">
                                             {format(blockCalendarMonth, 'MMMM yyyy', { locale: localeID })}
                                         </h3>
@@ -1552,7 +1552,7 @@ return;
                                             }}
                                             className={`text-[10px] font-bold px-3 py-1.5 rounded-lg border transition-all active:scale-95 cursor-pointer ${
                                                 isBulkMode
-                                                    ? 'bg-blue-600 border-blue-600 text-white font-bold'
+                                                    ? 'bg-emerald-600 border-emerald-600 text-white font-bold'
                                                     : 'bg-white border-slate-200 text-slate-655 hover:bg-slate-50'
                                             }`}
                                         >
@@ -1601,7 +1601,7 @@ return;
                                             }
 
                                             if (isSelected && !isBlocked) {
-                                                cellBg = 'bg-blue-600 border-blue-600';
+                                                cellBg = 'bg-emerald-600 border-emerald-600';
                                                 textColor = 'text-white';
                                             }
 
@@ -1638,7 +1638,7 @@ return;
                                                             }
                                                         }
                                                     }}
-                                                    className={`h-12 rounded-xl border flex flex-col items-center justify-center transition-all active:scale-95 cursor-pointer relative ${cellBg} ${isToday && !isBlocked ? 'ring-2 ring-blue-500' : ''}`}
+                                                    className={`h-12 rounded-xl border flex flex-col items-center justify-center transition-all active:scale-95 cursor-pointer relative ${cellBg} ${isToday && !isBlocked ? 'ring-2 ring-emerald-500' : ''}`}
                                                 >
                                                     <span className={`text-xs font-bold ${textColor}`}>{dayNum}</span>
                                                     {isBlocked && (
@@ -1646,7 +1646,7 @@ return;
                                                     )}
                                                     {isBulkMode && !isBlocked && !isPast && (
                                                         <div className={`absolute top-1 right-1 w-3 h-3 rounded border flex items-center justify-center text-[8px] ${
-                                                            isSelected ? 'bg-white border-white text-blue-600' : 'bg-white/50 border-slate-300'
+                                                            isSelected ? 'bg-white border-white text-emerald-600' : 'bg-white/50 border-slate-300'
                                                         }`}>
                                                             {isSelected && <Check className="w-2.5 h-2.5" />}
                                                         </div>
@@ -1664,7 +1664,7 @@ return;
                                         <span>Diblokir</span>
                                     </div>
                                     <div className="flex items-center space-x-1.5">
-                                        <div className="w-3 h-3 rounded bg-blue-600" />
+                                        <div className="w-3 h-3 rounded bg-emerald-600" />
                                         <span>Dipilih</span>
                                     </div>
                                     <span className="text-slate-400">| Total: {blockedDates.length} tanggal diblokir</span>
@@ -1672,9 +1672,9 @@ return;
 
                                 {/* Bulk action form */}
                                 {isBulkMode && bulkSelectedDates.length > 0 && (
-                                    <div className="bg-blue-50/50 border border-blue-150 rounded-xl p-4 space-y-3">
+                                    <div className="bg-emerald-50/50 border border-emerald-150 rounded-xl p-4 space-y-3">
                                         <div className="flex items-center justify-between text-xs">
-                                            <span className="font-bold text-blue-700">{bulkSelectedDates.length} tanggal dipilih</span>
+                                            <span className="font-bold text-emerald-700">{bulkSelectedDates.length} tanggal dipilih</span>
                                             <button type="button" onClick={() => setBulkSelectedDates([])} className="text-[10px] text-slate-450 hover:text-slate-600 font-bold">
                                                 Hapus Pilihan
                                             </button>
@@ -1685,7 +1685,7 @@ return;
                                                 placeholder="Sebutkan alasan pemblokiran massal..."
                                                 value={bulkReason}
                                                 onChange={(e) => setBulkReason(e.target.value)}
-                                                className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold"
+                                                className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold"
                                             />
                                             <button
                                                 type="button"
@@ -1720,7 +1720,7 @@ return;
                                                 value={blockDateInput} 
                                                 onChange={(e) => setBlockDateInput(e.target.value)} 
                                                 min={format(new Date(), 'yyyy-MM-dd')}
-                                                className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold cursor-pointer" 
+                                                className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold cursor-pointer" 
                                             />
                                         </div>
                                         <div>
@@ -1730,7 +1730,7 @@ return;
                                                 placeholder="Misal: Perbaikan atap bocor" 
                                                 value={blockReasonInput} 
                                                 onChange={(e) => setBlockReasonInput(e.target.value)} 
-                                                className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold" 
+                                                className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold" 
                                             />
                                         </div>
                                         <div>

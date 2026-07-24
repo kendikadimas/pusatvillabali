@@ -27,14 +27,14 @@ const statusColors: Record<string, string> = {
     pending: 'bg-yellow-100 text-yellow-700',
     confirmed: 'bg-green-100 text-green-700',
     cancelled: 'bg-red-100 text-red-700',
-    completed: 'bg-blue-100 text-blue-700',
+    completed: 'bg-emerald-100 text-emerald-700',
 };
 
 const paymentColors: Record<string, string> = {
     unpaid: 'bg-red-100 text-red-700',
     pending: 'bg-yellow-100 text-yellow-700',
     paid: 'bg-green-100 text-green-700',
-    refunded: 'bg-blue-100 text-blue-700',
+    refunded: 'bg-emerald-100 text-emerald-700',
     expired: 'bg-slate-100 text-slate-600',
 };
 
@@ -84,7 +84,7 @@ export default function AdminBookingsPage({ bookings, filters, stats }: Props) {
 
                 {/* Stats cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <button type="button" onClick={() => router.get('/admin/bookings', { status: '' }, { preserveScroll: false })} className="text-left bg-blue-600 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
+                    <button type="button" onClick={() => router.get('/admin/bookings', { status: '' }, { preserveScroll: false })} className="text-left bg-emerald-600 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
                         <p className="text-xs text-white/70 mb-1">Masuk Hari Ini</p>
                         <div className="flex items-end justify-between"><p className="text-2xl font-black text-white">{stats.today}</p><ArrowUpRight className="w-4 h-4 text-white/50 mb-0.5 opacity-0 group-hover:opacity-100 transition-opacity" /></div>
                     </button>
@@ -206,7 +206,7 @@ export default function AdminBookingsPage({ bookings, filters, stats }: Props) {
                                         <p className="text-xs text-slate-400 font-mono">#{b.booking_code}</p>
                                         <p className="text-xs text-slate-500 mt-0.5">{b.villa?.name ?? '-'}</p>
                                     </div>
-                                    <Link href={`/admin/bookings/${b.id}`} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg shrink-0">
+                                    <Link href={`/admin/bookings/${b.id}`} className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg shrink-0">
                                         <Eye className="w-4 h-4" />
                                     </Link>
                                 </div>
@@ -266,7 +266,7 @@ export default function AdminBookingsPage({ bookings, filters, stats }: Props) {
                                             <div className="flex items-center justify-center gap-1">
                                                 <Link
                                                     href={`/admin/bookings/${b.id}`}
-                                                    className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-flex"
+                                                    className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors inline-flex"
                                                     title="Lihat Detail Pemesanan"
                                                 >
                                                     <Eye className="w-4.5 h-4.5" />
@@ -275,7 +275,7 @@ export default function AdminBookingsPage({ bookings, filters, stats }: Props) {
                                                     href={`/booking/status?code=${b.booking_code}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-flex"
+                                                    className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors inline-flex"
                                                     title="Lihat Halaman Publik"
                                                 >
                                                     <ExternalLink className="w-4.5 h-4.5" />
@@ -317,7 +317,7 @@ params.status = statusFilter;
                                             router.get('/admin/bookings', params, { preserveScroll: true });
                                         }}
                                         className={`w-7 h-7 rounded text-xs font-medium ${
-                                            page === bookings.current_page ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-200'
+                                            page === bookings.current_page ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-200'
                                         }`}
                                     >
                                         {page}

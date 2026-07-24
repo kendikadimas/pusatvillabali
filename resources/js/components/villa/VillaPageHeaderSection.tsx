@@ -31,7 +31,7 @@ export default function VillaPageHeaderSection({
                         {reviewsCount > 0 && (
                             <>
                                 <span className="text-slate-300">·</span>
-                                <button onClick={onScrollToReviews} className="underline hover:text-blue-500 transition-colors">
+                                <button onClick={onScrollToReviews} className="underline hover:text-emerald-500 transition-colors">
                                     {reviewsCount} ulasan
                                 </button>
                             </>

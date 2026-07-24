@@ -261,7 +261,7 @@ setMonth((m) => m + 1);
                 <div className="bg-white border border-slate-200 rounded-2xl p-5">
                     <label className="block text-sm font-medium text-slate-700 mb-2">Pilih Villa</label>
                     <div className="relative">
-                        <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 py-2.5 bg-white focus-within:ring-2 focus-within:ring-blue-500">
+                        <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 py-2.5 bg-white focus-within:ring-2 focus-within:ring-emerald-500">
                             <Search className="w-4 h-4 text-slate-400 shrink-0" />
                             <input
                                 type="text"
@@ -285,7 +285,7 @@ setMonth((m) => m + 1);
                                         onClick={() => {
  setSelectedId(String(v.id)); setVillaSearch(''); 
 }}
-                                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors ${String(v.id) === selectedId ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-700'}`}
+                                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors ${String(v.id) === selectedId ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-slate-700'}`}
                                     >
                                         {v.name}
                                     </button>
@@ -297,7 +297,7 @@ setMonth((m) => m + 1);
                     {selectedVilla && (
                         <div className="mt-2 flex items-center gap-2">
                             <span className="text-xs text-slate-500">Dipilih:</span>
-                            <span className="text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">{selectedVilla.name}</span>
+                            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">{selectedVilla.name}</span>
                             <button type="button" onClick={() => setSelectedId('')} className="text-xs text-slate-400 hover:text-red-500 transition-colors">Ganti</button>
                         </div>
                     )}
@@ -308,7 +308,7 @@ setMonth((m) => m + 1);
                                     key={v.id}
                                     type="button"
                                     onClick={() => setSelectedId(String(v.id))}
-                                    className="text-xs px-3 py-1 rounded-full border border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
+                                    className="text-xs px-3 py-1 rounded-full border border-slate-200 text-slate-600 hover:border-emerald-400 hover:text-emerald-600 transition-colors"
                                 >
                                     {v.name}
                                 </button>
@@ -391,10 +391,10 @@ setMonth((m) => m + 1);
                                             } else if (isBooked) {
                                                 cellClass += 'bg-amber-100 text-amber-800 border border-amber-400 hover:bg-amber-200 cursor-pointer';
                                             } else {
-                                                cellClass += 'text-slate-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer';
+                                                cellClass += 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 cursor-pointer';
 
                                                 if (isToday) {
-cellClass += ' ring-2 ring-blue-400 ring-offset-1';
+cellClass += ' ring-2 ring-emerald-400 ring-offset-1';
 }
                                             }
 
@@ -600,7 +600,7 @@ title = 'Klik untuk blokir';
                                 value={reason}
                                 onChange={(e) => setReason(e.target.value)}
                                 placeholder="cth: Renovasi, Acara pribadi..."
-                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                                 autoFocus
                                 onKeyDown={(e) => e.key === 'Enter' && confirmBlock()}
                             />

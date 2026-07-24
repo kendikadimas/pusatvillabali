@@ -179,7 +179,7 @@ return;
                     </div>
                     <button
                         onClick={openCreate}
-                        className="flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors cursor-pointer"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-colors cursor-pointer"
                     >
                         <Plus className="w-4 h-4" /><span className="hidden sm:inline">Buat Voucher</span>
                     </button>
@@ -189,7 +189,7 @@ return;
                 <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
                     {loading ? (
                         <div className="flex items-center justify-center py-16">
-                            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                            <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
                         </div>
                     ) : vouchers.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-slate-400 gap-3">
@@ -283,7 +283,7 @@ return;
                                     <input
                                         {...field('code')}
                                         placeholder="cth. DISKON50"
-                                        className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-mono font-bold uppercase focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                                        className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-mono font-bold uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50"
                                     />
                                     {errors.code && <p className="text-xs text-red-500 mt-1">{errors.code[0]}</p>}
                                 </div>
@@ -294,7 +294,7 @@ return;
                                     <input
                                         {...field('description')}
                                         placeholder="cth. Diskon hari jadi"
-                                        className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                                        className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50"
                                     />
                                 </div>
 
@@ -305,7 +305,7 @@ return;
                                         <select
                                             value={form.type}
                                             onChange={e => setForm(f => ({ ...f, type: e.target.value as 'fixed' | 'percent' }))}
-                                            className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                                            className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50"
                                         >
                                             <option value="fixed">Nominal (IDR)</option>
                                             <option value="percent">Persentase (%)</option>
@@ -321,7 +321,7 @@ return;
                                             min="0"
                                             max={form.type === 'percent' ? 100 : undefined}
                                             placeholder={form.type === 'percent' ? '10' : '50000'}
-                                            className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                                            className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50"
                                         />
                                         {errors.value && <p className="text-xs text-red-500 mt-1">{errors.value[0]}</p>}
                                     </div>
@@ -336,7 +336,7 @@ return;
                                             type="number"
                                             min="0"
                                             placeholder="cth. 200000 (kosongkan = tidak ada batas)"
-                                            className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                                            className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50"
                                         />
                                     </div>
                                 )}
@@ -349,7 +349,7 @@ return;
                                         type="number"
                                         min="0"
                                         placeholder="0 = tidak ada minimum"
-                                        className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                                        className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50"
                                     />
                                 </div>
 
@@ -361,7 +361,7 @@ return;
                                         type="number"
                                         min="1"
                                         placeholder="Kosongkan = tidak terbatas"
-                                        className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                                        className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50"
                                     />
                                 </div>
 
@@ -372,7 +372,7 @@ return;
                                         <input
                                             {...field('valid_from')}
                                             type="date"
-                                            className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 [color-scheme:light]"
+                                            className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 [color-scheme:light]"
                                         />
                                     </div>
                                     <div>
@@ -380,7 +380,7 @@ return;
                                         <input
                                             {...field('valid_until')}
                                             type="date"
-                                            className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 [color-scheme:light]"
+                                            className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50 [color-scheme:light]"
                                         />
                                         {errors.valid_until && <p className="text-xs text-red-500 mt-1">{errors.valid_until[0]}</p>}
                                     </div>
@@ -395,7 +395,7 @@ return;
                                     <button
                                         type="button"
                                         onClick={() => setForm(f => ({ ...f, is_active: !f.is_active }))}
-                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${form.is_active ? 'bg-blue-600' : 'bg-slate-200'}`}
+                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${form.is_active ? 'bg-emerald-600' : 'bg-slate-200'}`}
                                     >
                                         <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${form.is_active ? 'translate-x-6' : 'translate-x-1'}`} />
                                     </button>
@@ -411,7 +411,7 @@ return;
                                 <button
                                     onClick={handleSave}
                                     disabled={saving}
-                                    className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer"
+                                    className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 cursor-pointer"
                                 >
                                     {saving ? 'Menyimpan...' : editingId ? 'Simpan Perubahan' : 'Buat Voucher'}
                                 </button>

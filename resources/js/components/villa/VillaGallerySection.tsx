@@ -84,7 +84,7 @@ cornerClass = 'md:rounded-br-2xl';
                                 src={getPhotoUrl(ph)}
                                 alt="Thumb"
                                 onClick={() => setCurrentImageIndex(idx)}
-                                className={`w-16 h-12 object-cover rounded-lg cursor-pointer border-2 transition-all ${idx === currentImageIndex ? 'border-blue-500 scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-85'}`}
+                                className={`w-16 h-12 object-cover rounded-lg cursor-pointer border-2 transition-all ${idx === currentImageIndex ? 'border-emerald-500 scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-85'}`}
                             />
                         ))}
                     </div>

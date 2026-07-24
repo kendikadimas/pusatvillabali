@@ -67,7 +67,7 @@ export default function AuthCallback() {
                         <p className="text-sm text-slate-500">{error}</p>
                         <button
                             onClick={() => router.visit('/login')}
-                            className="mt-4 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                            className="mt-4 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
                         >
                             Back to login
                         </button>

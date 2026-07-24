@@ -26,7 +26,7 @@ interface Props {
 
 function StatCard({ label, value, icon, color = 'blue', href }: { label: string; value: string | number; icon: React.ReactNode; color?: string; href?: string }) {
     const colors: Record<string, { card: string; icon: string }> = {
-        blue:   { card: 'bg-blue-600',   icon: 'bg-blue-500' },
+        blue:   { card: 'bg-emerald-600',   icon: 'bg-emerald-500' },
         green:  { card: 'bg-green-600',  icon: 'bg-green-500' },
         amber:  { card: 'bg-amber-500',  icon: 'bg-amber-400' },
         purple: { card: 'bg-purple-600', icon: 'bg-purple-500' },
@@ -59,7 +59,7 @@ const statusColors: Record<string, string> = {
     pending: 'bg-yellow-100 text-yellow-700',
     confirmed: 'bg-green-100 text-green-700',
     cancelled: 'bg-red-100 text-red-700',
-    completed: 'bg-blue-100 text-blue-700',
+    completed: 'bg-emerald-100 text-emerald-700',
 };
 
 const statusLabels: Record<string, string> = {
@@ -92,7 +92,7 @@ export default function AdminDashboardPage({ stats, recentBookings, todayCheckin
                     <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl overflow-hidden">
                         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
                             <h2 className="font-bold text-slate-800">Pemesanan Terbaru</h2>
-                            <Link href="/admin/bookings" className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                            <Link href="/admin/bookings" className="text-xs text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
                                 Lihat semua <ArrowUpRight className="w-3 h-3" />
                             </Link>
                         </div>

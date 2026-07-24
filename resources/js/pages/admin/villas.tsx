@@ -75,7 +75,7 @@ return;
                     </div>
                     <Link
                         href="/admin/villas/new"
-                        className="flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors"
+                        className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors"
                     >
                         <Plus className="w-4 h-4" /><span className="hidden sm:inline">Tambah Villa</span>
                     </Link>
@@ -83,7 +83,7 @@ return;
 
                 {/* Stats cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <button type="button" onClick={() => router.get('/admin/villas', { status: '' }, { preserveScroll: false })} className="text-left bg-blue-600 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
+                    <button type="button" onClick={() => router.get('/admin/villas', { status: '' }, { preserveScroll: false })} className="text-left bg-emerald-600 rounded-xl p-4 hover:brightness-110 transition-all cursor-pointer group">
                         <p className="text-xs text-white/70 mb-1">Total Villa</p>
                         <div className="flex items-end justify-between"><p className="text-2xl font-black text-white">{stats.total}</p><ArrowUpRight className="w-4 h-4 text-white/50 mb-0.5 opacity-0 group-hover:opacity-100 transition-opacity" /></div>
                     </button>
@@ -124,7 +124,7 @@ return;
                             onChange={(e) => {
  setDestinationId(e.target.value); applyFilters({ dest: e.target.value }); 
 }}
-                            className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                            className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                         >
                             <option value="">Semua Lokasi</option>
                             {destinations.map((d) => (
@@ -136,7 +136,7 @@ return;
                             onChange={(e) => {
  setStatus(e.target.value); applyFilters({ status: e.target.value }); 
 }}
-                            className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                            className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                         >
                             <option value="">Semua Status</option>
                             <option value="active">Aktif</option>
@@ -147,7 +147,7 @@ return;
                             onChange={(e) => {
  setSort(e.target.value); applyFilters({ sort: e.target.value }); 
 }}
-                            className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                            className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                         >
                             <option value="newest">Terbaru</option>
                             <option value="oldest">Terlama</option>
@@ -179,7 +179,7 @@ return;
                                         className={`text-xs px-2 py-1 rounded-full font-semibold ${villa.is_active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
                                         {villa.is_active ? 'Aktif' : 'Nonaktif'}
                                     </button>
-                                    <Link href={`/admin/villas/${villa.id}/edit`} className="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg">
+                                    <Link href={`/admin/villas/${villa.id}/edit`} className="p-1.5 text-slate-500 hover:text-emerald-600 rounded-lg">
                                         <Edit className="w-4 h-4" />
                                     </Link>
                                     <button
@@ -194,7 +194,7 @@ return;
                         ))}
                         {villas.data.length === 0 && (
                             <div className="p-8 text-center text-slate-400 text-sm">
-                                Belum ada villa. <Link href="/admin/villas/new" className="text-blue-600 hover:underline">Tambah villa pertama</Link>
+                                Belum ada villa. <Link href="/admin/villas/new" className="text-emerald-600 hover:underline">Tambah villa pertama</Link>
                             </div>
                         )}
                     </div>
@@ -254,7 +254,7 @@ return;
                                             <div className="flex items-center justify-center gap-1">
                                                 <Link
                                                     href={`/admin/villas/${villa.id}/edit`}
-                                                    className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </Link>
@@ -272,7 +272,7 @@ return;
                                 {villas.data.length === 0 && (
                                     <tr>
                                         <td colSpan={7} className="px-5 py-12 text-center text-slate-400">
-                                            Belum ada villa. <Link href="/admin/villas/new" className="text-blue-600 hover:underline">Tambah villa pertama</Link>
+                                            Belum ada villa. <Link href="/admin/villas/new" className="text-emerald-600 hover:underline">Tambah villa pertama</Link>
                                         </td>
                                     </tr>
                                 )}
@@ -292,7 +292,7 @@ return;
                                         key={page}
                                         onClick={() => router.get('/admin/villas', { search, destination_id: destinationId || undefined, status: status || undefined, sort, page: String(page) })}
                                         className={`w-7 h-7 rounded text-xs font-medium ${
-                                            page === villas.current_page ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-200'
+                                            page === villas.current_page ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-slate-200'
                                         }`}
                                     >
                                         {page}

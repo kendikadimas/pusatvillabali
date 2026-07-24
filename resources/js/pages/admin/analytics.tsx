@@ -158,7 +158,7 @@ export default function AdminAnalyticsPage() {
                             type="date"
                             value={from}
                             onChange={(e) => setFrom(e.target.value)}
-                            className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                            className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                         />
                     </div>
                     <div>
@@ -167,13 +167,13 @@ export default function AdminAnalyticsPage() {
                             type="date"
                             value={to}
                             onChange={(e) => setTo(e.target.value)}
-                            className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                            className="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                         />
                     </div>
                     <button
                         onClick={() => fetchData(from, to)}
                         disabled={loading}
-                        className="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60"
+                        className="inline-flex items-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-60"
                     >
                         <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                         {loading ? 'Memuat...' : 'Tampilkan'}
@@ -194,7 +194,7 @@ export default function AdminAnalyticsPage() {
                                     setTo(newTo);
                                     fetchData(newFrom, newTo);
                                 }}
-                                className="text-xs text-slate-500 hover:text-blue-600 border border-slate-200 hover:border-blue-300 px-3 py-1.5 rounded-lg transition-colors"
+                                className="text-xs text-slate-500 hover:text-emerald-600 border border-slate-200 hover:border-emerald-300 px-3 py-1.5 rounded-lg transition-colors"
                             >
                                 {label}
                             </button>
@@ -211,7 +211,7 @@ export default function AdminAnalyticsPage() {
                                 <p className="text-2xl font-black text-white">{formatPrice(totalRevenue)}</p>
                                 <p className="text-xs text-white/60 mt-1">{data.period.from} – {data.period.to}</p>
                             </div>
-                            <Link href="/admin/bookings" className="rounded-2xl p-5 bg-blue-600 hover:brightness-110 transition-all group">
+                            <Link href="/admin/bookings" className="rounded-2xl p-5 bg-emerald-600 hover:brightness-110 transition-all group">
                                 <p className="text-xs font-medium text-white/70 mb-1">Total Pemesanan</p>
                                 <div className="flex items-end justify-between">
                                     <p className="text-2xl font-black text-white">{totalBookings.toLocaleString('id-ID')}</p>
@@ -255,7 +255,7 @@ export default function AdminAnalyticsPage() {
                                                     <p className="text-sm text-slate-700 w-40 truncate shrink-0">{v.villa_name}</p>
                                                     <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
                                                         <div
-                                                            className="bg-blue-500 h-2 rounded-full transition-all"
+                                                            className="bg-emerald-500 h-2 rounded-full transition-all"
                                                             style={{ width: `${pct}%` }}
                                                         />
                                                     </div>

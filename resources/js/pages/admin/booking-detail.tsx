@@ -23,14 +23,14 @@ const statusColors: Record<string, string> = {
     pending: 'bg-yellow-100 text-yellow-700',
     confirmed: 'bg-green-100 text-green-700',
     cancelled: 'bg-red-100 text-red-700',
-    completed: 'bg-blue-100 text-blue-700',
+    completed: 'bg-emerald-100 text-emerald-700',
 };
 
 const paymentColors: Record<string, string> = {
     unpaid: 'bg-red-100 text-red-700',
     pending: 'bg-yellow-100 text-yellow-700',
     paid: 'bg-green-100 text-green-700',
-    refunded: 'bg-blue-100 text-blue-700',
+    refunded: 'bg-emerald-100 text-emerald-700',
     expired: 'bg-slate-100 text-slate-600',
 };
 
@@ -157,7 +157,7 @@ return;
                                     {booking.villa && (
                                         <Link
                                             href={`/admin/villas/${booking.villa_id}/edit`}
-                                            className="flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600 border border-slate-200 px-2 py-1 rounded-lg"
+                                            className="flex items-center gap-1 text-xs text-slate-500 hover:text-emerald-600 border border-slate-200 px-2 py-1 rounded-lg"
                                         >
                                             <Edit className="w-3 h-3" /> Edit Villa
                                         </Link>
@@ -214,8 +214,8 @@ return;
                             </h3>
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <span className="text-blue-600 font-bold text-sm">
+                                    <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span className="text-emerald-600 font-bold text-sm">
                                             {booking.guest_name?.[0]?.toUpperCase() ?? 'G'}
                                         </span>
                                     </div>
@@ -226,13 +226,13 @@ return;
                                 </div>
                                 <div className="flex items-center gap-2 text-sm text-slate-600">
                                     <Mail className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                                    <a href={`mailto:${booking.guest_email}`} className="hover:text-blue-600">
+                                    <a href={`mailto:${booking.guest_email}`} className="hover:text-emerald-600">
                                         {booking.guest_email}
                                     </a>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm text-slate-600">
                                     <Phone className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                                    <a href={`tel:${booking.guest_phone}`} className="hover:text-blue-600">
+                                    <a href={`tel:${booking.guest_phone}`} className="hover:text-emerald-600">
                                         {booking.guest_phone}
                                     </a>
                                 </div>
@@ -249,7 +249,7 @@ return;
                                             href={`/admin/bookings/${booking.booking_code}/ktp`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline"
+                                            className="inline-flex items-center gap-2 text-sm text-emerald-600 hover:underline"
                                         >
                                             <FileText className="w-4 h-4" /> Lihat Foto KTP
                                         </a>
@@ -310,7 +310,7 @@ return;
                                         disabled={updatingStatus || booking.status === s}
                                         className={`w-full text-left text-sm px-3 py-2 rounded-lg border transition-colors ${
                                             booking.status === s
-                                                ? 'border-blue-300 bg-blue-50 text-blue-700 font-semibold cursor-default'
+                                                ? 'border-emerald-300 bg-emerald-50 text-emerald-700 font-semibold cursor-default'
                                                 : 'border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50'
                                         }`}
                                     >
@@ -337,7 +337,7 @@ return;
                                         disabled={updatingPayment || booking.payment_status === s}
                                         className={`w-full text-left text-sm px-3 py-2 rounded-lg border transition-colors ${
                                             booking.payment_status === s
-                                                ? 'border-blue-300 bg-blue-50 text-blue-700 font-semibold cursor-default'
+                                                ? 'border-emerald-300 bg-emerald-50 text-emerald-700 font-semibold cursor-default'
                                                 : 'border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50'
                                         }`}
                                     >

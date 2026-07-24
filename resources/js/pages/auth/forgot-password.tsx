@@ -14,7 +14,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <Head title="Forgot password" />
 
             {status && (
-                <div className="mb-4 rounded-lg bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-700">
+                <div className="mb-4 rounded-lg bg-emerald-50 px-4 py-3 text-center text-sm font-medium text-emerald-700">
                     {status}
                 </div>
             )}
@@ -37,13 +37,13 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                     autoComplete="off"
                                     autoFocus
                                     placeholder="email@example.com"
-                                    className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <Button
-                                className="mt-2 h-11 w-full rounded-lg bg-blue-600 text-base font-semibold text-white transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
+                                className="mt-2 h-11 w-full rounded-lg bg-emerald-600 text-base font-semibold text-white transition-all duration-200 hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60"
                                 disabled={processing}
                                 data-test="email-password-reset-link-button"
                             >
@@ -62,7 +62,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     Or, return to{' '}
                     <TextLink
                         href={login()}
-                        className="font-semibold text-blue-600 hover:text-blue-700"
+                        className="font-semibold text-emerald-600 hover:text-emerald-700"
                     >
                         log in
                     </TextLink>

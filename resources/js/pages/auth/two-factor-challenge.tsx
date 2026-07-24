@@ -72,7 +72,7 @@ export default function TwoFactorChallenge() {
                                         placeholder="Enter recovery code"
                                         autoFocus={showRecoveryInput}
                                         required
-                                        className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                        className="h-10 rounded-lg border-slate-300 bg-white transition-all duration-200 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                                     />
                                     <InputError
                                         message={errors.recovery_code}
@@ -101,7 +101,7 @@ export default function TwoFactorChallenge() {
                                                         <InputOTPSlot
                                                             key={index}
                                                             index={index}
-                                                            className="size-11 rounded-lg border-slate-300 text-lg font-semibold shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                                            className="size-11 rounded-lg border-slate-300 text-lg font-semibold shadow-sm transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                                                         />
                                                     ),
                                                 )}
@@ -114,7 +114,7 @@ export default function TwoFactorChallenge() {
 
                             <Button
                                 type="submit"
-                                className="mt-2 h-11 w-full rounded-lg bg-blue-600 text-base font-semibold text-white transition-all duration-200 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60"
+                                className="mt-2 h-11 w-full rounded-lg bg-emerald-600 text-base font-semibold text-white transition-all duration-200 hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60"
                                 disabled={processing}
                             >
                                 {processing ? 'Verifying...' : 'Continue'}
@@ -124,7 +124,7 @@ export default function TwoFactorChallenge() {
                                 <span>Or </span>
                                 <button
                                     type="button"
-                                    className="font-semibold text-blue-600 underline decoration-blue-300 underline-offset-4 transition-colors duration-200 hover:text-blue-700 hover:decoration-blue-400"
+                                    className="font-semibold text-emerald-600 underline decoration-emerald-300 underline-offset-4 transition-colors duration-200 hover:text-emerald-700 hover:decoration-emerald-400"
                                     onClick={() =>
                                         toggleRecoveryMode(clearErrors)
                                     }

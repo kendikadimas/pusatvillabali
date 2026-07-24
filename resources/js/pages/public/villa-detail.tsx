@@ -31,7 +31,7 @@ function MobileBookingBar({ villa, checkIn, checkOut, nights, totalPrice, onOpen
                     {hasSelection ? (
                         <>
                             <p className="text-[11px] text-slate-400 font-medium leading-tight">
-                                {formatDate(checkIn)} ? {formatDate(checkOut)} · {nights} malam
+                                {formatDate(checkIn)} - {formatDate(checkOut)} Â· {nights} malam
                             </p>
                             <p className="text-lg font-black text-slate-900 leading-tight font-heading">
                                 {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalPrice)}
@@ -183,7 +183,7 @@ onClose();
                     {nights > 0 ? (
                         <div className="flex items-center justify-between">
                             <span className="text-sm text-slate-500">
-                                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(villa.price_per_night)} × {nights} malam
+                                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(villa.price_per_night)} Ã— {nights} malam
                             </span>
                             <span className="text-base font-black text-slate-900 font-heading">
                                 {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalPrice)}
@@ -423,7 +423,7 @@ export default function VillaDetailPage({ villa, settings }: Props) {
                     return new Date(year, month - 1, day);
                 }));
             })
-            .catch(() => {/* non-critical — calendar still works without it */});
+            .catch(() => {/* non-critical â€” calendar still works without it */});
     }, [villa.slug]);
 
     const photos = villa.photos && villa.photos.length > 0 ? villa.photos : [];
@@ -771,7 +771,7 @@ nextPhoto();
                                 {nights > 0 && (
                                     <div className="space-y-2 text-sm border-t border-slate-100 pt-3">
                                         <div className="flex justify-between text-slate-600">
-                                            <span>{formatPrice(villa.price_per_night)} × {nights} malam</span>
+                                            <span>{formatPrice(villa.price_per_night)} Ã— {nights} malam</span>
                                             <span>{formatPrice(totalPrice)}</span>
                                         </div>
                                         <div className="flex justify-between font-bold text-slate-900 text-[15px] border-t border-slate-100 pt-2">

@@ -1,0 +1,1 @@
+function e(e){return e==null?`Rp 0`:`Rp `+Number(e).toLocaleString(`id-ID`)}export{e as t};

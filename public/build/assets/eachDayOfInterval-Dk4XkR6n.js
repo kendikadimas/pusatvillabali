@@ -1,0 +1,1 @@
+import{p as e,x as t}from"./app-DDLnKztI.js";function n(n,r){let{start:i,end:a}=e(r?.in,n),o=+i>+a,s=o?+i:+a,c=o?a:i;c.setHours(0,0,0,0);let l=r?.step??1;if(!l)return[];l<0&&(l=-l,o=!o);let u=[];for(;+c<=s;)u.push(t(i,c)),c.setDate(c.getDate()+l),c.setHours(0,0,0,0);return o?u.reverse():u}export{n as t};

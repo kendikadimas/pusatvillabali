@@ -5,6 +5,7 @@ import { ChevronLeft, X, Search, User, LogOut } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import type { DateRange } from 'react-day-picker';
+import AppLogoIcon from '@/components/app-logo-icon';
 import { normaliseStorageUrl } from '@/lib/villaUtils';
 import { logout } from '@/routes';
 import type { AppSettings } from '@/types';
@@ -285,7 +286,9 @@ parts.push(`${searchPets} hewan`);
                             </button>
                         )}
                         <Link href="/" className="flex items-center gap-2 group">
-                            <img src="/favicon.svg" alt="Logo" className="w-7 h-7" />
+                            <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-600 text-white shadow-sm group-hover:bg-emerald-700 transition-colors">
+                                <AppLogoIcon className="size-5" />
+                            </div>
                             <span className="font-heading font-bold text-slate-900 text-[16px] leading-tight hidden sm:block">
                                 {appName}
                             </span>
@@ -942,7 +945,12 @@ parts.push(`${searchPets} hewan`);
                     <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
                     <div className="relative ml-auto w-72 max-w-full h-full bg-white shadow-2xl flex flex-col">
                         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-                            <span className="font-bold text-slate-900">{appName}</span>
+                            <div className="flex items-center gap-2 min-w-0">
+                                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
+                                    <AppLogoIcon className="size-5" />
+                                </div>
+                                <span className="font-bold text-slate-900 truncate">{appName}</span>
+                            </div>
                             <button onClick={() => setMobileOpen(false)} className="p-2 rounded-full hover:bg-slate-100">
                                 <X className="w-5 h-5 text-slate-600" />
                             </button>

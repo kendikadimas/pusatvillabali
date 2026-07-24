@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Mail, MapPin } from 'lucide-react';
 import React from 'react';
+import AppLogoIcon from '@/components/app-logo-icon';
 import type { AppSettings } from '@/types';
 
 const formatWhatsAppDisplay = (num: string): string => {
@@ -43,8 +44,8 @@ export default function PublicFooter() {
                     {/* ── Brand (4 cols) ── */}
                     <div className="lg:col-span-4 space-y-5">
                         <Link href="/" className="inline-flex items-center gap-3 group">
-                            <div className="w-11 h-11 bg-emerald-500/15 rounded-xl flex items-center justify-center ring-1 ring-emerald-400/20 group-hover:ring-emerald-400/40 transition-all">
-                                <img src="/favicon.svg" alt="Logo" className="size-6" />
+                            <div className="w-11 h-11 bg-emerald-500/15 rounded-xl flex items-center justify-center ring-1 ring-emerald-400/20 group-hover:ring-emerald-400/40 transition-all text-emerald-300">
+                                <AppLogoIcon className="size-6" />
                             </div>
                             <div>
                                 <span className="text-lg font-black tracking-tight text-white font-heading">{appName}</span>

@@ -26,6 +26,8 @@ it('renders admin dashboard for authenticated admins', function () {
             ->component('admin/dashboard')
             ->has('stats')
             ->has('recentBookings')
+            ->has('sanctum_token')
+            ->has('admin_token')
         );
 });
 
@@ -49,4 +51,25 @@ it('logs admin in via web session and redirects to dashboard', function () {
     ])->assertRedirect(route('admin.dashboard'));
 
     $this->assertAuthenticatedAs($admin);
+    expect(session('admin_token'))->not->toBeEmpty()
+        ->and(session('sanctum_token'))->not->toBeEmpty();
+});
+
+it('allows admin api calls with bearer token from web login session', function () {
+    $admin = User::factory()->create([
+        'role' => 'super_admin',
+        'password' => bcrypt('password'),
+    ]);
+
+    $this->post('/admin/login', [
+        'email' => $admin->email,
+        'password' => 'password',
+    ])->assertRedirect(route('admin.dashboard'));
+
+    $token = session('admin_token');
+    expect($token)->not->toBeEmpty();
+
+    $this->withToken($token)
+        ->getJson('/api/v1/admin/analytics?from='.now()->subMonth()->toDateString().'&to='.now()->toDateString())
+        ->assertOk();
 });

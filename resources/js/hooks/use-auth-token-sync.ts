@@ -1,9 +1,9 @@
 import { usePage } from '@inertiajs/react';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 /**
  * Keeps localStorage Sanctum tokens in sync with Inertia shared session props.
- * Covers Fortify register/login and any session-only auth path.
+ * Uses useLayoutEffect so tokens are written before child effects fire API calls.
  */
 export function useAuthTokenSync() {
     const { auth, sanctum_token, admin_token } = usePage<{
@@ -12,7 +12,7 @@ export function useAuthTokenSync() {
         admin_token?: string | null;
     }>().props;
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!auth?.user) {
             localStorage.removeItem('sanctum_token');
             localStorage.removeItem('admin_token');

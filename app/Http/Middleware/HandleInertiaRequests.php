@@ -47,11 +47,18 @@ class HandleInertiaRequests extends Middleware
     {
         $user = $request->user();
         $sanctumToken = $request->session()->get('sanctum_token');
+        $adminToken = $request->session()->get('admin_token');
 
         if ($user && ! $sanctumToken) {
             try {
-                $sanctumToken = $user->createToken('session-token')->plainTextToken;
+                $abilities = $user->isAdmin() ? ['admin-access'] : [];
+                $sanctumToken = $user->createToken('session-token', $abilities)->plainTextToken;
                 $request->session()->put('sanctum_token', $sanctumToken);
+
+                if ($user->isAdmin()) {
+                    $adminToken = $sanctumToken;
+                    $request->session()->put('admin_token', $adminToken);
+                }
             } catch (\Throwable $e) {
                 Log::error('HandleInertiaRequests createToken failed', [
                     'user_id' => $user->id,
@@ -59,6 +66,22 @@ class HandleInertiaRequests extends Middleware
                     'trace' => $e->getTraceAsString(),
                 ]);
                 $sanctumToken = null;
+            }
+        }
+
+        // Admin API routes require a token with the admin-access ability.
+        if ($user && $user->isAdmin() && ! $adminToken) {
+            try {
+                $adminToken = $user->createToken('admin-token', ['admin-access'])->plainTextToken;
+                $request->session()->put('admin_token', $adminToken);
+                $request->session()->put('sanctum_token', $adminToken);
+                $sanctumToken = $adminToken;
+            } catch (\Throwable $e) {
+                Log::error('HandleInertiaRequests create admin token failed', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage(),
+                ]);
+                $adminToken = null;
             }
         }
 
@@ -70,6 +93,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'sanctum_token' => $sanctumToken,
+            'admin_token' => $user && $user->isAdmin() ? $adminToken : null,
         ];
     }
 }

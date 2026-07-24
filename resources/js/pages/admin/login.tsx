@@ -1,5 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import React, { useState } from 'react';
+import AppLogoIcon from '@/components/app-logo-icon';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
@@ -52,28 +53,8 @@ export default function AdminLoginPage() {
                     <div className="relative z-10 flex h-full flex-col p-10">
                         {/* Logo */}
                         <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm border border-white/10">
-                                <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="size-6">
-                                    <circle cx="100" cy="100" r="96" fill="#166534"/>
-                                    <polygon points="30,118 170,118 155,98 45,98" fill="#f0fdf4"/>
-                                    <polygon points="52,98 148,98 136,80 64,80" fill="#dcfce7"/>
-                                    <polygon points="72,80 128,80 120,65 80,65" fill="#f0fdf4"/>
-                                    <line x1="80" y1="65" x2="120" y2="65" stroke="#15803d" strokeWidth="2.5" strokeLinecap="round"/>
-                                    <rect x="72" y="118" width="56" height="36" fill="#f0fdf4"/>
-                                    <path d="M91,154 L91,134 Q100,126 109,134 L109,154 Z" fill="#15803d"/>
-                                    <rect x="77" y="123" width="10" height="10" rx="1" fill="#15803d" opacity="0.5"/>
-                                    <rect x="113" y="123" width="10" height="10" rx="1" fill="#15803d" opacity="0.5"/>
-                                    <line x1="55" y1="154" x2="145" y2="154" stroke="#86efac" strokeWidth="2" strokeLinecap="round"/>
-                                    <path d="M55,154 Q42,130 30,120" stroke="#86efac" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                                    <path d="M55,154 Q38,138 28,138" stroke="#86efac" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-                                    <path d="M145,154 Q158,130 170,120" stroke="#86efac" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                                    <path d="M145,154 Q162,138 172,138" stroke="#86efac" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-                                    <circle cx="100" cy="44" r="5" fill="#86efac"/>
-                                    <line x1="100" y1="34" x2="100" y2="32" stroke="#86efac" strokeWidth="2" strokeLinecap="round"/>
-                                    <line x1="100" y1="54" x2="100" y2="56" stroke="#86efac" strokeWidth="2" strokeLinecap="round"/>
-                                    <line x1="90" y1="44" x2="88" y2="44" stroke="#86efac" strokeWidth="2" strokeLinecap="round"/>
-                                    <line x1="110" y1="44" x2="112" y2="44" stroke="#86efac" strokeWidth="2" strokeLinecap="round"/>
-                                </svg>
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm border border-white/10 text-white">
+                                <AppLogoIcon className="size-6" />
                             </div>
                             <span className="text-lg font-semibold tracking-tight text-white">PusatVillaBali</span>
                         </div>
@@ -127,36 +108,17 @@ export default function AdminLoginPage() {
                 <div className="relative flex min-h-dvh items-center justify-center bg-slate-50 p-6 lg:p-10">
                     {/* Mobile logo */}
                     <div className="absolute top-6 left-6 flex items-center gap-2 lg:hidden">
-                        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="size-8">
-                            <circle cx="100" cy="100" r="96" fill="#15803d"/>
-                            <polygon points="30,118 170,118 155,98 45,98" fill="#f0fdf4"/>
-                            <polygon points="52,98 148,98 136,80 64,80" fill="#dcfce7"/>
-                            <polygon points="72,80 128,80 120,65 80,65" fill="#f0fdf4"/>
-                            <rect x="72" y="118" width="56" height="36" fill="#f0fdf4"/>
-                            <path d="M91,154 L91,134 Q100,126 109,134 L109,154 Z" fill="#15803d"/>
-                            <path d="M55,154 Q42,130 30,120" stroke="#86efac" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                            <path d="M145,154 Q158,130 170,120" stroke="#86efac" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                        </svg>
+                        <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-600 text-white">
+                            <AppLogoIcon className="size-5" />
+                        </div>
                         <span className="text-sm font-semibold tracking-tight text-slate-900">PusatVillaBali</span>
                     </div>
 
                     <div className="mx-auto w-full max-w-sm">
                         {/* Header */}
                         <div className="mb-8">
-                            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-600 shadow-lg shadow-green-600/30">
-                                <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="size-7">
-                                    <circle cx="100" cy="100" r="96" fill="#166534"/>
-                                    <polygon points="30,118 170,118 155,98 45,98" fill="#f0fdf4"/>
-                                    <polygon points="52,98 148,98 136,80 64,80" fill="#dcfce7"/>
-                                    <polygon points="72,80 128,80 120,65 80,65" fill="#f0fdf4"/>
-                                    <rect x="72" y="118" width="56" height="36" fill="#f0fdf4"/>
-                                    <path d="M91,154 L91,134 Q100,126 109,134 L109,154 Z" fill="#15803d"/>
-                                    <rect x="77" y="123" width="10" height="10" rx="1" fill="#15803d" opacity="0.5"/>
-                                    <rect x="113" y="123" width="10" height="10" rx="1" fill="#15803d" opacity="0.5"/>
-                                    <path d="M55,154 Q42,130 30,120" stroke="#86efac" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                                    <path d="M145,154 Q158,130 170,120" stroke="#86efac" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                                    <circle cx="100" cy="44" r="5" fill="#86efac"/>
-                                </svg>
+                            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 shadow-lg shadow-emerald-600/30 text-white">
+                                <AppLogoIcon className="size-7" />
                             </div>
                             <h1 className="text-2xl font-bold tracking-tight text-slate-900">Masuk ke Admin Panel</h1>
                             <p className="mt-1 text-sm text-slate-500">

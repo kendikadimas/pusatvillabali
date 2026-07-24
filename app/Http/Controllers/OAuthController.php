@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -20,13 +21,10 @@ class OAuthController extends Controller
 
     public function handleGoogleCallback(Request $request): RedirectResponse
     {
-        // Frontend is Next.js static export (separate domain). Prefer FRONTEND_URL.
-        $frontendUrl = rtrim((string) config('app.frontend_url', config('app.url')), '/');
-
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (\Exception $e) {
-            return redirect($frontendUrl.'/auth/callback/?error='.urlencode('Gagal autentikasi dengan Google.'));
+            return redirect()->route('login')->with('error', 'Gagal autentikasi dengan Google.');
         }
 
         $user = User::where('email', $googleUser->getEmail())->first();
@@ -39,20 +37,21 @@ class OAuthController extends Controller
                 'avatar' => $googleUser->getAvatar(),
                 'password' => Hash::make(Str::password(32)),
                 'role' => 'user',
+                'email_verified_at' => now(),
             ]);
         } else {
             $user->update([
                 'google_id' => $googleUser->getId(),
                 'avatar' => $googleUser->getAvatar(),
+                'email_verified_at' => $user->email_verified_at ?? now(),
             ]);
         }
 
-        // Generate a short-lived one-time authorization code (valid for 60 seconds)
-        $code = Str::random(64);
-        Cache::put('oauth_code:'.$code, $user->id, 60);
+        // Inertia app uses session auth — log user in directly
+        Auth::login($user, true);
+        $request->session()->regenerate();
 
-        // Trailing slash required for Next.js static export (auth/callback/index.html)
-        return redirect($frontendUrl.'/auth/callback/?code='.$code);
+        return redirect()->intended(route('home'));
     }
 
     /**

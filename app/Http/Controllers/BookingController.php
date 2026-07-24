@@ -43,6 +43,18 @@ class BookingController extends Controller
             'payment_method_id' => $request->payment_method_id,
         ]);
 
+        $user = $request->user();
+        if ($user instanceof User && $user->isAdmin()) {
+            Log::warning('[Booking.store] Admin role blocked from creating bookings', [
+                'user_id' => $user->id,
+                'role' => $user->role,
+            ]);
+
+            return response()->json([
+                'message' => 'Akun admin tidak dapat membuat booking. Silakan gunakan akun pengguna biasa.',
+            ], 403);
+        }
+
         // HEIC/HEIF dari iPhone: browser mengirim sebagai image/heic atau image/heif
         // Laravel 'mimes' rule menolaknya karena tidak ada di daftar. Kita tangani sebelum validasi
         // dengan mengkonversi mime type check secara manual — file tetap disimpan as-is karena

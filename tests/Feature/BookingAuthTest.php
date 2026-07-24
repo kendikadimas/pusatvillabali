@@ -89,6 +89,60 @@ it('rejects unauthenticated booking requests', function () {
     $response->assertUnauthorized();
 });
 
+it('rejects admin from creating bookings', function () {
+    Storage::fake('private');
+    $admin = User::factory()->admin()->create();
+    $villa = Villa::factory()->create([
+        'price_per_night' => 1000000,
+        'weekend_price' => null,
+        'is_active' => true,
+        'max_guests' => 6,
+    ]);
+
+    $response = $this->actingAs($admin)->postJson('/api/v1/bookings', [
+        'villa_id' => $villa->id,
+        'guest_name' => $admin->name,
+        'guest_email' => $admin->email,
+        'guest_phone' => '081234567890',
+        'check_in' => now()->addDays(14)->toDateString(),
+        'check_out' => now()->addDays(17)->toDateString(),
+        'num_guests' => 2,
+        'ktp_image' => UploadedFile::fake()->image('ktp.jpg'),
+    ]);
+
+    $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Akun admin tidak dapat membuat booking. Silakan gunakan akun pengguna biasa.',
+        ]);
+});
+
+it('rejects super_admin from creating bookings', function () {
+    Storage::fake('private');
+    $superAdmin = User::factory()->superAdmin()->create();
+    $villa = Villa::factory()->create([
+        'price_per_night' => 1000000,
+        'weekend_price' => null,
+        'is_active' => true,
+        'max_guests' => 6,
+    ]);
+
+    $response = $this->actingAs($superAdmin)->postJson('/api/v1/bookings', [
+        'villa_id' => $villa->id,
+        'guest_name' => $superAdmin->name,
+        'guest_email' => $superAdmin->email,
+        'guest_phone' => '081234567890',
+        'check_in' => now()->addDays(21)->toDateString(),
+        'check_out' => now()->addDays(24)->toDateString(),
+        'num_guests' => 2,
+        'ktp_image' => UploadedFile::fake()->image('ktp.jpg'),
+    ]);
+
+    $response->assertForbidden()
+        ->assertJson([
+            'message' => 'Akun admin tidak dapat membuat booking. Silakan gunakan akun pengguna biasa.',
+        ]);
+});
+
 it('returns sanctum token on api user login', function () {
     $user = User::factory()->create([
         'role' => 'user',

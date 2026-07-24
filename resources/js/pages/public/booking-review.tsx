@@ -27,7 +27,7 @@ export default function BookingReviewPage({ booking, existingReview, token }: Pr
                         <Search className="w-8 h-8 text-slate-400" />
                     </div>
                     <h2 className="text-xl font-bold text-slate-800 mb-2">Link tidak valid</h2>
-                    <Link href="/" className="text-blue-600 hover:underline text-sm">Kembali ke beranda</Link>
+                    <Link href="/" className="text-emerald-600 hover:underline text-sm">Kembali ke beranda</Link>
                 </div>
             </>
         );
@@ -72,7 +72,7 @@ export default function BookingReviewPage({ booking, existingReview, token }: Pr
                         </div>
                         <h2 className="text-xl font-bold text-slate-800 mb-2">Ulasan terkirim!</h2>
                         <p className="text-slate-500 text-sm mb-6">Terima kasih sudah berbagi pengalaman Anda.</p>
-                        <Link href="/" className="inline-block bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors text-sm">
+                        <Link href="/" className="inline-block bg-emerald-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors text-sm">
                             Kembali ke Beranda
                         </Link>
                     </div>
@@ -114,14 +114,14 @@ export default function BookingReviewPage({ booking, existingReview, token }: Pr
                                 required
                                 rows={5}
                                 placeholder="Bagaimana fasilitas villa, kebersihan, lokasi, dan pelayanan host?"
-                                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
                             />
                         </div>
 
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60"
+                            className="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-60"
                         >
                             {submitting ? 'Mengirim...' : 'Kirim Ulasan'}
                         </button>

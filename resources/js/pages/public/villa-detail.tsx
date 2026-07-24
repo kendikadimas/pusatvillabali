@@ -1,4 +1,4 @@
-﻿import { Head, router, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { eachDayOfInterval, format, parseISO } from 'date-fns';
 import { MapPin, BedDouble, Bath, Users, Star, Calendar, ChevronLeft, ChevronRight, Check, X, Grid3X3, Minus, Plus, LayoutGrid, SlidersHorizontal } from 'lucide-react';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -7,7 +7,7 @@ import { formatPrice } from '@/lib/format';
 import { getPhotoUrl, getPhotoCategory, getPhotoDesc } from '@/lib/villaUtils';
 import type { Villa, AppSettings } from '@/types';
 
-// ─── Mobile Booking Bar ───────────────────────────────────────────────────────
+// --- Mobile Booking Bar -------------------------------------------------------
 
 interface MobileBookingBarProps {
     villa: Villa;
@@ -31,7 +31,7 @@ function MobileBookingBar({ villa, checkIn, checkOut, nights, totalPrice, onOpen
                     {hasSelection ? (
                         <>
                             <p className="text-[11px] text-slate-400 font-medium leading-tight">
-                                {formatDate(checkIn)} → {formatDate(checkOut)} · {nights} malam
+                                {formatDate(checkIn)} ? {formatDate(checkOut)} � {nights} malam
                             </p>
                             <p className="text-lg font-black text-slate-900 leading-tight font-heading">
                                 {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalPrice)}
@@ -53,7 +53,7 @@ function MobileBookingBar({ villa, checkIn, checkOut, nights, totalPrice, onOpen
                     <button
                         type="button"
                         onClick={onOpenSheet}
-                        className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-sm font-semibold transition-colors hover:bg-blue-100 cursor-pointer"
+                        className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 text-sm font-semibold transition-colors hover:bg-emerald-100 cursor-pointer"
                     >
                         <Calendar className="w-4 h-4" />
                         {hasSelection ? 'Ubah' : 'Pilih Tanggal'}
@@ -62,7 +62,7 @@ function MobileBookingBar({ villa, checkIn, checkOut, nights, totalPrice, onOpen
                         <button
                             type="button"
                             onClick={onBook as unknown as React.MouseEventHandler}
-                            className="px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold transition-colors hover:bg-blue-700 cursor-pointer"
+                            className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-bold transition-colors hover:bg-emerald-700 cursor-pointer"
                         >
                             Pesan
                         </button>
@@ -73,7 +73,7 @@ function MobileBookingBar({ villa, checkIn, checkOut, nights, totalPrice, onOpen
     );
 }
 
-// ─── Mobile Booking Sheet ─────────────────────────────────────────────────────
+// --- Mobile Booking Sheet -----------------------------------------------------
 
 interface MobileBookingSheetProps {
     villa: Villa;
@@ -155,8 +155,8 @@ onClose();
                     />
 
                     {nights > 0 && (
-                        <div className="flex items-center justify-center py-1.5 bg-blue-50 rounded-xl">
-                            <span className="text-sm font-semibold text-blue-700">{nights} malam dipilih</span>
+                        <div className="flex items-center justify-center py-1.5 bg-emerald-50 rounded-xl">
+                            <span className="text-sm font-semibold text-emerald-700">{nights} malam dipilih</span>
                         </div>
                     )}
                     <div className="flex items-center justify-between py-3 border-t border-slate-100">
@@ -183,7 +183,7 @@ onClose();
                     {nights > 0 ? (
                         <div className="flex items-center justify-between">
                             <span className="text-sm text-slate-500">
-                                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(villa.price_per_night)} × {nights} malam
+                                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(villa.price_per_night)} � {nights} malam
                             </span>
                             <span className="text-base font-black text-slate-900 font-heading">
                                 {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalPrice)}
@@ -201,7 +201,7 @@ onClose();
  onBook(e); onClose(); 
 }}
                         disabled={!checkIn || !checkOut || nights <= 0}
-                        className="w-full py-3.5 rounded-2xl bg-blue-600 text-white font-bold text-base transition-all hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                        className="w-full py-3.5 rounded-2xl bg-emerald-600 text-white font-bold text-base transition-all hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
                         {nights > 0 ? 'Pesan Sekarang' : 'Pilih tanggal terlebih dahulu'}
                     </button>
                     {settings?.settings_whatsapp && (
@@ -217,7 +217,7 @@ onClose();
     );
 }
 
-// ─── Photo Tour Modal ────────────────────────────────────────────────────────
+// --- Photo Tour Modal --------------------------------------------------------
 
 interface PhotoTourModalProps {
     photos: unknown[];
@@ -302,7 +302,7 @@ return;
                 <div className="hidden md:flex items-center gap-1 overflow-x-auto max-w-md">
                     {categories.map(cat => (
                         <button key={cat} type="button" onClick={() => setActiveCategory(cat)}
-                            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${activeCategory === cat ? 'bg-blue-600 text-white' : 'text-white/60 hover:text-white hover:bg-white/10'}`}>
+                            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${activeCategory === cat ? 'bg-emerald-600 text-white' : 'text-white/60 hover:text-white hover:bg-white/10'}`}>
                             {cat}
                         </button>
                     ))}
@@ -320,7 +320,7 @@ return;
             <div className="flex md:hidden items-center gap-1 px-4 py-2 overflow-x-auto shrink-0 border-b border-white/10 scrollbar-none">
                 {categories.map(cat => (
                     <button key={cat} type="button" onClick={() => setActiveCategory(cat)}
-                        className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${activeCategory === cat ? 'bg-blue-600 text-white' : 'text-white/50 hover:text-white hover:bg-white/10'}`}>
+                        className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${activeCategory === cat ? 'bg-emerald-600 text-white' : 'text-white/50 hover:text-white hover:bg-white/10'}`}>
                         {cat}
                     </button>
                 ))}
@@ -348,7 +348,7 @@ return;
                     <div ref={thumbRef} className="flex items-center gap-2 px-4 py-3 overflow-x-auto shrink-0 border-t border-white/10 scrollbar-none" style={{ scrollbarWidth: 'none' }}>
                         {filtered.map((photo, i) => (
                             <button key={i} type="button" data-active={i === current ? 'true' : 'false'} onClick={() => setCurrent(i)}
-                                className={`shrink-0 w-16 h-11 sm:w-20 sm:h-14 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${i === current ? 'border-blue-500 opacity-100 scale-105' : 'border-transparent opacity-40 hover:opacity-70'}`}>
+                                className={`shrink-0 w-16 h-11 sm:w-20 sm:h-14 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${i === current ? 'border-emerald-500 opacity-100 scale-105' : 'border-transparent opacity-40 hover:opacity-70'}`}>
                                 <img src={getPhotoUrl(photo)} alt="" className="w-full h-full object-cover" />
                             </button>
                         ))}
@@ -364,7 +364,7 @@ return;
                                 <button key={i} type="button" onClick={() => {
  setCurrent(i); setView('slide'); 
 }}
-                                    className="relative group aspect-[4/3] overflow-hidden rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    className="relative group aspect-[4/3] overflow-hidden rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                     <img src={getPhotoUrl(photo)} alt={d || ''} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-300" />
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200" />
                                     {d && (
@@ -382,7 +382,7 @@ return;
     );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// --- Main Page ----------------------------------------------------------------
 
 interface Props {
     villa: Villa;
@@ -423,7 +423,7 @@ export default function VillaDetailPage({ villa, settings }: Props) {
                     return new Date(year, month - 1, day);
                 }));
             })
-            .catch(() => {/* non-critical — calendar still works without it */});
+            .catch(() => {/* non-critical � calendar still works without it */});
     }, [villa.slug]);
 
     const photos = villa.photos && villa.photos.length > 0 ? villa.photos : [];
@@ -691,8 +691,8 @@ nextPhoto();
                                         />
                                     </div>
                                 ) : null}
-                                <a href={villa.maps_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors mt-3">
-                                    <span className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center"><MapPin className="w-4 h-4" /></span>
+                                <a href={villa.maps_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold text-sm transition-colors mt-3">
+                                    <span className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center"><MapPin className="w-4 h-4" /></span>
                                     Lihat di Google Maps
                                 </a>
                             </div>
@@ -771,7 +771,7 @@ nextPhoto();
                                 {nights > 0 && (
                                     <div className="space-y-2 text-sm border-t border-slate-100 pt-3">
                                         <div className="flex justify-between text-slate-600">
-                                            <span>{formatPrice(villa.price_per_night)} × {nights} malam</span>
+                                            <span>{formatPrice(villa.price_per_night)} � {nights} malam</span>
                                             <span>{formatPrice(totalPrice)}</span>
                                         </div>
                                         <div className="flex justify-between font-bold text-slate-900 text-[15px] border-t border-slate-100 pt-2">
@@ -783,7 +783,7 @@ nextPhoto();
 
                                 <button
                                     type="submit"
-                                    className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-md shadow-blue-600/20 text-sm tracking-wide"
+                                    className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-md shadow-emerald-600/20 text-sm tracking-wide"
                                 >
                                     Pesan Sekarang
                                 </button>
@@ -814,7 +814,7 @@ nextPhoto();
                 />
             )}
 
-            {/* ── Mobile Sticky Bottom Bar ── */}
+            {/* -- Mobile Sticky Bottom Bar -- */}
             <MobileBookingBar
                 villa={villa}
                 checkIn={checkIn}
@@ -827,7 +827,7 @@ nextPhoto();
                 formatDate={formatDate}
             />
 
-            {/* ── Mobile Booking Sheet ── */}
+            {/* -- Mobile Booking Sheet -- */}
             {bookingSheetOpen && (
                 <MobileBookingSheet
                     villa={villa}

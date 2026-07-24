@@ -32,7 +32,7 @@ export default function BookingSuccessPage({ booking, settings, code }: Props) {
                     <p className="text-slate-500 text-sm mb-6">
                         Kode booking "{code}" tidak ditemukan.
                     </p>
-                    <Link href="/" className="text-blue-600 hover:underline text-sm">Kembali ke beranda</Link>
+                    <Link href="/" className="text-emerald-600 hover:underline text-sm">Kembali ke beranda</Link>
                 </div>
             </>
         );
@@ -77,15 +77,15 @@ export default function BookingSuccessPage({ booking, settings, code }: Props) {
                 </div>
 
                 {/* Booking code highlight */}
-                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-6 text-center">
-                    <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">Kode Pemesanan Anda</p>
+                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 mb-6 text-center">
+                    <p className="text-xs text-emerald-600 font-semibold uppercase tracking-wider mb-1">Kode Pemesanan Anda</p>
                     <div className="flex items-center justify-center gap-3 mt-2">
-                        <span className="text-2xl font-black text-blue-800 font-mono tracking-widest">
+                        <span className="text-2xl font-black text-emerald-800 font-mono tracking-widest">
                             #{booking.booking_code}
                         </span>
                         <button
                             onClick={copyCode}
-                            className="p-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors"
+                            className="p-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-600 transition-colors"
                             title="Salin kode"
                         >
                             <Copy className="w-4 h-4" />
@@ -94,7 +94,7 @@ export default function BookingSuccessPage({ booking, settings, code }: Props) {
                     {copied && (
                         <p className="text-xs text-green-600 mt-2 font-medium">Kode disalin!</p>
                     )}
-                    <p className="text-xs text-blue-500 mt-2">Simpan kode ini untuk cek status pemesanan</p>
+                    <p className="text-xs text-emerald-500 mt-2">Simpan kode ini untuk cek status pemesanan</p>
                 </div>
 
                 {/* Villa photo + details */}
@@ -186,7 +186,7 @@ export default function BookingSuccessPage({ booking, settings, code }: Props) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     <button
                         onClick={handleDownloadPDF}
-                        className="flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-3 rounded-xl hover:bg-blue-700 transition-colors"
+                        className="flex items-center justify-center gap-2 bg-emerald-600 text-white text-sm font-semibold px-4 py-3 rounded-xl hover:bg-emerald-700 transition-colors"
                     >
                         <Download className="w-4 h-4" /> Download Invoice
                     </button>
@@ -201,7 +201,7 @@ export default function BookingSuccessPage({ booking, settings, code }: Props) {
                 <div className="flex flex-col gap-3">
                     <Link
                         href={`/booking/status?code=${booking.booking_code}`}
-                        className="flex items-center justify-center gap-2 border border-blue-200 text-blue-600 text-sm font-semibold px-4 py-3 rounded-xl hover:bg-blue-50 transition-colors text-center"
+                        className="flex items-center justify-center gap-2 border border-emerald-200 text-emerald-600 text-sm font-semibold px-4 py-3 rounded-xl hover:bg-emerald-50 transition-colors text-center"
                     >
                         Lihat Status Pemesanan
                     </Link>

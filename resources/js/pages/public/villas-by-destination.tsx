@@ -100,12 +100,12 @@ params.max_price = maxPrice;
                     <button
                         onClick={() => setShowFilters(!showFilters)}
                         className={`flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-lg transition-colors ${
-                            showFilters ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            showFilters ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                         }`}
                     >
                         <SlidersHorizontal className="w-4 h-4" />
                         Filter
-                        {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-blue-500" />}
+                        {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-emerald-500" />}
                     </button>
 
                     {hasActiveFilters && (
@@ -142,7 +142,7 @@ params.max_price = maxPrice;
                                 <label className="block text-xs font-medium text-slate-600 mb-1">Harga max</label>
                                 <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} placeholder="∞" className="text-sm border border-slate-200 rounded-lg px-3 py-2 outline-none w-32" />
                             </div>
-                            <button onClick={applyFilters} className="bg-blue-600 text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            <button onClick={applyFilters} className="bg-emerald-600 text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
                                 Terapkan
                             </button>
                         </div>
@@ -168,7 +168,7 @@ params.max_price = maxPrice;
                         </div>
                         <h3 className="text-xl font-bold text-slate-700 mb-2 font-heading">Villa tidak ditemukan</h3>
                         <p className="text-slate-500 mb-6">Coba ubah filter pencarian Anda</p>
-                        <button onClick={clearFilters} className="text-blue-600 font-semibold hover:underline">Reset filter</button>
+                        <button onClick={clearFilters} className="text-emerald-600 font-semibold hover:underline">Reset filter</button>
                     </div>
                 ) : (
                     <div className="space-y-12">
@@ -182,8 +182,8 @@ return null;
                             return (
                                 <section key={destination}>
                                     <div className="flex items-center gap-3 mb-5">
-                                        <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center">
-                                            <MapPin className="w-4 h-4 text-blue-600" />
+                                        <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center">
+                                            <MapPin className="w-4 h-4 text-emerald-600" />
                                         </div>
                                         <div>
                                             <h2 className="text-lg sm:text-xl font-bold text-zinc-900 font-heading">{destination}</h2>

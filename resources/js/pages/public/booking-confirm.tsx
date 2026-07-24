@@ -273,7 +273,7 @@ return;
                         <Home className="w-8 h-8 text-slate-400" />
                     </div>
                     <h2 className="text-xl font-bold text-slate-800 mb-2 font-heading">Villa tidak ditemukan</h2>
-                    <Link href="/villas" className="text-blue-600 hover:underline text-sm font-medium">← Kembali ke daftar villa</Link>
+                    <Link href="/villas" className="text-emerald-600 hover:underline text-sm font-medium">← Kembali ke daftar villa</Link>
                 </div>
             </>
         );
@@ -293,9 +293,9 @@ return;
 
                 {/* Mobile price summary bar */}
                 {villa && nights > 0 && (
-                    <div className="lg:hidden bg-blue-50 border border-blue-100 rounded-xl p-3 mb-4 flex items-center justify-between">
+                    <div className="lg:hidden bg-emerald-50 border border-emerald-100 rounded-xl p-3 mb-4 flex items-center justify-between">
                         <span className="text-sm font-semibold text-slate-800 truncate mr-2">{villa.name}</span>
-                        <span className="text-sm font-bold text-blue-700 shrink-0">{formatPrice(total)}</span>
+                        <span className="text-sm font-bold text-emerald-700 shrink-0">{formatPrice(total)}</span>
                     </div>
                 )}
 
@@ -307,7 +307,7 @@ return;
                             <div className="lg:col-span-3">
                                 <form onSubmit={handleSubmit} className="space-y-5">
                                     {/* Villa summary */}
-                                    <div className="flex items-center gap-4 bg-blue-50 border border-blue-100 rounded-2xl p-4">
+                                    <div className="flex items-center gap-4 bg-emerald-50 border border-emerald-100 rounded-2xl p-4">
                                         <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0">
                                             <img src={getPhotoUrl(villa.photos?.[0])} alt={villa.name} className="w-full h-full object-cover" />
                                         </div>
@@ -348,7 +348,7 @@ return;
                                         </div>
                                         <div className="mt-4">
                                             <label className="block text-xs font-medium text-slate-600 mb-1">Jumlah Tamu</label>
-                                            <select value={guests} onChange={(e) => setGuests(Number(e.target.value))} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                                            <select value={guests} onChange={(e) => setGuests(Number(e.target.value))} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
                                                 {Array.from({ length: villa.max_guests }, (_, i) => i + 1).map(n => (
                                                     <option key={n} value={n}>{n} tamu</option>
                                                 ))}
@@ -362,26 +362,26 @@ return;
                                         <div className="space-y-4">
                                             <div>
                                                 <label className="block text-xs font-medium text-slate-600 mb-1">Nama Lengkap *</label>
-                                                <input type="text" required value={guestName} onChange={(e) => setGuestName(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama sesuai KTP" />
+                                                <input type="text" required value={guestName} onChange={(e) => setGuestName(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Nama sesuai KTP" />
                                                 {errors.guest_name && <p className="text-xs text-red-500 mt-1">{errors.guest_name}</p>}
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-medium text-slate-600 mb-1">Email *</label>
-                                                <input type="email" required value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="email@contoh.com" />
+                                                <input type="email" required value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500" placeholder="email@contoh.com" />
                                                 {errors.guest_email && <p className="text-xs text-red-500 mt-1">{errors.guest_email}</p>}
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-medium text-slate-600 mb-1">Nomor WhatsApp *</label>
-                                                <input type="tel" required value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="08xx-xxxx-xxxx" />
+                                                <input type="tel" required value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500" placeholder="08xx-xxxx-xxxx" />
                                                 {errors.guest_phone && <p className="text-xs text-red-500 mt-1">{errors.guest_phone}</p>}
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-medium text-slate-600 mb-1">Catatan (opsional)</label>
-                                                <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Permintaan khusus..." />
+                                                <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 resize-none" placeholder="Permintaan khusus..." />
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-medium text-slate-600 mb-1">Foto KTP *</label>
-                                                <label className={`flex items-center gap-3 w-full border-2 border-dashed rounded-lg px-3 py-3 cursor-pointer transition-colors ${ktpFile ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-blue-300'}`}>
+                                                <label className={`flex items-center gap-3 w-full border-2 border-dashed rounded-lg px-3 py-3 cursor-pointer transition-colors ${ktpFile ? 'border-emerald-400 bg-emerald-50' : 'border-slate-200 hover:border-emerald-300'}`}>
                                                     <Upload className="w-4 h-4 text-slate-400 shrink-0" />
                                                     <span className="text-sm text-slate-500 truncate">
                                                         {ktpFile ? ktpFile.name : 'Upload foto KTP (JPG/PNG, maks 5MB)'}
@@ -406,8 +406,8 @@ return;
                                             <div className="space-y-2">
                                                 {paymentMethods.map((pm) => (
                                                     <div key={pm.id}>
-                                                        <label className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors ${selectedPaymentMethod === pm.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-blue-300'}`}>
-                                                            <input type="radio" name="payment_method" value={pm.id} checked={selectedPaymentMethod === pm.id} onChange={() => setSelectedPaymentMethod(pm.id)} className="text-blue-600 shrink-0" required />
+                                                        <label className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors ${selectedPaymentMethod === pm.id ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200 hover:border-emerald-300'}`}>
+                                                            <input type="radio" name="payment_method" value={pm.id} checked={selectedPaymentMethod === pm.id} onChange={() => setSelectedPaymentMethod(pm.id)} className="text-emerald-600 shrink-0" required />
                                                             <div>
                                                                 <p className="text-sm font-semibold text-slate-800">{pm.name}</p>
                                                                 {pm.account_number && <p className="text-xs text-slate-500">{pm.account_number} · {pm.account_name}</p>}
@@ -509,7 +509,7 @@ return;
 }}
                                                             onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleApplyVoucher())}
                                                             placeholder="Masukkan kode voucher"
-                                                            className="flex-1 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-mono font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                                                            className="flex-1 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-mono font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50"
                                                         />
                                                         <button
                                                             type="button"
@@ -532,7 +532,7 @@ return;
                                     <button
                                         type="submit"
                                         disabled={processing || nights === 0 || !selectedPaymentMethod || paymentMethods.length === 0}
-                                        className="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm"
+                                        className="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm"
                                     >
                                         {processing ? 'Memproses...' : 'Lanjut ke Pembayaran'}
                                     </button>
@@ -577,15 +577,15 @@ return;
                     /* ── PAYMENT STEP ── */
                     <div className="max-w-xl mx-auto">
                         {/* Booking code banner */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-5 flex items-center justify-between gap-3">
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-5 flex items-center justify-between gap-3">
                             <div>
-                                <p className="text-xs text-blue-600 font-semibold mb-0.5">Kode Pemesanan</p>
-                                <p className="text-lg font-black text-blue-800 font-mono tracking-widest">{bookingCode}</p>
+                                <p className="text-xs text-emerald-600 font-semibold mb-0.5">Kode Pemesanan</p>
+                                <p className="text-lg font-black text-emerald-800 font-mono tracking-widest">{bookingCode}</p>
                             </div>
                             <button
                                 type="button"
                                 onClick={copyBookingCode}
-                                className="flex items-center gap-1.5 px-3 py-2 bg-white border border-blue-200 rounded-xl text-xs font-semibold text-blue-700 hover:bg-blue-50 transition-colors cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 py-2 bg-white border border-emerald-200 rounded-xl text-xs font-semibold text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer"
                             >
                                 {copied ? <CheckCircle className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                                 {copied ? 'Disalin' : 'Salin'}
@@ -640,7 +640,7 @@ return;
                         <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-5">
                             <h2 className="font-bold text-slate-800 mb-3 text-sm">Upload Bukti Pembayaran</h2>
                             <form onSubmit={handleUploadProof} className="space-y-4">
-                                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 rounded-xl p-6 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors">
+                                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-300 rounded-xl p-6 cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-colors">
                                     <Upload className="w-6 h-6 text-slate-400" />
                                     <span className="text-xs text-slate-500 text-center">
                                         {proofFile ? proofFile.name : 'Klik untuk pilih file (JPG, PNG, WebP)'}
@@ -669,7 +669,7 @@ return;
                                 <button
                                     type="submit"
                                     disabled={uploading || !proofFile}
-                                    className="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm"
+                                    className="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm"
                                 >
                                     {uploading ? 'Mengirim...' : 'Kirim Bukti Pembayaran'}
                                 </button>
@@ -706,27 +706,27 @@ return;
                         </div>
 
                         {/* Booking code */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-6 text-center">
-                            <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">Kode Pemesanan Anda</p>
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 mb-6 text-center">
+                            <p className="text-xs text-emerald-600 font-semibold uppercase tracking-wider mb-1">Kode Pemesanan Anda</p>
                             <div className="flex items-center justify-center gap-3 mt-2">
-                                <span className="text-2xl font-black text-blue-800 font-mono tracking-widest">#{bookingCode}</span>
+                                <span className="text-2xl font-black text-emerald-800 font-mono tracking-widest">#{bookingCode}</span>
                                 <button
                                     type="button"
                                     onClick={copyBookingCode}
-                                    className="p-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors"
+                                    className="p-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-600 transition-colors"
                                     title="Salin kode"
                                 >
                                     <Copy className="w-4 h-4" />
                                 </button>
                             </div>
                             {copied && <p className="text-xs text-green-600 mt-2 font-medium">Kode disalin!</p>}
-                            <p className="text-xs text-blue-500 mt-2">Simpan kode ini untuk cek status pemesanan</p>
+                            <p className="text-xs text-emerald-500 mt-2">Simpan kode ini untuk cek status pemesanan</p>
                         </div>
 
                         {/* Amount due */}
                         <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-6 text-center">
                             <p className="text-sm text-slate-500 mb-1">Total yang harus dibayar</p>
-                            <p className="text-3xl font-black text-blue-700">{formatPrice(total)}</p>
+                            <p className="text-3xl font-black text-emerald-700">{formatPrice(total)}</p>
                             {checkIn && checkOut && nights > 0 && (
                                 <p className="text-xs text-slate-500 mt-1">
                                     {nights} malam · {format(parseISO(checkIn), 'dd MMM', { locale: localeID })} – {format(parseISO(checkOut), 'dd MMM yyyy', { locale: localeID })}

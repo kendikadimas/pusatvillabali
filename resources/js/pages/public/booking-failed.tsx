@@ -36,7 +36,7 @@ export default function BookingFailedPage({ booking, settings }: Props) {
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     {booking && (
-                        <Link href={`/booking/payment?code=${booking.booking_code}`} className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors text-sm">
+                        <Link href={`/booking/payment?code=${booking.booking_code}`} className="bg-emerald-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors text-sm">
                             Coba Bayar Lagi
                         </Link>
                     )}

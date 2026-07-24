@@ -37,9 +37,9 @@ const statusMap: Record<string, { label: string; color: string; bg: string; icon
     },
     completed: {
         label: 'Selesai',
-        color: 'text-blue-700',
-        bg: 'bg-blue-50 border-blue-200',
-        icon: <CheckCircle className="w-5 h-5 text-blue-600" />,
+        color: 'text-emerald-700',
+        bg: 'bg-emerald-50 border-emerald-200',
+        icon: <CheckCircle className="w-5 h-5 text-emerald-600" />,
     },
 };
 
@@ -47,7 +47,7 @@ const paymentStatusMap: Record<string, { label: string; color: string }> = {
     unpaid: { label: 'Belum Dibayar', color: 'text-red-600' },
     pending: { label: 'Menunggu Verifikasi', color: 'text-yellow-600' },
     paid: { label: 'Lunas', color: 'text-green-600' },
-    refunded: { label: 'Dikembalikan', color: 'text-blue-600' },
+    refunded: { label: 'Dikembalikan', color: 'text-emerald-600' },
     expired: { label: 'Kadaluarsa', color: 'text-slate-500' },
 };
 
@@ -106,12 +106,12 @@ return;
                                 value={searchCode}
                                 onChange={(e) => setSearchCode(e.target.value)}
                                 placeholder="Masukkan kode booking..."
-                                className="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                             />
                             <button
                                 type="submit"
                                 disabled={searching}
-                                className="bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                                className="bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-colors"
                             >
                                 {searching ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Cari'}
                             </button>
@@ -119,7 +119,7 @@ return;
                     </div>
 
                     <div className="text-center mt-6">
-                        <Link href="/" className="text-sm text-blue-600 hover:underline">Kembali ke beranda</Link>
+                        <Link href="/" className="text-sm text-emerald-600 hover:underline">Kembali ke beranda</Link>
                     </div>
                 </div>
             </>
@@ -160,7 +160,7 @@ return;
                             </p>
                         )}
                         {booking.status === 'completed' && (
-                            <p className="text-xs text-blue-600 mt-0.5">Terima kasih telah menginap bersama kami!</p>
+                            <p className="text-xs text-emerald-600 mt-0.5">Terima kasih telah menginap bersama kami!</p>
                         )}
                     </div>
                 </div>
@@ -249,12 +249,12 @@ return;
                             value={searchCode}
                             onChange={(e) => setSearchCode(e.target.value)}
                             placeholder="Kode booking..."
-                            className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                         />
                         <button
                             type="submit"
                             disabled={searching}
-                            className="bg-blue-600 text-white text-sm font-semibold px-3 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                            className="bg-emerald-600 text-white text-sm font-semibold px-3 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors"
                         >
                             {searching ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Cari'}
                         </button>
@@ -266,7 +266,7 @@ return;
                     {booking.payment_status === 'unpaid' && booking.status !== 'cancelled' && (
                         <Link
                             href={`/booking/payment?code=${booking.booking_code}`}
-                            className="flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors text-sm text-center"
+                            className="flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors text-sm text-center"
                         >
                             <CreditCard className="w-4 h-4" /> Lanjutkan Pembayaran
                         </Link>
@@ -282,7 +282,7 @@ return;
                             <p className="text-xs text-slate-500 mb-3">Batas waktu pembayaran telah habis. Buat booking baru untuk melanjutkan.</p>
                             <Link
                                 href={booking.villa ? `/villas/${booking.villa.slug}` : '/villas'}
-                                className="inline-block bg-blue-600 text-white font-bold px-5 py-2 rounded-xl text-sm hover:bg-blue-700 transition-colors"
+                                className="inline-block bg-emerald-600 text-white font-bold px-5 py-2 rounded-xl text-sm hover:bg-emerald-700 transition-colors"
                             >
                                 Pesan Lagi
                             </Link>

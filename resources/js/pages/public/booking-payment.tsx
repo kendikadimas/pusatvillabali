@@ -42,7 +42,7 @@ return;
                         <Search className="w-8 h-8 text-slate-400" />
                     </div>
                     <h2 className="text-xl font-bold text-slate-800 mb-2">Pemesanan tidak ditemukan</h2>
-                    <Link href="/" className="text-blue-600 hover:underline text-sm">Kembali ke beranda</Link>
+                    <Link href="/" className="text-emerald-600 hover:underline text-sm">Kembali ke beranda</Link>
                 </div>
             </>
         );
@@ -100,10 +100,10 @@ return;
                 <p className="text-sm text-slate-500 mb-8 font-mono">#{booking.booking_code}</p>
 
                 {/* Amount */}
-                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-6 text-center">
-                    <p className="text-sm text-blue-600 mb-1">Total yang harus dibayar</p>
-                    <p className="text-3xl font-black text-blue-700">{formatPrice(booking.total_amount)}</p>
-                    <p className="text-xs text-blue-500 mt-1">
+                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 mb-6 text-center">
+                    <p className="text-sm text-emerald-600 mb-1">Total yang harus dibayar</p>
+                    <p className="text-3xl font-black text-emerald-700">{formatPrice(booking.total_amount)}</p>
+                    <p className="text-xs text-emerald-500 mt-1">
                         {booking.total_nights} malam · {format(parseISO(booking.check_in), 'dd MMM', { locale: localeID })} – {format(parseISO(booking.check_out), 'dd MMM yyyy', { locale: localeID })}
                     </p>
                 </div>
@@ -156,7 +156,7 @@ return;
                 {!uploaded ? (
                     <form onSubmit={handleUpload} className="bg-white border border-slate-200 rounded-2xl p-5 mb-6">
                         <h2 className="font-bold text-slate-800 mb-3">Upload Bukti Pembayaran</h2>
-                        <label className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-slate-300 rounded-xl p-8 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors">
+                        <label className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-slate-300 rounded-xl p-8 cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/30 transition-colors">
                             <Upload className="w-8 h-8 text-slate-400" />
                             <span className="text-sm text-slate-500">
                                 {proofFile ? proofFile.name : 'Pilih file gambar (JPG, PNG, WebP)'}
@@ -180,7 +180,7 @@ return;
                         <button
                             type="submit"
                             disabled={!proofFile || uploading}
-                            className="mt-4 w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60"
+                            className="mt-4 w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-60"
                         >
                             {uploading ? 'Mengirim...' : 'Kirim Bukti Pembayaran'}
                         </button>
@@ -244,7 +244,7 @@ return;
                             href={`/booking/${booking.booking_code}/invoice`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-xl transition-colors text-sm mb-3"
+                            className="flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-3 rounded-xl transition-colors text-sm mb-3"
                         >
                             <Download className="w-4 h-4" />
                             Unduh Invoice

@@ -187,3 +187,19 @@
 @utility animate-slide-up {
     animation: slide-up 0.5s ease-out;
 }
+
+/* react-day-picker brand colors (default is blue) */
+.rdp-root {
+    --rdp-accent-color: #059669;
+    --rdp-accent-background-color: #d1fae5;
+    --rdp-today-color: #059669;
+    --rdp-range_middle-background-color: #d1fae5;
+    --rdp-range_start-date-background-color: #059669;
+    --rdp-range_end-date-background-color: #059669;
+}
+
+.villa-calendar .rdp-root,
+.search-date-picker.rdp-root {
+    --rdp-accent-color: #059669;
+    --rdp-accent-background-color: #d1fae5;
+}

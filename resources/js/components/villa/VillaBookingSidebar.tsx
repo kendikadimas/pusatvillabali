@@ -70,7 +70,7 @@ export default function VillaBookingSidebar({
 
                     <button
                         onClick={onBookingSubmit}
-                        className="w-full bg-[#2563EB] hover:bg-[#1d4ed8] active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-md text-sm transition-all cursor-pointer"
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-md text-sm transition-all cursor-pointer"
                     >
                         {storeCheckIn && storeCheckOut ? 'Pesan Sekarang' : 'Cek Ketersediaan'}
                     </button>
@@ -95,7 +95,7 @@ export default function VillaBookingSidebar({
                 </div>
                 <button
                     onClick={onBookingSubmit}
-                    className="bg-[#2563EB] hover:bg-[#1d4ed8] active:scale-[0.98] text-white font-bold px-6 py-3 rounded-xl shadow-md text-sm transition-all cursor-pointer"
+                    className="bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold px-6 py-3 rounded-xl shadow-md text-sm transition-all cursor-pointer"
                 >
                     Pesan
                 </button>

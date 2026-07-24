@@ -356,11 +356,14 @@ errors.check_out_time = 'Jam check-out wajib diisi.';
             }
         } catch (err: any) {
             console.error('Failed to save villa:', err);
-            const errMsg = err.response?.data?.message || 'Gagal menyimpan villa.';
-            toast.error(errMsg);
+            const errors = err.response?.data?.errors;
 
-            if (err.response?.data?.errors) {
-                setFormErrors(err.response.data.errors);
+            if (errors) {
+                setFormErrors(errors);
+                const first = Object.values(errors).flat()[0];
+                toast.error(typeof first === 'string' ? first : 'Gagal menyimpan villa. Periksa isian form.');
+            } else {
+                toast.error(err.response?.data?.message || 'Gagal menyimpan villa.');
             }
         } finally {
             setSubmitting(false);

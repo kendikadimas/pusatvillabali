@@ -223,6 +223,44 @@ it('admin can create a villa', function () {
     $this->assertDatabaseHas('villas', ['name' => 'Villa Sunset']);
 });
 
+it('admin can create a villa with relative host avatar path', function () {
+    actingAsAdmin();
+    $dest = Destination::factory()->create();
+
+    $response = $this->postJson('/api/v1/admin/villas', [
+        'name' => 'Villa Relative Avatar',
+        'description' => 'Villa dengan avatar relatif dari form admin.',
+        'short_desc' => 'Avatar relatif /storage.',
+        'location' => 'Canggu, Bali',
+        'destination_id' => $dest->id,
+        'price_per_night' => 1200000,
+        'weekend_price' => 1500000,
+        'bedrooms' => 3,
+        'bathrooms' => 2,
+        'max_guests' => 6,
+        'min_nights' => 2,
+        'check_in_time' => '14:00:00',
+        'check_out_time' => '12:00:00',
+        'is_active' => true,
+        'host_name' => 'Admin',
+        'host_years' => 1,
+        'host_avatar' => '/storage/avatars/host.jpg',
+        'host_phone' => '081234567890',
+        'host_is_verified' => true,
+        'amenities' => [
+            ['name' => 'WiFi', 'icon' => 'Wifi'],
+        ],
+        'beds' => 4,
+        'cleaning_fee' => 100000,
+        'bedrooms_info' => [
+            ['image' => '/storage/villas/extras/room.jpg', 'title' => 'Master', 'subtext' => 'King bed'],
+        ],
+    ]);
+
+    $response->assertCreated()
+        ->assertJsonPath('villa.host_avatar', '/storage/avatars/host.jpg');
+});
+
 it('admin can update a villa', function () {
     actingAsAdmin();
     $dest = Destination::factory()->create();

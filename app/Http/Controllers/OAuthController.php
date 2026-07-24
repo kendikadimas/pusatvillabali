@@ -20,7 +20,7 @@ class OAuthController extends Controller
 
     public function handleGoogleCallback(Request $request): RedirectResponse
     {
-        $frontendUrl = config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:3000'));
+        $frontendUrl = config('app.url');
 
         try {
             $googleUser = Socialite::driver('google')->user();

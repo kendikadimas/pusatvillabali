@@ -7,8 +7,7 @@ export default function GoogleLoginButton() {
 
     const handleGoogleLogin = () => {
         setLoading(true);
-        const backendUrl = import.meta.env.VITE_APP_URL || 'http://localhost:8000';
-        window.location.href = `${backendUrl}/auth/google/redirect`;
+        window.location.href = '/auth/google/redirect';
     };
 
     return (

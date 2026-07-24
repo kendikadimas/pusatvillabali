@@ -70,8 +70,8 @@ it('admin cannot create voucher with duplicate code', function () {
 
     $response = $this->postJson('/api/v1/admin/vouchers', [
         'code' => 'DUPE',
-        'type' => 'fixed',
-        'value' => 10000,
+        'discount_type' => 'fixed',
+        'discount_value' => 10000,
         'min_booking_amount' => 0,
         'is_active' => true,
         'valid_from' => now()->toDateString(),

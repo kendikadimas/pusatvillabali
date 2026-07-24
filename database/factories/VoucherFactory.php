@@ -31,8 +31,8 @@ class VoucherFactory extends Factory
     public function percent(float $value = 10, ?float $maxDiscount = null): static
     {
         return $this->state(fn () => [
-            'type' => 'percent',
-            'value' => $value,
+            'discount_type' => 'percentage',
+            'discount_value' => $value,
             'max_discount' => $maxDiscount,
         ]);
     }
@@ -40,8 +40,8 @@ class VoucherFactory extends Factory
     public function fixed(float $value = 50000): static
     {
         return $this->state(fn () => [
-            'type' => 'fixed',
-            'value' => $value,
+            'discount_type' => 'fixed',
+            'discount_value' => $value,
         ]);
     }
 

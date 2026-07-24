@@ -9,9 +9,19 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (! Schema::hasTable('vouchers')) {
+            return;
+        }
+
+        if (Schema::hasColumn('vouchers', 'discount_type') && Schema::hasColumn('vouchers', 'discount_value')) {
+            return;
+        }
+
+        if (! Schema::hasColumn('vouchers', 'type') || ! Schema::hasColumn('vouchers', 'value')) {
+            return;
+        }
+
         if (DB::getDriverName() === 'sqlite') {
-            // SQLite cannot rename enum columns directly.
-            // Recreate the column with the new name and correct enum values.
             Schema::table('vouchers', function (Blueprint $table) {
                 $table->string('discount_type')->default('fixed')->after('description');
                 $table->decimal('discount_value', 12, 2)->after('discount_type');
@@ -24,19 +34,28 @@ return new class extends Migration
             return;
         }
 
-        // MySQL: rename columns
-        Schema::table('vouchers', function (Blueprint $table) {
-            $table->renameColumn('type', 'discount_type');
-            $table->renameColumn('value', 'discount_value');
-        });
-
-        // Update enum values: 'percent' → 'percentage'
-        DB::statement("ALTER TABLE vouchers MODIFY COLUMN discount_type ENUM('percentage', 'fixed') NOT NULL DEFAULT 'fixed'");
-        DB::statement("UPDATE vouchers SET discount_type = 'percentage' WHERE discount_type = 'percent'");
+        // MySQL: expand enum → normalize values → shrink enum → rename via CHANGE COLUMN
+        // (renameColumn mangles enum defaults on some MySQL/doctrine combos)
+        DB::statement("ALTER TABLE vouchers MODIFY COLUMN type ENUM('percent', 'percentage', 'fixed') NOT NULL DEFAULT 'fixed'");
+        DB::statement("UPDATE vouchers SET type = 'percentage' WHERE type = 'percent'");
+        DB::statement("ALTER TABLE vouchers CHANGE COLUMN type discount_type ENUM('percentage', 'fixed') NOT NULL DEFAULT 'fixed'");
+        DB::statement('ALTER TABLE vouchers CHANGE COLUMN value discount_value DECIMAL(12, 2) NOT NULL');
     }
 
     public function down(): void
     {
+        if (! Schema::hasTable('vouchers')) {
+            return;
+        }
+
+        if (Schema::hasColumn('vouchers', 'type') && Schema::hasColumn('vouchers', 'value')) {
+            return;
+        }
+
+        if (! Schema::hasColumn('vouchers', 'discount_type') || ! Schema::hasColumn('vouchers', 'discount_value')) {
+            return;
+        }
+
         if (DB::getDriverName() === 'sqlite') {
             Schema::table('vouchers', function (Blueprint $table) {
                 $table->string('type')->default('fixed')->after('description');
@@ -50,12 +69,9 @@ return new class extends Migration
             return;
         }
 
-        DB::statement("UPDATE vouchers SET discount_type = 'percent' WHERE discount_type = 'percentage'");
-        DB::statement("ALTER TABLE vouchers MODIFY COLUMN discount_type ENUM('percent', 'fixed') NOT NULL DEFAULT 'fixed'");
-
-        Schema::table('vouchers', function (Blueprint $table) {
-            $table->renameColumn('discount_type', 'type');
-            $table->renameColumn('discount_value', 'value');
-        });
+        DB::statement("ALTER TABLE vouchers CHANGE COLUMN discount_type type ENUM('percent', 'percentage', 'fixed') NOT NULL DEFAULT 'fixed'");
+        DB::statement('ALTER TABLE vouchers CHANGE COLUMN discount_value value DECIMAL(12, 2) NOT NULL');
+        DB::statement("UPDATE vouchers SET type = 'percent' WHERE type = 'percentage'");
+        DB::statement("ALTER TABLE vouchers MODIFY COLUMN type ENUM('percent', 'fixed') NOT NULL DEFAULT 'fixed'");
     }
 };

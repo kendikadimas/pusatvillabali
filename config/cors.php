@@ -21,15 +21,19 @@ return [
 
     'allowed_origins' => [
         // Hardcoded — tidak bergantung pada env() agar tidak terdampak config cache issue
+        'https://pusatvillabali.com',
+        'https://www.pusatvillabali.com',
+        'https://api.pusatvillabali.com',
+        // Legacy domain (if still used)
         'https://pusatvillaid.com',
         'https://www.pusatvillaid.com',
-        'https://api.pusatvillaid.com',
         // Local dev
         'http://localhost:3000',
         'http://127.0.0.1:3000',
     ],
 
     'allowed_origins_patterns' => [
+        '#^https?://(?:.+\.)?pusatvillabali\.com$#',
         '#^https?://(?:.+\.)?pusatvillaid\.com$#',
     ],
 

@@ -12,7 +12,7 @@ class IcalController extends Controller
      * Generate iCal (.ics) feed for a villa's booked and blocked dates.
      *
      * External OTAs (Agoda, Traveloka, Airbnb, Booking.com) can subscribe
-     * to this URL to auto-sync availability from PusatVilla.id.
+     * to this URL to auto-sync availability from PusatVillaBali.
      */
     public function export(int $id): Response
     {
@@ -32,7 +32,7 @@ class IcalController extends Controller
 
         foreach ($bookings as $booking) {
             $events[] = [
-                'uid' => $booking->booking_code.'@pusatvilla.id',
+                'uid' => $booking->booking_code.'@pusatvillabali.com',
                 'dtstart' => Carbon::parse($booking->check_in)->format('Ymd'),
                 'dtend' => Carbon::parse($booking->check_out)->format('Ymd'),
                 'summary' => 'Reserved - '.$booking->booking_code,
@@ -83,7 +83,7 @@ class IcalController extends Controller
 
             foreach ($ranges as $i => $range) {
                 $events[] = [
-                    'uid' => "blocked-{$villa->id}-{$i}-".$range['start']->format('Ymd').'@pusatvilla.id',
+                    'uid' => "blocked-{$villa->id}-{$i}-".$range['start']->format('Ymd').'@pusatvillabali.com',
                     'dtstart' => $range['start']->format('Ymd'),
                     'dtend' => $range['end']->format('Ymd'),
                     'summary' => 'Blocked - '.($range['reason'] ?? 'Maintenance'),
@@ -96,10 +96,10 @@ class IcalController extends Controller
         // 3. Build iCal output
         $ical = "BEGIN:VCALENDAR\r\n";
         $ical .= "VERSION:2.0\r\n";
-        $ical .= "PRODID:-//PusatVilla.id//Booking Calendar//ID\r\n";
+        $ical .= "PRODID:-//PusatVillaBali//Booking Calendar//ID\r\n";
         $ical .= "CALSCALE:GREGORIAN\r\n";
         $ical .= "METHOD:PUBLISH\r\n";
-        $ical .= 'X-WR-CALNAME:'.$this->escapeIcal($villa->name)." - PusatVilla.id\r\n";
+        $ical .= 'X-WR-CALNAME:'.$this->escapeIcal($villa->name)." - PusatVillaBali\r\n";
         $ical .= "X-WR-TIMEZONE:Asia/Jakarta\r\n";
 
         foreach ($events as $event) {

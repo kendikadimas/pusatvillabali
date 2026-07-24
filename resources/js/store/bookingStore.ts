@@ -133,7 +133,7 @@ export const useBookingStore = create<BookingState>()(
             }),
         }),
         {
-            name: 'pusatvillaid-booking-store',
+            name: 'pusatvillabali-booking-store',
         }
     )
 );

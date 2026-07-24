@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         $admin = User::updateOrCreate(
             ['email' => 'admin@example.com'],
             [
-                'name' => 'Admin PusatVilla',
+                'name' => 'Admin PusatVillaBali',
                 'password' => bcrypt('password'), // default password
                 'role' => 'admin',
             ]
@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         $user = User::firstOrCreate(
             ['email' => 'user@example.com'],
             [
-                'name' => 'User PusatVilla',
+                'name' => 'User PusatVillaBali',
                 'password' => bcrypt('password'), // default password
                 'role' => 'user',
             ]

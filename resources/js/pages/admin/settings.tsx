@@ -412,7 +412,7 @@ handleLogoUpload(f);
                             <div>
                                 <label className="block text-xs font-medium text-slate-600 mb-1">Nama Pemilik *</label>
                                 <input type="text" required value={pmForm.account_name} onChange={(e) => setPmForm((f) => ({ ...f, account_name: e.target.value }))}
-                                    placeholder="PT. Pusat Villa" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
+                                    placeholder="PT. PusatVillaBali" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
                                 {pmErrors.account_name && <p className="text-xs text-red-500 mt-1">{pmErrors.account_name}</p>}
                             </div>
 

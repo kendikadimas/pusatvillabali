@@ -67,7 +67,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </div>
                 {sidebarOpen && (
                     <div className="min-w-0">
-                        <p className="font-bold text-white text-sm leading-tight truncate">PusatVilla</p>
+                        <p className="font-bold text-white text-sm leading-tight truncate">PusatVillaBali</p>
                         <p className="text-[10px] text-slate-400 leading-tight uppercase tracking-wider">Admin Panel</p>
                     </div>
                 )}

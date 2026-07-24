@@ -362,7 +362,7 @@ it('admin can create a payment method', function () {
         'name' => 'BCA Transfer',
         'code' => 'bca_test',
         'account_number' => '1234567890',
-        'account_name' => 'PT Pusat Villa',
+        'account_name' => 'PT PusatVillaBali',
         'is_active' => true,
     ]);
 

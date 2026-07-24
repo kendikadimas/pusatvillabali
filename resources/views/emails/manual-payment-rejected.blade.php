@@ -195,10 +195,10 @@
         </div>
 
         <div class="footer-text">
-            <p style="margin:0 0 8px;font-weight:600;color:#1e293b">PusatVilla.id</p>
+            <p style="margin:0 0 8px;font-weight:600;color:#1e293b">PusatVillaBali</p>
             <p style="margin:0 0 4px">Platform persewaan villa premium terbaik di Indonesia</p>
             <p style="margin:0">
-                <a href="mailto:support@pusatvilla.id">support@pusatvilla.id</a>
+                <a href="mailto:support@pusatvillabali.com">support@pusatvillabali.com</a>
             </p>
             <p style="margin:8px 0 0;font-size:12px;color:#cbd5e1">
                 © {{ date('Y') }} External. All rights reserved.

@@ -168,7 +168,7 @@ class ProductionLayoutSeeder extends Seeder
             'Lokasi strategis, dekat dengan pantai dan restoran. Recommended!',
             'Pelayanan sangat baik, semua permintaan dipenuhi dengan cepat.',
             'Villa mewah dengan harga terjangkau. Worth every penny!',
-            'Pengalaman menginap yang tak terlupakan. Terima kasih PusatVilla!',
+            'Pengalaman menginap yang tak terlupakan. Terima kasih PusatVillaBali!',
             'Tempatnya instagramable banget! Foto-foto jadi bagus semua.',
             'Kamar tidur luas dan nyaman. Tidur nyenyak setiap malam.',
             'Dapur lengkap, bisa masak sendiri. Sangat homey.',

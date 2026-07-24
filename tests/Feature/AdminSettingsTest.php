@@ -85,7 +85,7 @@ it('admin can toggle payment method active status', function () {
         'name' => 'BCA',
         'code' => 'bca',
         'account_number' => '123456',
-        'account_name' => 'PusatVilla',
+        'account_name' => 'PusatVillaBali',
         'is_active' => true,
     ]);
 

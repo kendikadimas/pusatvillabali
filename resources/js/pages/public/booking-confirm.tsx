@@ -198,6 +198,7 @@ return;
             toast.success('Pemesanan dibuat. Silakan selesaikan pembayaran.');
 
             try {
+                localStorage.removeItem('pusatvillabali-booking-store');
                 localStorage.removeItem('pusatvillaid-booking-store');
             } catch {
                 // ignore

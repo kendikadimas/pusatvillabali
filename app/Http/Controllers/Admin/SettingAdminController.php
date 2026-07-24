@@ -36,7 +36,7 @@ class SettingAdminController extends Controller
         $settings = [
             'settings_prop_name' => Setting::getValue('settings_prop_name', 'PusatVillaBali'),
             'settings_whatsapp' => $whatsapp,
-            'settings_email' => Setting::getValue('settings_email', 'noreply@pusatvilla.id'),
+            'settings_email' => Setting::getValue('settings_email', 'noreply@pusatvillabali.com'),
             'settings_address' => Setting::getValue('settings_address', ''),
             'settings_meta_title' => Setting::getValue('settings_meta_title', ''),
             'settings_meta_description' => Setting::getValue('settings_meta_description', ''),

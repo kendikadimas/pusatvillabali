@@ -283,10 +283,10 @@
         </div>
 
         <div class="footer-text">
-            <p style="margin:0 0 8px;font-weight:600;color:#1e293b">PusatVilla.id</p>
-            <p style="margin:0 0 4px">Notifikasi Sistem Otomatis - PusatVilla.id</p>
+            <p style="margin:0 0 8px;font-weight:600;color:#1e293b">PusatVillaBali</p>
+            <p style="margin:0 0 4px">Notifikasi Sistem Otomatis - PusatVillaBali</p>
             <p style="margin:8px 0 0;font-size:12px;color:#cbd5e1">
-                © {{ date('Y') }} PusatVilla.id. All rights reserved.
+                © {{ date('Y') }} PusatVillaBali. All rights reserved.
             </p>
         </div>
     </div>

@@ -43,7 +43,7 @@ export default function AuthSplitLayout({
                             <AppLogoIcon className="size-6 fill-current text-white" />
                         </div>
                         <span className="text-lg font-semibold tracking-tight">
-                            PusatVilla.id
+                            PusatVillaBali
                         </span>
                     </Link>
 
@@ -57,11 +57,11 @@ export default function AuthSplitLayout({
                                     finest villas
                                 </span>
                                 <br />
-                                across Indonesia
+                                across Bali
                             </h2>
                             <p className="max-w-md text-base leading-relaxed text-white/60">
-                                Curated luxury villas in Bali, Lombok, Yogyakarta,
-                                and beyond. Your gateway to unforgettable stays.
+                                Curated luxury villas across Bali. Your gateway
+                                to unforgettable tropical stays.
                             </p>
                         </div>
 
@@ -112,7 +112,7 @@ export default function AuthSplitLayout({
                 >
                     <AppLogoIcon className="size-8 fill-current text-emerald-600" />
                     <span className="text-sm font-semibold tracking-tight text-slate-900">
-                        PusatVilla.id
+                        PusatVillaBali
                     </span>
                 </Link>
 

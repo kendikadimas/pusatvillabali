@@ -32,7 +32,7 @@ export default function AuthSplitLayout({
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
                             <AppLogoIcon className="size-6 fill-current text-white" />
                         </div>
-                        <span className="text-lg font-semibold tracking-tight text-white">PusatVilla</span>
+                        <span className="text-lg font-semibold tracking-tight text-white">PusatVillaBali</span>
                     </Link>
                 </div>
 
@@ -63,7 +63,7 @@ export default function AuthSplitLayout({
                 </div>
 
                 <div className="relative z-10 text-sm text-emerald-200/40">
-                    &copy; {new Date().getFullYear()} PusatVilla. All rights reserved.
+                    &copy; {new Date().getFullYear()} PusatVillaBali. All rights reserved.
                 </div>
             </div>
 

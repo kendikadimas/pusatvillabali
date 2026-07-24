@@ -161,5 +161,5 @@ export default function Register({ passwordRules }: Props) {
 
 Register.layout = {
     title: 'Create your account',
-    description: 'Enter your details to get started with PusatVilla',
+    description: 'Enter your details to get started with PusatVillaBali',
 };
